@@ -1,0 +1,44 @@
+{
+  "name": "nanogl-pbr",
+  "version": "0.1.0",
+  "description": "pbr material for nanogl",
+  "main": "pbr.js",
+  "scripts": {
+    "test": "jshint *.js && karma start",
+    "gztest": "browserify pbr.js -o gztest.js && uglifyjs --screw-ie8 -m -c warnings=false -o gztest.min.js -- gztest.js && gzip -k -9 gztest.min.js && stat -f%z gztest.min.js.gz && rm ./*gztest*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/plepers/nanogl-pbr.git"
+  },
+  "keywords": [
+    "nanogl",
+    "transform",
+    "matrix"
+  ],
+  "author": "Pierre Lepers",
+  "license": "GPL-2.0",
+  "bugs": {
+    "url": "https://github.com/plepers/nanogl-pbr/issues"
+  },
+  "homepage": "https://github.com/plepers/nanogl-pbr#readme",
+  "dependencies": {
+    "nanogl-state": "^0.1.11"
+  },
+  "devDependencies": {
+    "expect.js": "^0.3.1",
+    "glslify": "^5.0.2",
+    "jshint": "^2.9.1-rc1",
+    "karma": "^0.13.15",
+    "karma-browserify": "^4.4.2",
+    "karma-chrome-launcher": "^0.2.2",
+    "karma-firefox-launcher": "^0.1.7",
+    "karma-mocha": "^0.2.1",
+    "karma-safari-launcher": "^0.1.1",
+    "karma-sauce-launcher": "^0.3.0",
+    "mocha": "^2.3.4",
+    "sinon": "^1.17.2",
+    "string-template": "^1.0.0",
+    "uglify-js": "^2.6.1"
+  }
+}
