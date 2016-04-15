@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/plepers/nanogl-pbr#readme",
   "dependencies": {
+    "gl-matrix": "^2.3.2",
     "nanogl-state": "^0.1.11"
   },
   "devDependencies": {

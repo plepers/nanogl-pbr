@@ -25,7 +25,7 @@ vec3 rotate( mat4 m, vec3 v )
 void main( void ){
 
   #pragma CODE
-  
+
   vec4 pos = vec4( aPosition, 1.0 );
 
   gl_Position    = uMVP         * pos;
