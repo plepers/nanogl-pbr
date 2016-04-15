@@ -15,7 +15,7 @@ function StandardMaterial( gl ){
   this.ibl = null;
 
 
-  this.inputs = new InputList();
+  this.inputs      = new InputList();
   this.iAlbedo     = this.inputs.add( 'albedo',    3 );
   this.iSpecular   = this.inputs.add( 'specular',  3 );
   this.iRoughness  = this.inputs.add( 'roughness', 1 );
