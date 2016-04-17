@@ -13,8 +13,11 @@ varying vec2 vTexCoord;
 varying vec3 vWorldPosition;
 
 varying mediump vec3 vWorldNormal;
-varying mediump vec3 vWorldTangent;
-varying mediump vec3 vWorldBitangent;
+
+#if HAS_normal
+  varying mediump vec3 vWorldTangent;
+  varying mediump vec3 vWorldBitangent;
+#endif
 
 
 vec3 rotate( mat4 m, vec3 v )
@@ -33,8 +36,10 @@ void main( void ){
 
 
   vWorldNormal    = rotate( uWorldMatrix, aNormal );
-  vWorldTangent   = rotate( uWorldMatrix, aTangent );
-  vWorldBitangent = rotate( uWorldMatrix, aBitangent );
+  #if HAS_normal
+    vWorldTangent   = rotate( uWorldMatrix, aTangent );
+    vWorldBitangent = rotate( uWorldMatrix, aBitangent );
+  #endif
 
 
   vTexCoord = aTexCoord;

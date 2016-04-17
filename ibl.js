@@ -2,9 +2,10 @@
 
 
 function IBL( env, sh ){
-  this.env  = env;
-  this.sh   = sh;
-  this.expo = 1.0;
+  this.env   = env;
+  this.sh    = sh;
+  this.expo  = 1.0;
+  this.gamma = 1.0;
 }
 
 IBL.prototype = {
@@ -13,7 +14,7 @@ IBL.prototype = {
     prg.tEnv(       this.env );
     prg.uSHCoeffs(  this.sh  );
 
-    prg.uEnvExpo(   this.expo  );
+    prg.uEnvTonemap( this.expo, this.gamma );
   }
 
 

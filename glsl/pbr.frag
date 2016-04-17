@@ -6,15 +6,17 @@ varying vec2 vTexCoord;
 varying vec3 vWorldPosition;
 
 varying mediump vec3 vWorldNormal;
-varying mediump vec3 vWorldTangent;
-varying mediump vec3 vWorldBitangent;
 
+#if HAS_normal
+  varying mediump vec3 vWorldTangent;
+  varying mediump vec3 vWorldBitangent;
+#endif
 
 // IBL
 // ========
 uniform vec4 uSHCoeffs[7];
 uniform sampler2D tEnv;
-uniform float uEnvExpo;
+uniform vec2 uEnvTonemap;
 
 
 // MATH
@@ -41,11 +43,14 @@ vec3 F_Schlick( float VoH,vec3 specular,float gloss, vec3 fresnel)
 
 // ------------------------------
 //
+
+#if HAS_normal
 vec3 perturbWorldNormal(vec3 n){
   n = 2.0*n - 1.0;
   vec3 nrm = gl_FrontFacing ? vWorldNormal : -vWorldNormal;
   return normalize(vWorldTangent * n.x + vWorldBitangent*n.y + nrm * n.z );
 }
+#endif
 
 
 // ------------------------------
@@ -74,7 +79,7 @@ void main( void ){
   // SH diffuse coeff
   // -------------
   vec3 diffuseCoef=SampleSH(worldNormal, uSHCoeffs );
-  diffuseCoef *= uEnvExpo;
+  diffuseCoef = uEnvTonemap.x * pow( diffuseCoef, vec3( uEnvTonemap.y ) );
 
 
   #ifdef HAS_occlusion
@@ -86,14 +91,21 @@ void main( void ){
 
   vec3 viewDir = normalize( uCameraPosition - vWorldPosition );
   vec3 worldReflect = reflect( -viewDir, worldNormal );
-  vec3 specularColor = uEnvExpo * SpecularIBL( tEnv, worldReflect, 1.0-gloss() );
+  vec3 specularColor = SpecularIBL( tEnv, worldReflect, 1.0-gloss() );
+  specularColor = uEnvTonemap.x * pow( specularColor, vec3( uEnvTonemap.y ) );
 
   float NoV = sdot( viewDir, worldNormal );
   vec3 specularSq = specular()*specular();
   specularColor *= F_Schlick( NoV, specularSq, gloss() , fresnel() );
 
 
-  vec3 albedoSq = albedo()*albedo();
+  vec3 alb = albedo();
+  // if conserve energy
+    alb = alb - alb * specular();
+  // endif
+  vec3 albedoSq = alb*alb;
+
+
   gl_FragColor.xyz = toneMap( diffuseCoef*albedoSq + specularColor );
   // gl_FragColor.xyz= specularColor;
 
