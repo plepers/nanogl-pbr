@@ -39,12 +39,19 @@ uniform vec2 uEnvTonemap;
 
 
 
-vec3 F_Schlick( float VoH,vec3 specular,float gloss, vec3 fresnel)
+// Schlick approx
+// [Schlick 1994, "An Inexpensive BRDF Model for Physically-Based Rendering"]
+// https://github.com/EpicGames/UnrealEngine/blob/dff3c48be101bb9f84633a733ef79c91c38d9542/Engine/Shaders/BRDF.usf#L168
+vec3 F_Schlick( float VoH,vec3 specular,float gloss )
 {
   float dot = 1.0-VoH;
   dot = dot*dot*dot*dot*dot;
   dot *= gloss*gloss;
-  return( specular - dot*specular ) + dot*fresnel;
+  #if HAS_fresnel
+    return( 1.0 - dot )*specular + dot*fresnel();
+  #else
+    return( 1.0 - dot )*specular + dot;
+  #endif
 }
 
 
@@ -89,9 +96,6 @@ void main( void ){
   diffuseCoef = uEnvTonemap.x * pow( diffuseCoef, vec3( uEnvTonemap.y ) );
 
 
-  #if HAS_occlusion
-    diffuseCoef *= occlusion();
-  #endif
 
   // IBL reflexion
   // --------------
@@ -103,14 +107,26 @@ void main( void ){
 
   float NoV = sdot( viewDir, worldNormal );
   vec3 specularSq = specular()*specular();
-  specularColor *= F_Schlick( NoV, specularSq, gloss() , fresnel() );
+  specularColor *= F_Schlick( NoV, specularSq, gloss() );
 
 
   vec3 alb = albedo();
-  // if conserve energy
+  #if conserveEnergy
     alb = alb - alb * specular();
-  // endif
+  #endif
   vec3 albedoSq = alb*alb;
+
+
+
+  #if HAS_occlusion
+    diffuseCoef *= occlusion();
+  #endif
+
+  #if HAS_cavity
+    diffuseCoef   *= cavity() * cavityStrength().r + (1.0-cavityStrength().r);
+    specularColor *= cavity() * cavityStrength().g + (1.0-cavityStrength().g);
+  #endif
+
 
 
   gl_FragColor.xyz = toneMap( diffuseCoef*albedoSq + specularColor );

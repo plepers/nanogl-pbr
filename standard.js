@@ -3,7 +3,8 @@ var glslify      = require( 'glslify' );
 
 var ProgramCache = require( './lib/program-cache' );
 var Input        = require('./lib/input' );
-var InputList    = require('./lib/input-list' );
+var Flag         = require('./lib/flag' );
+var ChunksList   = require('./lib/chunks-tree' );
 
 
 var M4           = require( 'gl-matrix' ).mat4.create();
@@ -15,22 +16,27 @@ function StandardMaterial( gl ){
   this.prg = null;
 
 
-  this.inputs      = new InputList();
-  this.iAlbedo     = this.inputs.add( 'albedo',    3 );
-  this.iSpecular   = this.inputs.add( 'specular',  3 );
-  this.iGloss      = this.inputs.add( 'gloss',     1 );
-  this.iNormal     = this.inputs.add( 'normal',    3 );
-  this.iOcclusion  = this.inputs.add( 'occlusion', 1 );
-  this.iFresnel    = this.inputs.add( 'fresnel',   3 );
+  this.inputs          = new ChunksList();
+  this.iAlbedo         = this.inputs.add( new Input( 'albedo',          3 ) );
+  this.iSpecular       = this.inputs.add( new Input( 'specular',        3 ) );
+  this.iGloss          = this.inputs.add( new Input( 'gloss',           1 ) );
+  this.iNormal         = this.inputs.add( new Input( 'normal',          3 ) );
+  this.iOcclusion      = this.inputs.add( new Input( 'occlusion',       1 ) );
+  this.iCavity         = this.inputs.add( new Input( 'cavity',          1 ) );
+  this.iCavityStrength = this.inputs.add( new Input( 'cavityStrength',  2 ) );
+  this.iFresnel        = this.inputs.add( new Input( 'fresnel',         3 ) );
+
+  this.conserveEnergy  = this.inputs.add( new Flag ( 'conserveEnergy',  true ) );
 
 
 
   this._prgcache = ProgramCache.getCache( gl );
+
   // for program-cache
   this._uid       = 'std';
+  this._precision = 'highp'
   this._vertSrc   = glslify( './glsl/pbr.vert' );
   this._fragSrc   = glslify( './glsl/pbr.frag' );
-  this._precision = 'highp'
 
 
 }
@@ -74,7 +80,8 @@ StandardMaterial.prototype = {
 
   // need recompilation
   _isDirty : function(){
-    if( this.prg === null || this.inputs._isDirty() ){
+    if( this.prg === null || this.inputs._isDirty ){
+      console.log( 'dirty input')
       return true;
     }
     return false;
