@@ -1,6 +1,6 @@
 
 var Input     = require( './lib/input' );
-var InputList = require( './lib/input-list' );
+var ChunkList = require( './lib/chunk-list' );
 
 
 function log(il){
@@ -22,7 +22,7 @@ function log(il){
 
 
 
-var inputs      = new InputList();
+var inputs      = new ChunkList();
 var iAlbedo     = inputs.add( 'albedo',    3 );
 var iSpecular   = inputs.add( 'specular',  3 );
 var iRoughness  = inputs.add( 'roughness', 1 );

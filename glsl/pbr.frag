@@ -1,5 +1,12 @@
 #pragma PRECODE
 
+
+
+#pragma Input vec3 normal
+#pragma Enum ibl_type { NONE, SH7, SH9 }
+
+
+
 uniform vec3 uCameraPosition;
 
 varying vec2 vTexCoord;
@@ -82,7 +89,7 @@ void main( void ){
   diffuseCoef = uEnvTonemap.x * pow( diffuseCoef, vec3( uEnvTonemap.y ) );
 
 
-  #ifdef HAS_occlusion
+  #if HAS_occlusion
     diffuseCoef *= occlusion();
   #endif
 
@@ -107,7 +114,6 @@ void main( void ){
 
 
   gl_FragColor.xyz = toneMap( diffuseCoef*albedoSq + specularColor );
-  // gl_FragColor.xyz= specularColor;
 
 
 
