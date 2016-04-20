@@ -3,26 +3,26 @@
 #pragma glslify: octwrapDecode = require( ./octwrap-decode.glsl )
 #pragma glslify: decodeRGBE = require( ./decode-rgbe.glsl )
 
-vec3 SpecularIBL( sampler2D tEnv, vec3 skyUV, float roughness)
+vec3 SpecularIBL( sampler2D tEnv, vec3 skyDir, float roughness)
 {
 
-  vec2 P = octwrapDecode( skyUV );
+  vec2 uvA = octwrapDecode( skyDir );
 
-  P = vec2(
+  uvA = vec2(
     0.25*(254.0/256.0),
     0.125*0.5*(254.0/256.0)
-    ) * P + vec2(0.5,0.125*0.5);
+    ) * uvA + vec2(0.5,0.125*0.5);
 
 
 
-  float Q=fract(7.0*roughness);
-  P.y+=0.125*(7.0*roughness-Q);
-  vec2 R=P+vec2(0.0,0.125);
+  float frac=fract(7.0*roughness);
+  uvA.y+=0.125*(7.0*roughness-frac);
+  vec2 uvB=uvA+vec2(0.0,0.125);
 
   return  mix(
-    decodeRGBE( texture2D(tEnv,P) ),
-    decodeRGBE( texture2D(tEnv,R) ),
-    Q
+    decodeRGBE( texture2D(tEnv,uvA) ),
+    decodeRGBE( texture2D(tEnv,uvB) ),
+    frac
   );
   // return decodeRGBE( texture2D(tEnv,P) );
 

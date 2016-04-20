@@ -16,21 +16,22 @@ function StandardMaterial( gl ){
 
 
   this.inputs      = new InputList();
-  this.iAlbedo     = this.inputs.add( 'albedo',    3 );
-  this.iSpecular   = this.inputs.add( 'specular',  3 );
-  this.iGloss      = this.inputs.add( 'gloss',     1 );
-  this.iNormal     = this.inputs.add( 'normal',    3 );
-  this.iOcclusion  = this.inputs.add( 'occlusion', 1 );
-  this.iFresnel    = this.inputs.add( 'fresnel',   3 );
+  this.iAlbedo     = this.inputs.add( new Input( 'albedo',    3 ) );
+  this.iSpecular   = this.inputs.add( new Input( 'specular',  3 ) );
+  this.iGloss      = this.inputs.add( new Input( 'gloss',     1 ) );
+  this.iNormal     = this.inputs.add( new Input( 'normal',    3 ) );
+  this.iOcclusion  = this.inputs.add( new Input( 'occlusion', 1 ) );
+  this.iFresnel    = this.inputs.add( new Input( 'fresnel',   3 ) );
 
 
 
   this._prgcache = ProgramCache.getCache( gl );
+
   // for program-cache
   this._uid       = 'std';
+  this._precision = 'highp'
   this._vertSrc   = glslify( './glsl/pbr.vert' );
   this._fragSrc   = glslify( './glsl/pbr.frag' );
-  this._precision = 'highp'
 
 
 }
