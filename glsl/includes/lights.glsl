@@ -2,7 +2,7 @@
 #define NUM_D_LIGHTS 1
 #define NUM_LIGHTS NUM_D_LIGHTS+NUM_D_LIGHTS
 
-uniform vec2 uLightPositions  [NUM_S_LIGHTS];
+uniform vec3 uLightPositions  [NUM_S_LIGHTS];
 uniform vec3 uLightParams     [NUM_S_LIGHTS];
 uniform vec3 uLightSpot       [NUM_S_LIGHTS];
 
@@ -10,22 +10,13 @@ uniform vec3 uLightDirections [NUM_LIGHTS];
 uniform vec3 uLightColors     [NUM_LIGHTS];
 
 
-vec3 spotLightContrib( LightData light, vec3 lightDir, float invLightDist ){
-
-
-  float falloff = saturate( light.invDist / invLightDist );
-  falloff = 1.0 + falloff * ( light.curveFactors.x + light.curveFactors.y*falloff );
-
-  float s = saturate( dot( lightDir, light.direction ) );
-  s = saturate( light.spotFactors.x-light.spotFactors.y * (1.0-s*s) );
-
-  return (falloff *s ) * light.color.xyz;
-}
-
-
-void LIGHT( )
-
-void SPOT( void ){
+// viewDir
+// specularMul
+// roughness
+// worldNormal
+// diffuseCoef
+// specularColor
+void Lights( void ){
 
 
 
@@ -92,6 +83,6 @@ void SPOT( void ){
       specularColor += sContib  * uLightColors[o];
 
     }
-    
+
 
 }
