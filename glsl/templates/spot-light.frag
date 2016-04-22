@@ -13,8 +13,6 @@ s = saturate( uLSpotSpot[{{index}}].y-uLSpotSpot[{{index}}].z * (1.0-s*s) );
 vec3 lightContrib = (falloff *s ) * uLSpotColors[{{index}}];
 
 
-
-
 // --------- SPEC
 vec3 H = normalize( lightDir + viewDir );
 float NoH = sdot( H,worldNormal );
@@ -23,8 +21,12 @@ float sContib = specularMul * pow( NoH, roughness );
 float dContrib = (1.0/PI) * sdot( lightDir, worldNormal );
 
 {{= if(obj.shadowIndex>-1){ }}
-  dContrib *= lightOcclusions.weights[{{shadowIndex}}];
-  sContib  *= lightOcclusions.weights[{{shadowIndex}}];
+{
+  vec3 fragCoord = calcShadowPosition( uShadowTexelBiasVector[{{shadowIndex}}], uShadowMatrices[{{shadowIndex}}] , worldNormal, samplesDelta );
+  float shOccl = calcLightOcclusions(tShadowMap{{shadowIndex}},fragCoord,kernelOffset);
+  dContrib *= shOccl;
+  sContib  *= shOccl;
+}
 {{= } }}
 
 

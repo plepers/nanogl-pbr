@@ -6,8 +6,12 @@ float sContib = specularMul * pow( NoH, roughness );
 float dContrib = (1.0/3.141592) * sdot( uLDirDirections[{{index}}] ,worldNormal );
 
 {{= if(obj.shadowIndex>-1){ }}
-  dContrib *= lightOcclusions.weights[{{shadowIndex}}];
-  sContib  *= lightOcclusions.weights[{{shadowIndex}}];
+{
+  vec3 fragCoord = calcShadowPosition( uShadowTexelBiasVector[{{shadowIndex}}], uShadowMatrices[{{shadowIndex}}] , worldNormal, samplesDelta );
+  float shOccl = calcLightOcclusions(tShadowMap{{shadowIndex}},fragCoord,kernelOffset);
+  dContrib *= shOccl;
+  sContib  *= shOccl;
+}
 {{= } }}
 
 diffuseCoef   += dContrib * uLDirColors[{{index}}];
