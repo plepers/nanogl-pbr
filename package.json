@@ -4,7 +4,9 @@
   "description": "pbr material for nanogl",
   "main": "pbr.js",
   "scripts": {
-    "test": "jshint *.js && karma start",
+    "build": "node tools/make_templates.js",
+    "testxx": "jshint *.js && karma start",
+    "test": "karma start",
     "gztest": "browserify pbr.js -o gztest.js && uglifyjs --screw-ie8 -m -c warnings=false -o gztest.min.js -- gztest.js && gzip -k -9 gztest.min.js && stat -f%z gztest.min.js.gz && rm ./*gztest*"
   },
   "repository": {
@@ -28,19 +30,21 @@
     "nanogl-state": "^0.1.11"
   },
   "devDependencies": {
-    "expect.js": "^0.3.1",
-    "glslify": "^5.0.2",
-    "jshint": "^2.9.1-rc1",
-    "karma": "^0.13.15",
-    "karma-browserify": "^4.4.2",
-    "karma-chrome-launcher": "^0.2.2",
-    "karma-firefox-launcher": "^0.1.7",
-    "karma-mocha": "^0.2.1",
-    "karma-safari-launcher": "^0.1.1",
-    "karma-sauce-launcher": "^0.3.0",
-    "mocha": "^2.3.4",
-    "sinon": "^1.17.2",
-    "string-template": "^1.0.0",
-    "uglify-js": "^2.6.1"
+    "expect.js": "0.3.1",
+    "glob": "7.0.3",
+    "glslify": "5.0.2",
+    "jshint": "2.9.1-rc1",
+    "karma": "0.13.15",
+    "karma-browserify": "4.4.2",
+    "karma-chrome-launcher": "0.2.2",
+    "karma-firefox-launcher": "0.1.7",
+    "karma-mocha": "0.2.1",
+    "karma-safari-launcher": "0.1.1",
+    "karma-sauce-launcher": "0.3.0",
+    "mocha": "2.3.4",
+    "replace-ext": "0.0.1",
+    "sinon": "1.17.2",
+    "string-template": "1.0.0",
+    "uglify-js": "2.6.1"
   }
 }

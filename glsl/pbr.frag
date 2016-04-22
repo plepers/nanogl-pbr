@@ -1,4 +1,4 @@
-#pragma PRECODE
+#pragma SLOT pf
 
 
 
@@ -79,7 +79,7 @@ vec3 toneMap(vec3 c){
 
 void main( void ){
 
-  #pragma CODE
+  #pragma SLOT f
 
 
   // -----------
@@ -108,6 +108,9 @@ void main( void ){
   float NoV = sdot( viewDir, worldNormal );
   vec3 specularSq = specular()*specular();
   specularColor *= F_Schlick( NoV, specularSq, gloss() );
+
+
+  #pragma SLOT lightsf
 
 
   vec3 alb = albedo();

@@ -39,3 +39,11 @@ var normals   = iNormal   .attachConstant ( [1, 2, 3.123456789] );
 
 
 log( inputs )
+
+
+/// ------------------------------------
+var tpl = require( './glsl/templates/directional-light' );
+console.log( tpl({
+  index:1,
+  shadowIndex:-1
+}) )
