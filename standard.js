@@ -39,6 +39,8 @@ function StandardMaterial( gl ){
   this._fragSrc   = glslify( './glsl/pbr.frag' );
 
 
+
+
 }
 
 StandardMaterial.prototype = {
@@ -46,6 +48,14 @@ StandardMaterial.prototype = {
 
   setIBL : function( ibl ){
     this.ibl = ibl;
+  },
+
+
+  setLightSetup : function( setup ){
+    var chunks = setup.getChunks();
+    for (var i = 0; i < chunks.length; i++) {
+      this.inputs.add( chunks[i] );
+    }
   },
 
 
@@ -73,6 +83,11 @@ StandardMaterial.prototype = {
 
     //
     prg.uCameraPosition( camera._wposition );
+
+  },
+
+
+  prepareShadow : function( node, light ){
 
   },
 

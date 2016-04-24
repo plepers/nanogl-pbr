@@ -1,9 +1,9 @@
-#pragma SLOT pf
 
 
 
-#pragma Input vec3 normal
-#pragma Enum ibl_type { NONE, SH7, SH9 }
+
+// #pragma Input vec3 normal
+// #pragma Enum ibl_type { NONE, SH7, SH9 }
 
 
 
@@ -14,10 +14,14 @@ varying vec3 vWorldPosition;
 
 varying mediump vec3 vWorldNormal;
 
+#pragma SLOT pf
+
 #if HAS_normal
   varying mediump vec3 vWorldTangent;
   varying mediump vec3 vWorldBitangent;
 #endif
+
+
 
 // IBL
 // ========

@@ -1,7 +1,8 @@
+#define QUALITY_SHADOWS 2
 
 #define QUALITY_SHADOWMAP_SIZE 1024.0
 #define SHADOW_KERNEL (4.0 / QUALITY_SHADOWMAP_SIZE )
-#define SHADOW_COUNT {{shadowCount}}
+#define SHADOW_COUNT {{@shadowCount}}
 
 {{= for(var i = 0; i<obj.shadowCount; i++){ }}
   uniform sampler2D tShadowMap{{i}};
@@ -107,9 +108,6 @@ float calcLightOcclusions(sampler2D depth, highp vec3 fragCoord, highp vec2 kern
 }
 
 
-struct LightOcclusions{
-  float weights[LIGHT_COUNT];
-};
 
 vec3 calcShadowPosition( vec4 texelBiasVector, mat4 shadowProjection, vec3 worldNormal, float samplesDelta )
 {
@@ -122,33 +120,3 @@ vec3 calcShadowPosition( vec4 texelBiasVector, mat4 shadowProjection, vec3 world
 }
 
 
-void resolveLightOcclusion(out LightOcclusions ss,float samplesDelta)
-{
-  highp vec3 fragCoord;
-
-  vec3 worldNormal = gl_FrontFacing ? vWorldNormal : -vWorldNormal;
-
-  highp vec2 kernelOffset = uShadowKernelRotation * samplesDelta;
-
-  #if SHADOW_COUNT > 0
-    fragCoord = calcShadowPosition( uShadowTexelBiasVector[0], uShadowMatrices[0] , worldNormal, samplesDelta );
-    ss.weights[0] = calcLightOcclusions(tShadowMap0,fragCoord,kernelOffset);
-  #endif
-
-  #if SHADOW_COUNT > 1
-    fragCoord = calcShadowPosition( uShadowTexelBiasVector[1], uShadowMatrices[1] , worldNormal, samplesDelta );
-    ss.weights[1] = calcLightOcclusions(tShadowMap1,fragCoord,kernelOffset);
-  #endif
-
-  #if SHADOW_COUNT > 2
-    fragCoord = calcShadowPosition( uShadowTexelBiasVector[2], uShadowMatrices[2] , worldNormal, samplesDelta );
-    ss.weights[2] = calcLightOcclusions(tShadowMap2,fragCoord,kernelOffset);
-  #endif
-
-  for(int o=SHADOW_COUNT; o<LIGHT_COUNT; ++o){
-    ss.weights[o]=1.0;
-  }
-
-}
-
-#endif

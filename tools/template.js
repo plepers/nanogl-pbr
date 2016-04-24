@@ -7,6 +7,7 @@
 // following template settings to use alternative delimiters.
 var templateSettings = {
   evaluate    : /\{\{=([\s\S]+?)\}\}/g,
+  scoped      : /\{\{@([\s\S]+?)\}\}/g,
   interpolate : /\{\{([\s\S]+?)\}\}/g
 };
 
@@ -45,7 +46,7 @@ var template = function(text) {
 
   // Combine delimiters into one regular expression via alternation.
   var matcher = RegExp([
-    (settings.escape || noMatch).source,
+    (settings.scoped || noMatch).source,
     (settings.evaluate || noMatch).source,
     (settings.interpolate || noMatch).source
   ].join('|') + '|$', 'g');
@@ -54,16 +55,16 @@ var template = function(text) {
   // Compile the template source, escaping string literals appropriately.
   var index = 0;
   var source = "__p+='";
-  text.replace(matcher, function(match, escape, evaluate, interpolate, offset) {
+  text.replace(matcher, function(match, scoped, evaluate, interpolate, offset) {
     source += text.slice(index, offset).replace(escaper, escapeChar);
     index = offset + match.length;
 
-    if (escape) {
-      source += "'+\n((__t=(" + escape + "))==null?'':_.escape(__t))+\n'";
+    if (scoped) {
+      source += "'+\n(obj." + scoped + ")+\n'";
     } else if (evaluate) {
       source += "';\n" + evaluate + "\n__p+='";
     } else if (interpolate) {
-      source += "'+\n(obj." + interpolate + ")+\n'";
+      source += "'+\n(" + interpolate + ")+\n'";
     }
 
     // Adobe VMs need the match returned to produce the correct offest.

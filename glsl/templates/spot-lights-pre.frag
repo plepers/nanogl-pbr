@@ -1,4 +1,4 @@
-#define NUM_S_LIGHTS {{count}}
+#define NUM_S_LIGHTS {{@count}}
 
 {{= if(obj.count>0){ }}
 uniform vec3 uLSpotPositions  [NUM_S_LIGHTS];

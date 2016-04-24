@@ -1,29 +1,37 @@
 module.exports = function( obj ){
 var __t,__p='';
-__p+='\nvec3 lightDir= uLSpotPositions['+
+__p+='{\n\n  vec3 lightDir= uLSpotPositions['+
 (obj.index)+
-'] - vWorldPosition;\nfloat invLightDist=inversesqrt(dot(lightDir,lightDir));\nlightDir *= invLightDist;\n\n// spot effect\nfloat falloff = saturate( uLSpotFalloff['+
+'] - vWorldPosition;\n  float invLightDist=inversesqrt(dot(lightDir,lightDir));\n  lightDir *= invLightDist;\n\n  // spot effect\n  float falloff = saturate( uLSpotFalloff['+
 (obj.index)+
-'].z / invLightDist );\nfalloff = 1.0 + falloff * ( uLSpotFalloff['+
+'].z / invLightDist );\n  falloff = 1.0 + falloff * ( uLSpotFalloff['+
 (obj.index)+
 '].x + uLSpotFalloff['+
 (obj.index)+
-'].y * falloff );\n\nfloat s = saturate( dot( lightDir, uLSpotDirections['+
+'].y * falloff );\n\n  float s = saturate( dot( lightDir, uLSpotDirections['+
 (obj.index)+
-'] ) );\ns = saturate( uLSpotSpot['+
+'] ) );\n  s = saturate( uLSpotSpot['+
 (obj.index)+
-'].y-uLSpotSpot['+
+'].x-uLSpotSpot['+
 (obj.index)+
-'].z * (1.0-s*s) );\n\nvec3 lightContrib = (falloff *s ) * uLSpotColors['+
+'].y * (1.0-s*s) );\n\n  vec3 lightContrib = (falloff *s ) * uLSpotColors['+
 (obj.index)+
-'];\n\n\n\n\n// --------- SPEC\nvec3 H = normalize( lightDir + viewDir );\nfloat NoH = sdot( H,worldNormal );\nfloat sContib = specularMul * pow( NoH, roughness );\n// -------- DIFFUSE\nfloat dContrib = (1.0/PI) * sdot( lightDir, worldNormal );\n\n';
+'];\n\n\n  // --------- SPEC\n  vec3 H = normalize( lightDir + viewDir );\n  float NoH = sdot( H,worldNormal );\n  float sContrib = specularMul * pow( NoH, roughness );\n  // -------- DIFFUSE\n  float dContrib = (1.0/3.141592) * sdot( lightDir, worldNormal );\n\n  ';
  if(obj.shadowIndex>-1){ 
-__p+='\n  dContrib *= lightOcclusions.weights['+
+__p+='\n  {\n    vec3 fragCoord = calcShadowPosition( uShadowTexelBiasVector['+
 (obj.shadowIndex)+
-'];\n  sContib  *= lightOcclusions.weights['+
+'], uShadowMatrices['+
 (obj.shadowIndex)+
-'];\n';
+'] , worldNormal, SHADOW_KERNEL );\n    float shOccl = calcLightOcclusions(tShadowMap'+
+(obj.shadowIndex)+
+',fragCoord,kernelOffset);\n    dContrib *= shOccl;\n    sContrib  *= shOccl;\n    // sContrib = sin( decodeDepthRGB(texture2D(tShadowMap'+
+(obj.shadowIndex)+
+',fragCoord.xy).xyz)*200.0);\n    // dContrib = sin( decodeDepthRGB(texture2D(tShadowMap'+
+(obj.shadowIndex)+
+',fragCoord.xy).xyz)*200.0);\n\n    // diffuseCoef = vec3( decodeDepthRGB(texture2D(tShadowMap'+
+(obj.shadowIndex)+
+',fragCoord.xy).xyz ) );\n  }\n  ';
  } 
-__p+='\n\n\ndiffuseCoef   += dContrib * lightContrib;\nspecularColor += sContib  * lightContrib;';
+__p+='\n\n\n  diffuseCoef   += dContrib * lightContrib;\n  specularColor += sContrib  * lightContrib;\n\n  // specularColor *= 0.0;\n\n}';
 return __p;
 }

@@ -1,4 +1,4 @@
-#define NUM_D_LIGHTS {{count}}
+#define NUM_D_LIGHTS {{@count}}
 
 {{= if(obj.count>0){ }}
 uniform vec3 uLDirDirections [NUM_D_LIGHTS];
