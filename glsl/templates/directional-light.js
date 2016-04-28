@@ -10,9 +10,13 @@ __p+='\n  {\n    vec3 fragCoord = calcShadowPosition( uShadowTexelBiasVector['+
 (obj.shadowIndex)+
 '], uShadowMatrices['+
 (obj.shadowIndex)+
-'] , worldNormal, SHADOW_KERNEL );\n    float shOccl = calcLightOcclusions(tShadowMap'+
+'] , worldNormal, , 4.0/uShadowMapSize['+
 (obj.shadowIndex)+
-',fragCoord,kernelOffset);\n    dContrib *= shOccl;\n    sContib  *= shOccl;\n  }\n  ';
+'].x );\n    float shOccl = calcLightOcclusions(tShadowMap'+
+(obj.shadowIndex)+
+',fragCoord,uShadowMapSize['+
+(obj.shadowIndex)+
+']);\n    dContrib *= shOccl;\n    sContib  *= shOccl;\n  }\n  ';
  } 
 __p+='\n\n  diffuseCoef   += dContrib * uLDirColors['+
 (obj.index)+

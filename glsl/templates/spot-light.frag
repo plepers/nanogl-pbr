@@ -23,8 +23,8 @@
 
   {{= if(obj.shadowIndex>-1){ }}
   {
-    vec3 fragCoord = calcShadowPosition( uShadowTexelBiasVector[{{@shadowIndex}}], uShadowMatrices[{{@shadowIndex}}] , worldNormal, SHADOW_KERNEL );
-    float shOccl = calcLightOcclusions(tShadowMap{{@shadowIndex}},fragCoord,kernelOffset);
+    vec3 fragCoord = calcShadowPosition( uShadowTexelBiasVector[{{@shadowIndex}}], uShadowMatrices[{{@shadowIndex}}] , worldNormal, 4.0/uShadowMapSize[{{@shadowIndex}}].x );
+    float shOccl = calcLightOcclusions(tShadowMap{{@shadowIndex}},fragCoord,uShadowMapSize[{{@shadowIndex}}]);
     dContrib *= shOccl;
     sContrib  *= shOccl;
     // sContrib = sin( decodeDepthRGB(texture2D(tShadowMap{{@shadowIndex}},fragCoord.xy).xyz)*200.0);

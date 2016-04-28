@@ -1,7 +1,5 @@
-#define QUALITY_SHADOWS 2
+#define QUALITY_SHADOWS 4
 
-#define QUALITY_SHADOWMAP_SIZE 1024.0
-#define SHADOW_KERNEL (4.0 / QUALITY_SHADOWMAP_SIZE )
 #define SHADOW_COUNT {{@shadowCount}}
 
 {{= for(var i = 0; i<obj.shadowCount; i++){ }}
@@ -12,9 +10,9 @@
 
 
 uniform highp vec2 uShadowKernelRotation;
-uniform highp vec4 uShadowMapSize;
 uniform highp mat4 uShadowMatrices[SHADOW_COUNT];
 uniform highp vec4 uShadowTexelBiasVector[SHADOW_COUNT];
+uniform       vec2 uShadowMapSize[SHADOW_COUNT];
 
 
 highp float decodeDepthRGB(highp vec3 rgb){
@@ -28,11 +26,11 @@ float resolveShadowNoFiltering(highp float fragZ, sampler2D depth,highp vec2 uv 
 }
 
 
-float resolveShadow2x1(highp float fragZ, sampler2D depth,highp vec2 uv ){
+float resolveShadow2x1(highp float fragZ, sampler2D depth,highp vec2 uv, vec2 mapSize ){
 
-  highp float coordsPx = uv.x*uShadowMapSize.x;
-  highp float uvMin = floor( coordsPx ) * uShadowMapSize.z;
-  highp float uvMax = ceil(  coordsPx ) * uShadowMapSize.z;
+  highp float coordsPx = uv.x*mapSize.x;
+  highp float uvMin = floor( coordsPx ) * mapSize.y;
+  highp float uvMax = ceil(  coordsPx ) * mapSize.y;
 
   vec2 occl = vec2(
     decodeDepthRGB(texture2D(depth,vec2( uvMin, uv.y )).xyz),
@@ -41,16 +39,16 @@ float resolveShadow2x1(highp float fragZ, sampler2D depth,highp vec2 uv ){
 
   occl = step( vec2(fragZ), occl );
 
-  highp float ratio = coordsPx - uvMin*uShadowMapSize.x;
+  highp float ratio = coordsPx - uvMin*mapSize.x;
   return ( ratio * occl.y + occl.x ) - ratio * occl.x;
 
 }
 
-float resolveShadow2x2(highp float fragZ, sampler2D depth,highp vec2 uv ){
+float resolveShadow2x2(highp float fragZ, sampler2D depth,highp vec2 uv, vec2 mapSize ){
 
-  highp vec2 coordsPx = uv*uShadowMapSize.xy;
-  highp vec2 uvMin=floor( coordsPx ) *uShadowMapSize.zw;
-  highp vec2 uvMax=ceil(  coordsPx ) *uShadowMapSize.zw;
+  highp vec2 coordsPx = uv*mapSize.x;
+  highp vec2 uvMin=floor( coordsPx ) *mapSize.y;
+  highp vec2 uvMax=ceil(  coordsPx ) *mapSize.y;
 
   vec4 occl = vec4(
     decodeDepthRGB(texture2D(depth,uvMin).xyz),
@@ -61,15 +59,17 @@ float resolveShadow2x2(highp float fragZ, sampler2D depth,highp vec2 uv ){
 
   occl = step( vec4(fragZ), occl );
 
-  highp vec2 ratio = coordsPx - uvMin*uShadowMapSize.xy;
+  highp vec2 ratio = coordsPx - uvMin*mapSize.x;
   vec2  t = ( ratio.y * occl.zw + occl.xy ) - ratio.y * occl.xy;
 
   return(ratio.x*t.y+t.x)-ratio.x*t.x;
 }
 
 
-float calcLightOcclusions(sampler2D depth, highp vec3 fragCoord, highp vec2 kernelOffset){
+float calcLightOcclusions(sampler2D depth, highp vec3 fragCoord, vec2 mapSize ){
   float s;
+
+  highp vec2 kernelOffset = uShadowKernelRotation * ( 4.0 / mapSize.x );
 
   // NO FILTER
   #if QUALITY_SHADOWS == 1
@@ -88,17 +88,17 @@ float calcLightOcclusions(sampler2D depth, highp vec3 fragCoord, highp vec2 kern
   // PCF4x4
   #elif QUALITY_SHADOWS == 3
 
-    s = resolveShadow2x2( fragCoord.z, depth, fragCoord.xy + kernelOffset                    );
-    s+=resolveShadow2x2( fragCoord.z, depth, fragCoord.xy - kernelOffset                    );
-    s+=resolveShadow2x2( fragCoord.z, depth, fragCoord.xy + vec2(-kernelOffset.y,kernelOffset.x)  );
-    s+=resolveShadow2x2( fragCoord.z, depth, fragCoord.xy + vec2(kernelOffset.y,-kernelOffset.x)  );
+    s = resolveShadow2x2( fragCoord.z, depth, fragCoord.xy + kernelOffset                        , mapSize );
+    s+=resolveShadow2x2( fragCoord.z, depth, fragCoord.xy - kernelOffset                         , mapSize );
+    s+=resolveShadow2x2( fragCoord.z, depth, fragCoord.xy + vec2(-kernelOffset.y,kernelOffset.x) , mapSize );
+    s+=resolveShadow2x2( fragCoord.z, depth, fragCoord.xy + vec2(kernelOffset.y,-kernelOffset.x) , mapSize );
     s /= 4.0;
 
   // PCF2x2
   #elif QUALITY_SHADOWS == 4
 
-    s = resolveShadow2x1( fragCoord.z, depth, fragCoord.xy + kernelOffset );
-    s +=resolveShadow2x1( fragCoord.z, depth, fragCoord.xy - kernelOffset );
+    s = resolveShadow2x1( fragCoord.z, depth, fragCoord.xy + kernelOffset , mapSize);
+    s +=resolveShadow2x1( fragCoord.z, depth, fragCoord.xy - kernelOffset , mapSize);
     s /= 2.0;
 
   #endif

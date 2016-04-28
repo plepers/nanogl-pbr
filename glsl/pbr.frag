@@ -93,6 +93,7 @@ void main( void ){
     #else
       gl_FrontFacing ? vWorldNormal : -vWorldNormal;
     #endif
+  worldNormal = normalize( worldNormal );
 
   // SH diffuse coeff
   // -------------
