@@ -1,4 +1,11 @@
-#pragma PRECODE
+
+
+
+
+// #pragma Input vec3 normal
+// #pragma Enum ibl_type { NONE, SH7, SH9 }
+
+
 
 uniform vec3 uCameraPosition;
 
@@ -7,10 +14,14 @@ varying vec3 vWorldPosition;
 
 varying mediump vec3 vWorldNormal;
 
+#pragma SLOT pf
+
 #if HAS_normal
   varying mediump vec3 vWorldTangent;
   varying mediump vec3 vWorldBitangent;
 #endif
+
+
 
 // IBL
 // ========
@@ -72,7 +83,7 @@ vec3 toneMap(vec3 c){
 
 void main( void ){
 
-  #pragma CODE
+  #pragma SLOT f
 
 
   // -----------
@@ -82,6 +93,7 @@ void main( void ){
     #else
       gl_FrontFacing ? vWorldNormal : -vWorldNormal;
     #endif
+  worldNormal = normalize( worldNormal );
 
   // SH diffuse coeff
   // -------------
@@ -89,9 +101,6 @@ void main( void ){
   diffuseCoef = uEnvTonemap.x * pow( diffuseCoef, vec3( uEnvTonemap.y ) );
 
 
-  #ifdef HAS_occlusion
-    diffuseCoef *= occlusion();
-  #endif
 
   // IBL reflexion
   // --------------
@@ -106,15 +115,29 @@ void main( void ){
   specularColor *= F_Schlick( NoV, specularSq, gloss() );
 
 
+  #pragma SLOT lightsf
+
+
   vec3 alb = albedo();
-  // if conserve energy
+  #if conserveEnergy
     alb = alb - alb * specular();
-  // endif
+  #endif
   vec3 albedoSq = alb*alb;
 
 
+
+  #if HAS_occlusion
+    diffuseCoef *= occlusion();
+  #endif
+
+  #if HAS_cavity
+    diffuseCoef   *= cavity() * cavityStrength().r + (1.0-cavityStrength().r);
+    specularColor *= cavity() * cavityStrength().g + (1.0-cavityStrength().g);
+  #endif
+
+
+
   gl_FragColor.xyz = toneMap( diffuseCoef*albedoSq + specularColor );
-  // gl_FragColor.xyz= specularColor;
 
 
 

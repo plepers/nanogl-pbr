@@ -1,4 +1,4 @@
-#pragma PRECODE
+#pragma SLOT pv
 
 attribute vec3 aPosition;
 attribute vec2 aTexCoord;
@@ -27,7 +27,7 @@ vec3 rotate( mat4 m, vec3 v )
 
 void main( void ){
 
-  #pragma CODE
+  #pragma SLOT v
 
   vec4 pos = vec4( aPosition, 1.0 );
 

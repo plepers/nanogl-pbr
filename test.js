@@ -1,13 +1,13 @@
 
 var Input     = require( './lib/input' );
-var InputList = require( './lib/input-list' );
+var ChunkList = require( './lib/chunks-tree' );
 
 
 function log(il){
 
   il.compile()
 
-  var chunks = il.getChunks();
+  var chunks = il.getCode();
 
   console.log( '===============================\n' )
   console.log( 'PV -------------' )
@@ -22,7 +22,7 @@ function log(il){
 
 
 
-var inputs      = new InputList();
+var inputs      = new ChunkList();
 var iAlbedo     = inputs.add( new Input( 'albedo',    3 ) );
 var iSpecular   = inputs.add( new Input( 'specular',  3 ) );
 var iRoughness  = inputs.add( new Input( 'roughness', 1 ) );
@@ -39,3 +39,11 @@ var normals   = iNormal   .attachConstant ( [1, 2, 3.123456789] );
 
 
 log( inputs )
+
+
+/// ------------------------------------
+var tpl = require( './glsl/templates/directional-light' );
+console.log( tpl({
+  index:1,
+  shadowIndex:-1
+}) )
