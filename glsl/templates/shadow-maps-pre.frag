@@ -1,4 +1,4 @@
-#define QUALITY_SHADOWS 4
+
 
 #define SHADOW_COUNT {{@shadowCount}}
 
@@ -72,12 +72,12 @@ float calcLightOcclusions(sampler2D depth, highp vec3 fragCoord, vec2 mapSize ){
   highp vec2 kernelOffset = uShadowKernelRotation * ( 4.0 / mapSize.x );
 
   // NO FILTER
-  #if QUALITY_SHADOWS == 1
+  #if shadowFilter( PCFNONE )
     s = resolveShadowNoFiltering( fragCoord.z, depth, fragCoord.xy );
 
 
   // PCF4x1
-  #elif QUALITY_SHADOWS == 2
+  #elif shadowFilter( PCF4x1 )
 
     s = resolveShadowNoFiltering( fragCoord.z, depth, fragCoord.xy + kernelOffset                    );
     s+= resolveShadowNoFiltering( fragCoord.z, depth, fragCoord.xy - kernelOffset                    );
@@ -86,7 +86,7 @@ float calcLightOcclusions(sampler2D depth, highp vec3 fragCoord, vec2 mapSize ){
     s /= 4.0;
 
   // PCF4x4
-  #elif QUALITY_SHADOWS == 3
+  #elif shadowFilter( PCF4x4 )
 
     s = resolveShadow2x2( fragCoord.z, depth, fragCoord.xy + kernelOffset                        , mapSize );
     s+=resolveShadow2x2( fragCoord.z, depth, fragCoord.xy - kernelOffset                         , mapSize );
@@ -95,7 +95,7 @@ float calcLightOcclusions(sampler2D depth, highp vec3 fragCoord, vec2 mapSize ){
     s /= 4.0;
 
   // PCF2x2
-  #elif QUALITY_SHADOWS == 4
+  #elif shadowFilter( PCF2x2 )
 
     s = resolveShadow2x1( fragCoord.z, depth, fragCoord.xy + kernelOffset , mapSize);
     s +=resolveShadow2x1( fragCoord.z, depth, fragCoord.xy - kernelOffset , mapSize);
@@ -109,11 +109,11 @@ float calcLightOcclusions(sampler2D depth, highp vec3 fragCoord, vec2 mapSize ){
 
 
 
-vec3 calcShadowPosition( vec4 texelBiasVector, mat4 shadowProjection, vec3 worldNormal, float samplesDelta )
+vec3 calcShadowPosition( vec4 texelBiasVector, mat4 shadowProjection, vec3 worldNormal, float invMapSize )
 {
   float WoP = dot( texelBiasVector, vec4( vWorldPosition, 1.0 ) );
 
-  WoP *= .0005+0.5*samplesDelta;
+  WoP *= .0005+2.0*invMapSize;
 
   highp vec4 fragCoord = shadowProjection * vec4( vWorldPosition + WoP * worldNormal, 1.0);
   return fragCoord.xyz / fragCoord.w;

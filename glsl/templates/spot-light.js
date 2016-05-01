@@ -22,9 +22,9 @@ __p+='\n  {\n    vec3 fragCoord = calcShadowPosition( uShadowTexelBiasVector['+
 (obj.shadowIndex)+
 '], uShadowMatrices['+
 (obj.shadowIndex)+
-'] , worldNormal, 4.0/uShadowMapSize['+
+'] , worldNormal, uShadowMapSize['+
 (obj.shadowIndex)+
-'].x );\n    float shOccl = calcLightOcclusions(tShadowMap'+
+'].y );\n    float shOccl = calcLightOcclusions(tShadowMap'+
 (obj.shadowIndex)+
 ',fragCoord,uShadowMapSize['+
 (obj.shadowIndex)+
