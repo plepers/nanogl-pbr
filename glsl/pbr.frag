@@ -98,7 +98,9 @@ void main( void ){
   // SH diffuse coeff
   // -------------
   vec3 diffuseCoef=SampleSH(worldNormal, uSHCoeffs );
-  diffuseCoef = uEnvTonemap.x * pow( diffuseCoef, vec3( uEnvTonemap.y ) );
+  #if HAS_iblExpo
+    diffuseCoef = iblExpo().x * pow( diffuseCoef, vec3( iblExpo().y ) );
+  #endif
 
 
 
@@ -108,7 +110,9 @@ void main( void ){
   vec3 viewDir = normalize( uCameraPosition - vWorldPosition );
   vec3 worldReflect = reflect( -viewDir, worldNormal );
   vec3 specularColor = SpecularIBL( tEnv, worldReflect, 1.0-gloss() );
-  specularColor = uEnvTonemap.x * pow( specularColor, vec3( uEnvTonemap.y ) );
+  #if HAS_iblExpo
+    specularColor = iblExpo().x * pow( specularColor, vec3( iblExpo().y ) );
+  #endif
 
   float NoV = sdot( viewDir, worldNormal );
   vec3 specularSq = specular()*specular();
