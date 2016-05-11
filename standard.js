@@ -51,14 +51,12 @@ StandardMaterial.prototype = {
 
   setIBL : function( ibl ){
     this.ibl = ibl;
+    this.inputs.addChunks( ibl.getChunks() );
   },
 
 
   setLightSetup : function( setup ){
-    var chunks = setup.getChunks();
-    for (var i = 0; i < chunks.length; i++) {
-      this.inputs.add( chunks[i] );
-    }
+    this.inputs.addChunks( setup.getChunks() );
   },
 
 

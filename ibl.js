@@ -1,20 +1,29 @@
 
+var Input  = require( './lib/input' );
+var Flag   = require( './lib/flag' );
 
 
 function IBL( env, sh ){
   this.env   = env;
   this.sh    = sh;
-  this.expo  = 1.0;
-  this.gamma = 1.0;
+
+  this._expoInput   = new Input( 'iblExpo', 2 );
+
 }
 
 IBL.prototype = {
 
+
+  getChunks : function(){
+    return [
+      this._expoInput  .createProxy()
+    ];
+  },
+
+
   setupProgram : function( prg ){
     prg.tEnv(       this.env );
     prg.uSHCoeffs(  this.sh  );
-
-    prg.uEnvTonemap( this.expo, this.gamma );
   }
 
 
