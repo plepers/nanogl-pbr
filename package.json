@@ -10,7 +10,7 @@
     "gztest": "browserify pbr.js -o gztest.js && uglifyjs --screw-ie8 -m -c warnings=false -o gztest.min.js -- gztest.js && gzip -k -9 gztest.min.js && stat -f%z gztest.min.js.gz && rm ./*gztest*"
   },
   "bin": {
-    "ibl": "bin/ibl.sh"
+    
   },
   "repository": {
     "type": "git",

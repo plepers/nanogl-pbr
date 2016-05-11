@@ -1,4 +1,5 @@
 var Program      = require( 'nanogl/program' );
+var Config       = require( 'nanogl-state/config' );
 var glslify      = require( 'glslify' );
 
 var ProgramCache = require( './lib/program-cache' );
@@ -15,6 +16,8 @@ function StandardMaterial( gl ){
   this.ibl = null;
   this.prg = null;
 
+  this._mask = 1;
+
 
   this.inputs          = new ChunksList();
   this.iAlbedo         = this.inputs.add( new Input( 'albedo',          3 ) );
@@ -28,7 +31,7 @@ function StandardMaterial( gl ){
 
   this.conserveEnergy  = this.inputs.add( new Flag ( 'conserveEnergy',  true ) );
 
-
+  this.config    = new Config();
 
   this._prgcache = ProgramCache.getCache( gl );
 
