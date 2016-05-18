@@ -22,8 +22,8 @@ IBL.prototype = {
 
 
   setupProgram : function( prg ){
-    prg.tEnv(       this.env );
-    prg.uSHCoeffs(  this.sh  );
+    if( prg.tEnv )      prg.tEnv(       this.env );
+    if( prg.uSHCoeffs ) prg.uSHCoeffs(  this.sh  );
   }
 
 

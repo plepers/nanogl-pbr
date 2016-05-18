@@ -25,9 +25,15 @@ varying mediump vec3 vWorldNormal;
 
 // IBL
 // ========
-uniform vec4 uSHCoeffs[7];
 uniform sampler2D tEnv;
-uniform vec2 uEnvTonemap;
+
+#if perVertexIrrad
+  varying vec3 vIrradiance;
+#else
+  uniform vec4 uSHCoeffs[7];
+  #pragma glslify: SampleSH    = require( ./includes/spherical-harmonics.glsl )
+#endif
+
 
 
 // MATH
@@ -38,7 +44,7 @@ uniform vec2 uEnvTonemap;
 
 // INCLUDES
 // =========
-#pragma glslify: SampleSH    = require( ./includes/spherical-harmonics.glsl )
+
 #pragma glslify: SpecularIBL = require( ./includes/ibl.glsl )
 
 
@@ -95,11 +101,16 @@ void main( void ){
     #endif
   worldNormal = normalize( worldNormal );
 
-  // SH diffuse coeff
+
+  // SH Irradiance diffuse coeff
   // -------------
-  vec3 diffuseCoef=SampleSH(worldNormal, uSHCoeffs );
-  #if HAS_iblExpo
-    diffuseCoef = iblExpo().x * pow( diffuseCoef, vec3( iblExpo().y ) );
+  #if perVertexIrrad
+    vec3 diffuseCoef = vIrradiance;
+  #else
+    vec3 diffuseCoef=SampleSH(worldNormal, uSHCoeffs );
+    #if HAS_iblExpo
+      diffuseCoef = iblExpo().x * pow( diffuseCoef, vec3( iblExpo().y ) );
+    #endif
   #endif
 
 

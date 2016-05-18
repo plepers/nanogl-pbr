@@ -30,6 +30,7 @@ function StandardMaterial( gl ){
   this.iFresnel        = this.inputs.add( new Input( 'fresnel',         3 ) );
 
   this.conserveEnergy  = this.inputs.add( new Flag ( 'conserveEnergy',  true ) );
+  this.perVertexIrrad  = this.inputs.add( new Flag ( 'perVertexIrrad',  false ) );
 
   this.config    = new Config();
 

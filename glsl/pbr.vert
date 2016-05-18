@@ -19,6 +19,13 @@ varying mediump vec3 vWorldNormal;
   varying mediump vec3 vWorldBitangent;
 #endif
 
+#if perVertexIrrad
+  varying vec3 vIrradiance;
+  uniform vec4 uSHCoeffs[7];
+  #pragma glslify: SampleSH    = require( ./includes/spherical-harmonics.glsl )
+#endif
+
+
 
 vec3 rotate( mat4 m, vec3 v )
 {
@@ -39,6 +46,10 @@ void main( void ){
   #if HAS_normal
     vWorldTangent   = rotate( uWorldMatrix, aTangent );
     vWorldBitangent = rotate( uWorldMatrix, aBitangent );
+  #endif
+
+  #if perVertexIrrad
+    vIrradiance = SampleSH(vWorldNormal, uSHCoeffs );
   #endif
 
 
