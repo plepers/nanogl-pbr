@@ -10,7 +10,7 @@
     "gztest": "browserify pbr.js -o gztest.js && uglifyjs --screw-ie8 -m -c warnings=false -o gztest.min.js -- gztest.js && gzip -k -9 gztest.min.js && stat -f%z gztest.min.js.gz && rm ./*gztest*"
   },
   "bin": {
-    
+    "nanoglibl": "./bin/nanoglibl"
   },
   "repository": {
     "type": "git",
@@ -30,6 +30,7 @@
   "dependencies": {
     "gl-matrix": "^2.3.2",
     "nanogl": "^0.2.6",
+    "nanogl-camera": "^0.1.1",
     "nanogl-node": "^0.1.2",
     "nanogl-state": "^0.1.11"
   },

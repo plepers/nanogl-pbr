@@ -19,7 +19,7 @@ describe( "LightSetup", function(){
   });
 
   describe( "directionals", function(){
-    
+
     var l1, l2, n;
 
     beforeEach( function(){
@@ -51,7 +51,6 @@ describe( "LightSetup", function(){
       }
 
       list.compile()
-      console.log( list.getCode() )
     });
 
 
@@ -59,7 +58,7 @@ describe( "LightSetup", function(){
 
 
   describe( "spots", function(){
-    
+
     var l1, l2, n;
 
     beforeEach( function(){
@@ -91,7 +90,6 @@ describe( "LightSetup", function(){
       }
 
       list.compile()
-      console.log( list.getCode() )
     });
 
 

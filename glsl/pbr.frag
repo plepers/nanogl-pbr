@@ -54,9 +54,7 @@ uniform sampler2D tEnv;
 // https://github.com/EpicGames/UnrealEngine/blob/dff3c48be101bb9f84633a733ef79c91c38d9542/Engine/Shaders/BRDF.usf#L168
 vec3 F_Schlick( float VoH,vec3 specular,float gloss )
 {
-  float dot = 1.0-VoH;
-  dot = dot*dot*dot*dot*dot;
-  dot *= gloss*gloss;
+  float dot = gloss*gloss * pow( 1.0-VoH, 5.0 );
   #if HAS_fresnel
     return( 1.0 - dot )*specular + dot*fresnel();
   #else

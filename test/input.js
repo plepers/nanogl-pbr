@@ -15,7 +15,7 @@ describe( "Input", function(){
   });
 
   describe( "float", function(){
-    
+
     var input;
 
     beforeEach( function(){
@@ -29,7 +29,7 @@ describe( "Input", function(){
 
       inputs.compile()
       var codes = inputs.getCode();
-      expect( codes.slotsMap.pv.code ).to.be( '#define HAS__input 1\n' );
+      expect( codes.slotsMap.pv.code ).to.be( '#define HAS__input 1\n\n' );
     });
 
   });
