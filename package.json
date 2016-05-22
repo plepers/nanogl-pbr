@@ -39,7 +39,7 @@
     "glob": "7.0.3",
     "glslify": "5.0.2",
     "jshint": "2.9.1-rc1",
-    "karma": "0.13.15",
+    "karma": "0.13.19",
     "karma-browserify": "4.4.2",
     "karma-chrome-launcher": "0.2.2",
     "karma-firefox-launcher": "0.1.7",
