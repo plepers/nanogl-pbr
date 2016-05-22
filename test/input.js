@@ -63,6 +63,7 @@ describe( "Input", function(){
 
 
     it( 'should attach sampler float', function(){
+
       var attr = new Input.Attribute( 'aTexcoord10', 2 );
       var u = input.attachSampler( 'tInput', attr );
 

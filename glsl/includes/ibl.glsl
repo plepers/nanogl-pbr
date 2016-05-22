@@ -20,8 +20,6 @@ vec3 SpecularIBL( sampler2D tEnv, vec3 skyDir, float roughness)
       0.125*0.5 + 0.125 * ( r7 - fract( r7 ) )
     );
 
-
-
   #if glossNearest
 
     return decodeRGBE( texture2D(tEnv,uvA) );
@@ -36,8 +34,6 @@ vec3 SpecularIBL( sampler2D tEnv, vec3 skyDir, float roughness)
     );
 
   #endif
-
-  // return decodeRGBE( texture2D(tEnv,P) );
 
 }
 
