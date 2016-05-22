@@ -29,8 +29,9 @@ function StandardMaterial( gl ){
   this.iCavityStrength = this.inputs.add( new Input( 'cavityStrength',  2 ) );
   this.iFresnel        = this.inputs.add( new Input( 'fresnel',         3 ) );
 
-  this.conserveEnergy  = this.inputs.add( new Flag ( 'conserveEnergy',  true ) );
+  this.conserveEnergy  = this.inputs.add( new Flag ( 'conserveEnergy',  true  ) );
   this.perVertexIrrad  = this.inputs.add( new Flag ( 'perVertexIrrad',  false ) );
+  this.glossNearest    = this.inputs.add( new Flag ( 'glossNearest',    false ) );
 
   this.config    = new Config();
 
