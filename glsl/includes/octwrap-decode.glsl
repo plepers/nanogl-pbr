@@ -1,9 +1,13 @@
 
-vec2 octwrapDecode(in vec3 v) {
-  // Project the sphere onto the octahedron, and then onto the xy plane
-  vec2 p = v.xz / ( abs(v.x) + abs(v.y) + abs(v.z) );
+vec2 octwrapDecode( vec3 v ) {
+  // Project the sphere onto the octahedron, and then onto the xy plan
+  vec2 p = v.xy / dot(  abs( v ) , vec3(1.0) );
   p = vec2( p.x+p.y-1.0, p.x-p.y );
-  p.x *= sign( v.y );
+
+  if( v.z < 0.0 )
+    p.x *= -1.0;
+
+  // p.x *= sign( v.z );
   return p;
 }
 
