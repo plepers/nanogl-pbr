@@ -22,7 +22,7 @@ function DepthPass( gl ){
 
   // for program-cache
   this._uid       = 'stddepth';
-  this._precision = 'highp'
+  this._precision = 'highp';
   this._vertSrc   = glslify( './glsl/depthpass.vert' );
   this._fragSrc   = glslify( './glsl/depthpass.frag' );
 
@@ -44,13 +44,13 @@ DepthPass.prototype = {
     // this.
 
     var prg = this.prg;
-    prg.use()
+    prg.use();
 
-    prg.setupInputs( this )
+    prg.setupInputs( this );
 
     // matrices
     camera.modelViewProjectionMatrix( M4, node._wmatrix );
-    prg.uMVP(          M4            );
+    prg.uMVP( M4 );
 
   },
 
@@ -71,6 +71,6 @@ DepthPass.prototype = {
 
 
 
-}
+};
 
 module.exports = DepthPass;

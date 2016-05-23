@@ -27,7 +27,7 @@ IBL.prototype = {
   }
 
 
-}
+};
 
 IBL.convert = function( sh ){
   var SqrtPI = Math.sqrt(Math.PI);
@@ -35,7 +35,7 @@ IBL.convert = function( sh ){
   var C1 = Math.sqrt(3) / (3 * SqrtPI);
   var C2 = Math.sqrt(15) / (8 * SqrtPI);
   var C3 = Math.sqrt(5) / (16 * SqrtPI);
-  var C4 = .5 * C2;
+  var C4 = 0.5 * C2;
 
   var res = new Float32Array(7 * 4);
 
@@ -78,6 +78,6 @@ IBL.convert = function( sh ){
   res[27] =     1; //
 
   return res;
-}
+};
 
 module.exports = IBL;

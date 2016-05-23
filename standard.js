@@ -39,7 +39,7 @@ function StandardMaterial( gl ){
 
   // for program-cache
   this._uid       = 'std';
-  this._precision = 'highp'
+  this._precision = 'highp';
   this._vertSrc   = glslify( './glsl/pbr.vert' );
   this._fragSrc   = glslify( './glsl/pbr.frag' );
 
@@ -73,9 +73,9 @@ StandardMaterial.prototype = {
     // this.
 
     var prg = this.prg;
-    prg.use()
+    prg.use();
 
-    prg.setupInputs( this )
+    prg.setupInputs( this );
 
     this.ibl.setupProgram( prg );
 
@@ -99,7 +99,6 @@ StandardMaterial.prototype = {
   // need recompilation
   _isDirty : function(){
     if( this.prg === null || this.inputs._isDirty ){
-      console.log( 'dirty input')
       return true;
     }
     return false;
@@ -115,6 +114,6 @@ StandardMaterial.prototype = {
 
 
 
-}
+};
 
 module.exports = StandardMaterial;
