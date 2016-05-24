@@ -1,4 +1,4 @@
-#pragma PRECODE
+#pragma SLOT pv
 
 attribute vec3 aPosition;
 attribute vec2 aTexCoord;
@@ -13,8 +13,18 @@ varying vec2 vTexCoord;
 varying vec3 vWorldPosition;
 
 varying mediump vec3 vWorldNormal;
-varying mediump vec3 vWorldTangent;
-varying mediump vec3 vWorldBitangent;
+
+#if HAS_normal
+  varying mediump vec3 vWorldTangent;
+  varying mediump vec3 vWorldBitangent;
+#endif
+
+#if perVertexIrrad
+  varying vec3 vIrradiance;
+  uniform vec4 uSHCoeffs[7];
+  #pragma glslify: SampleSH    = require( ./includes/spherical-harmonics.glsl )
+#endif
+
 
 
 vec3 rotate( mat4 m, vec3 v )
@@ -24,8 +34,8 @@ vec3 rotate( mat4 m, vec3 v )
 
 void main( void ){
 
-  #pragma CODE
-  
+  #pragma SLOT v
+
   vec4 pos = vec4( aPosition, 1.0 );
 
   gl_Position    = uMVP         * pos;
@@ -33,8 +43,14 @@ void main( void ){
 
 
   vWorldNormal    = rotate( uWorldMatrix, aNormal );
-  vWorldTangent   = rotate( uWorldMatrix, aTangent );
-  vWorldBitangent = rotate( uWorldMatrix, aBitangent );
+  #if HAS_normal
+    vWorldTangent   = rotate( uWorldMatrix, aTangent );
+    vWorldBitangent = rotate( uWorldMatrix, aBitangent );
+  #endif
+
+  #if perVertexIrrad
+    vIrradiance = SampleSH(vWorldNormal, uSHCoeffs );
+  #endif
 
 
   vTexCoord = aTexCoord;

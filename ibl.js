@@ -1,23 +1,33 @@
 
+var Input  = require( './lib/input' );
+var Flag   = require( './lib/flag' );
 
 
 function IBL( env, sh ){
-  this.env  = env;
-  this.sh   = sh;
-  this.expo = 1.0;
+  this.env   = env;
+  this.sh    = sh;
+
+  this._expoInput   = new Input( 'iblExpo', 2 );
+
 }
 
 IBL.prototype = {
 
-  setupProgram : function( prg ){
-    prg.tEnv(       this.env );
-    prg.uSHCoeffs(  this.sh  );
 
-    prg.uEnvExpo(   this.expo  );
+  getChunks : function(){
+    return [
+      this._expoInput  .createProxy()
+    ];
+  },
+
+
+  setupProgram : function( prg ){
+    if( prg.tEnv )      prg.tEnv(       this.env );
+    if( prg.uSHCoeffs ) prg.uSHCoeffs(  this.sh  );
   }
 
 
-}
+};
 
 IBL.convert = function( sh ){
   var SqrtPI = Math.sqrt(Math.PI);
@@ -25,7 +35,7 @@ IBL.convert = function( sh ){
   var C1 = Math.sqrt(3) / (3 * SqrtPI);
   var C2 = Math.sqrt(15) / (8 * SqrtPI);
   var C3 = Math.sqrt(5) / (16 * SqrtPI);
-  var C4 = .5 * C2;
+  var C4 = 0.5 * C2;
 
   var res = new Float32Array(7 * 4);
 
@@ -68,6 +78,6 @@ IBL.convert = function( sh ){
   res[27] =     1; //
 
   return res;
-}
+};
 
 module.exports = IBL;
