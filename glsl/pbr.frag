@@ -150,8 +150,11 @@ void main( void ){
   #endif
 
 
+  #if tonemap
+    gl_FragColor.xyz = toneMap( diffuseCoef*albedoSq + specularColor );
+  #else
+    gl_FragColor.xyz = diffuseCoef*albedoSq + specularColor;
 
-  gl_FragColor.xyz = toneMap( diffuseCoef*albedoSq + specularColor );
   gl_FragColor.a = 1.0;
 
 
