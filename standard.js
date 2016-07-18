@@ -32,6 +32,7 @@ function StandardMaterial( gl ){
   this.conserveEnergy  = this.inputs.add( new Flag ( 'conserveEnergy',  true  ) );
   this.perVertexIrrad  = this.inputs.add( new Flag ( 'perVertexIrrad',  false ) );
   this.glossNearest    = this.inputs.add( new Flag ( 'glossNearest',    false ) );
+  this.tonemap         = this.inputs.add( new Flag ( 'tonemap',         true ) );
 
   this.config    = new Config();
 
