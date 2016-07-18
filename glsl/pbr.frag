@@ -123,12 +123,13 @@ void main( void ){
     specularColor = iblExpo().x * pow( specularColor, vec3( iblExpo().y ) );
   #endif
 
+
+  #pragma SLOT lightsf
+
+
   float NoV = sdot( viewDir, worldNormal );
   vec3 specularSq = specular()*specular();
   specularColor *= F_Schlick( NoV, specularSq, gloss() );
-
-
-  #pragma SLOT lightsf
 
 
   vec3 alb = albedo();
@@ -149,8 +150,12 @@ void main( void ){
   #endif
 
 
+  #if tonemap
+    gl_FragColor.xyz = toneMap( diffuseCoef*albedoSq + specularColor );
+  #else
+    gl_FragColor.xyz = diffuseCoef*albedoSq + specularColor;
 
-  gl_FragColor.xyz = toneMap( diffuseCoef*albedoSq + specularColor );
+  gl_FragColor.a = 1.0;
 
 
 
