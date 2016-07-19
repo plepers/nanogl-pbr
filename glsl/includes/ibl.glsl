@@ -14,10 +14,12 @@ vec3 SpecularIBL( sampler2D tEnv, vec3 skyDir, float roughness)
 
   vec2 uvA = octwrapDecode( skyDir );
 
-  float r7 = 7.0*roughness;
+  float r7   = 7.0*roughness;
+  float frac = fract(r7);
+
   uvA = uvA * _IBL_UVM + vec2(
       0.5,
-      0.125*0.5 + 0.125 * ( r7 - fract( r7 ) )
+      0.125*0.5 + 0.125 * ( r7 - frac )
     );
 
   #if glossNearest
