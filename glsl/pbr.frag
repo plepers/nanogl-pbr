@@ -144,9 +144,19 @@ void main( void ){
     diffuseCoef *= occlusion();
   #endif
 
+
   #if HAS_cavity
     diffuseCoef   *= cavity() * cavityStrength().r + (1.0-cavityStrength().r);
     specularColor *= cavity() * cavityStrength().g + (1.0-cavityStrength().g);
+  #endif
+
+
+  #if HAS_emissive
+    float e = emissive();
+    #if HAS_emissiveScale
+      e = e * emissiveScale();
+    #endif
+    diffuseCoef += vec3( e ) * albedo();
   #endif
 
 

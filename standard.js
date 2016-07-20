@@ -27,6 +27,8 @@ function StandardMaterial( gl ){
   this.iOcclusion      = this.inputs.add( new Input( 'occlusion',       1 ) );
   this.iCavity         = this.inputs.add( new Input( 'cavity',          1 ) );
   this.iCavityStrength = this.inputs.add( new Input( 'cavityStrength',  2 ) );
+  this.iEmissive       = this.inputs.add( new Input( 'emissive',        1 ) );
+  this.iEmissiveScale  = this.inputs.add( new Input( 'emissiveScale',   1 ) );
   this.iFresnel        = this.inputs.add( new Input( 'fresnel',         3 ) );
 
   this.conserveEnergy  = this.inputs.add( new Flag ( 'conserveEnergy',  true  ) );
