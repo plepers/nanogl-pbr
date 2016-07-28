@@ -6,7 +6,6 @@ var fs         = require( 'fs' );
 var compiler   = require( './template' );
 
 var sources = 'glsl/templates/*.+(vert|frag)';
- 
 
 
 function compile( path ){
@@ -17,6 +16,7 @@ function compile( path ){
     var js = compiler( data );
     fs.writeFile( jsPath, js, {encoding:'utf-8'}, function( e ){
       //done
+       console.log( jsPath )
     })
   });
 }

@@ -93,10 +93,6 @@ StandardMaterial.prototype = {
   },
 
 
-  prepareShadow : function( node, light ){
-
-  },
-
 
 
   // need recompilation
