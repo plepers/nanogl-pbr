@@ -17,6 +17,7 @@ function DepthPass( gl ){
 
 
   this.inputs          = new ChunksList();
+  this.depthTex        = this.inputs.add( new Flag ( 'depthTex',         false ) );
 
   this._prgcache = ProgramCache.getCache( gl );
 
