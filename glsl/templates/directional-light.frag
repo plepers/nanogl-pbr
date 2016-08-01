@@ -13,10 +13,15 @@
     float shOccl = calcLightOcclusions(tShadowMap{{@shadowIndex}},fragCoord,uShadowMapSize[{{@shadowIndex}}]);
     dContrib *= shOccl;
     sContib  *= shOccl;
+    
+    #if iblShadowing
+      float sDamp = uLDirColors[{{@index}}].a;
+      specularColor *= mix( sDamp, 1.0, shOccl );
+    #endif
   }
   {{= } }}
 
-  diffuseCoef   += dContrib * uLDirColors[{{@index}}];
-  specularColor += sContib  * uLDirColors[{{@index}}];
+  diffuseCoef   += dContrib * uLDirColors[{{@index}}].rgb;
+  LS_SPECULAR   += sContib  * uLDirColors[{{@index}}].rgb;
 
 }

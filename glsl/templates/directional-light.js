@@ -16,12 +16,14 @@ __p+='\n  {\n    vec3 fragCoord = calcShadowPosition( uShadowTexelBiasVector['+
 (obj.shadowIndex)+
 ',fragCoord,uShadowMapSize['+
 (obj.shadowIndex)+
-']);\n    dContrib *= shOccl;\n    sContib  *= shOccl;\n  }\n  ';
+']);\n    dContrib *= shOccl;\n    sContib  *= shOccl;\n    \n    #if iblShadowing\n      float sDamp = uLDirColors['+
+(obj.index)+
+'].a;\n      specularColor *= mix( sDamp, 1.0, shOccl );\n    #endif\n  }\n  ';
  } 
 __p+='\n\n  diffuseCoef   += dContrib * uLDirColors['+
 (obj.index)+
-'];\n  specularColor += sContib  * uLDirColors['+
+'].rgb;\n  LS_SPECULAR   += sContib  * uLDirColors['+
 (obj.index)+
-'];\n\n}';
+'].rgb;\n\n}';
 return __p;
 }

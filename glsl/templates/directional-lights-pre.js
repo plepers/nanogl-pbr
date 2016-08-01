@@ -4,7 +4,7 @@ __p+='#define NUM_D_LIGHTS '+
 (obj.count)+
 '\n\n';
  if(obj.count>0){ 
-__p+='\nuniform vec3 uLDirDirections [NUM_D_LIGHTS];\nuniform vec3 uLDirColors     [NUM_D_LIGHTS];\n';
+__p+='\nuniform vec3 uLDirDirections [NUM_D_LIGHTS];\nuniform vec4 uLDirColors     [NUM_D_LIGHTS]; // rgb + iblShadowing\n';
  } 
 __p+='\n\n';
 return __p;
