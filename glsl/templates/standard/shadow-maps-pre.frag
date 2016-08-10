@@ -25,10 +25,10 @@ highp float decodeDepthRGB(highp vec3 rgb){
 
 #if depthFormat( D_RGB )
   #define FETCH_DEPTH(t,uvs) decodeDepthRGB( texture2D(t,uvs).xyz )
+#endif
 
-#elif depthFormat( D_DEPTH )
+#if depthFormat( D_DEPTH )
   #define FETCH_DEPTH(t,uvs) texture2D(t,uvs).x
-
 #endif
 
 
@@ -88,35 +88,38 @@ float calcLightOcclusions(sampler2D depth, highp vec3 fragCoord, vec2 mapSize ){
 
   // NO FILTER
   #if shadowFilter( PCFNONE )
-    s = resolveShadowNoFiltering( fragCoord.z, depth, fragCoord.xy );
 
+    s = resolveShadowNoFiltering( fragCoord.z, depth, fragCoord.xy );
+  #endif
 
   // PCF4x1
-  #elif shadowFilter( PCF4x1 )
+  #if shadowFilter( PCF4x1 )
 
     s = resolveShadowNoFiltering( fragCoord.z, depth, fragCoord.xy + kernelOffset                    );
     s+= resolveShadowNoFiltering( fragCoord.z, depth, fragCoord.xy - kernelOffset                    );
     s+= resolveShadowNoFiltering( fragCoord.z, depth, fragCoord.xy + vec2(-kernelOffset.y,kernelOffset.x)  );
     s+= resolveShadowNoFiltering( fragCoord.z, depth, fragCoord.xy + vec2(kernelOffset.y,-kernelOffset.x)  );
     s /= 4.0;
+  #endif
 
   // PCF4x4
-  #elif shadowFilter( PCF4x4 )
+  #if shadowFilter( PCF4x4 )
 
     s = resolveShadow2x2( fragCoord.z, depth, fragCoord.xy + kernelOffset                        , mapSize );
     s+=resolveShadow2x2( fragCoord.z, depth, fragCoord.xy - kernelOffset                         , mapSize );
     s+=resolveShadow2x2( fragCoord.z, depth, fragCoord.xy + vec2(-kernelOffset.y,kernelOffset.x) , mapSize );
     s+=resolveShadow2x2( fragCoord.z, depth, fragCoord.xy + vec2(kernelOffset.y,-kernelOffset.x) , mapSize );
     s /= 4.0;
+  #endif
 
   // PCF2x2
-  #elif shadowFilter( PCF2x2 )
-
+  #if shadowFilter( PCF2x2 )
+  
     s = resolveShadow2x1( fragCoord.z, depth, fragCoord.xy + kernelOffset , mapSize);
     s +=resolveShadow2x1( fragCoord.z, depth, fragCoord.xy - kernelOffset , mapSize);
     s /= 2.0;
-
   #endif
+
 
   return s;
 
