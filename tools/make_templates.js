@@ -5,7 +5,7 @@ var replaceExt = require( 'replace-ext' );
 var fs         = require( 'fs' );
 var compiler   = require( './template' );
 
-var sources = 'glsl/templates/*.+(vert|frag)';
+var sources = 'glsl/templates/**/*.+(vert|frag)';
 
 
 function compile( path ){
