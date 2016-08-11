@@ -11,7 +11,7 @@
   float s = saturate( dot( lightDir, uLSpotDirections[{{@index}}] ) );
   s = saturate( uLSpotSpot[{{@index}}].x-uLSpotSpot[{{@index}}].y * (1.0-s*s) );
 
-  vec3 lightContrib = (falloff *s ) * uLSpotColors[{{@index}}];
+  vec3 lightContrib = (falloff *s ) * uLSpotColors[{{@index}}].rgb;
 
 
   // --------- SPEC
@@ -27,6 +27,12 @@
     float shOccl = calcLightOcclusions(tShadowMap{{@shadowIndex}},fragCoord,uShadowMapSize[{{@shadowIndex}}]);
     dContrib *= shOccl;
     sContrib  *= shOccl;
+
+    #if iblShadowing
+      float sDamp = uLSpotColors[{{@index}}].a;
+      specularColor *= mix( sDamp, 1.0, shOccl );
+    #endif
+
     // sContrib = sin( decodeDepthRGB(texture2D(tShadowMap{{@shadowIndex}},fragCoord.xy).xyz)*200.0);
     // dContrib = sin( decodeDepthRGB(texture2D(tShadowMap{{@shadowIndex}},fragCoord.xy).xyz)*200.0);
 
@@ -36,7 +42,7 @@
 
 
   diffuseCoef   += dContrib * lightContrib;
-  specularColor += sContrib  * lightContrib;
+  LS_SPECULAR   += sContrib  * lightContrib;
 
   // specularColor *= 0.0;
 

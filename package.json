@@ -1,6 +1,6 @@
 {
   "name": "nanogl-pbr",
-  "version": "0.1.4",
+  "version": "0.1.6",
   "description": "pbr material for nanogl",
   "main": "pbr.js",
   "scripts": {
@@ -29,8 +29,9 @@
   "homepage": "https://github.com/plepers/nanogl-pbr#readme",
   "dependencies": {
     "gl-matrix": "2.3.1",
-    "nanogl": "^0.2.6",
+    "nanogl": "^0.3.1",
     "nanogl-camera": "^0.1.1",
+    "nanogl-depth-texture": "^0.1.4",
     "nanogl-node": "^0.1.2",
     "nanogl-state": "^0.1.11"
   },
