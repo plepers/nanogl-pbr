@@ -1,6 +1,6 @@
 
-var Input  = require( './lib/input' );
-var Flag   = require( './lib/flag' );
+var Input  = require( './chunk/input' );
+var Flag   = require( './chunk/flag' );
 
 
 function IBL( env, sh ){

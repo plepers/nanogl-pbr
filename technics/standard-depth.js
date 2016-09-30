@@ -1,66 +1,43 @@
-var Program      = require( 'nanogl/program' );
-var Config       = require( 'nanogl-state/config' );
 var glslify      = require( 'glslify' );
-
-var ProgramCache = require( './lib/program-cache' );
-var Input        = require('./lib/input' );
-var Flag         = require('./lib/flag' );
-var ChunksList   = require('./lib/chunks-tree' );
-
 var RenderPass   = require( './render-pass' );
 
 
-var M4           = require( 'gl-matrix' ).mat4.create();
+var M4 = new Float32Array( 16 );
 
 
-
-function StandardColorPass( gl, technic ){
+function StandardDepthPass( gl, technic ){
 
   RenderPass.call( this, gl, technic );
 
   this._uid       = 'std_d';
   this._precision = 'highp';
-  this._vertSrc   = glslify( './glsl/depthpass.vert' );
-  this._fragSrc   = glslify( './glsl/depthpass.frag' );
+  this._vertSrc   = glslify( '../glsl/depthpass.vert' );
+  this._fragSrc   = glslify( '../glsl/depthpass.frag' );
 
-  this.depthTex        = this.inputs.add( new Flag ( 'depthTex',         false ) );
+
+  this.config
+    .enableCullface( false )
+    .enableDepthTest( )
+    .depthMask( true )
 
 }
 
 
 
-StandardColorPass.prototype = Object.create( RenderPass.prototype );
-StandardColorPass.prototype.constructor = StandardColorPass;
+StandardDepthPass.prototype = Object.create( RenderPass.prototype );
+StandardDepthPass.prototype.constructor = StandardDepthPass;
 
-
-
-StandardColorPass.prototype.setIBL = function( ibl ){
-  this.inputs.addChunks( ibl.getChunks() );
-};
-
-
-StandardColorPass.prototype.setLightSetup = function( setup ){
-  this.inputs.addChunks( setup.getChunks() );
-};
 
 
 // render time !
 // ----------
-StandardColorPass.prototype.prepare = function( node, camera ){
+StandardDepthPass.prototype.prepare = function( node, camera ){
   RenderPass.prototype.prepare.call( this, node, camera );
 
-  this.ibl.setupProgram( prg );
-
-  // matrices
   camera.modelViewProjectionMatrix( M4, node._wmatrix );
-  prg.uMVP(          M4            );
-  prg.uWorldMatrix(  node._wmatrix );
-
-  //
-  prg.uCameraPosition( camera._wposition );
-
+  prg.uMVP( M4 );
 };
 
 
 
-module.exports = StandardColorPass;
+module.exports = StandardDepthPass;

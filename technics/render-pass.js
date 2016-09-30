@@ -1,16 +1,9 @@
 
 
-var Program      = require( 'nanogl/program' );
 var Config       = require( 'nanogl-state/config' );
-var glslify      = require( 'glslify' );
 
-var ProgramCache = require( './lib/program-cache' );
-var Input        = require('./lib/input' );
-var Flag         = require('./lib/flag' );
-var ChunksList   = require('./lib/chunks-tree' );
-
-
-var M4           = require( 'gl-matrix' ).mat4.create();
+var ProgramCache = require( '../program/program-cache' );
+var ChunksList   = require( '../chunk/chunks-tree' );
 
 
 

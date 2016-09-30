@@ -1,118 +1,104 @@
-var Program      = require( 'nanogl/program' );
-var Config       = require( 'nanogl-state/config' );
-var glslify      = require( 'glslify' );
 
-var ProgramCache = require( './lib/program-cache' );
-var Input        = require('./lib/input' );
-var Flag         = require('./lib/flag' );
-var ChunksList   = require('./lib/chunks-tree' );
+var BaseMaterial = require( './material' );
+var Input        = require( './chunk/input');
+var Flag         = require( './chunk/flag');
 
-
-var M4           = require( 'gl-matrix' ).mat4.create();
+var DepthPass = require('./technics/standard-depth' ),
+    ColorPass = require('./technics/standard-color' ),
+    Technic   = require('./technics/technic' );
 
 
 
 function StandardMaterial( gl ){
-  this.ibl = null;
-  this.prg = null;
+  BaseMaterial.call( this, gl );
 
   this._mask = 1;
 
-
-  this.inputs          = new ChunksList();
-  this.iAlbedo         = this.inputs.add( new Input( 'albedo',          3 ) );
-  this.iSpecular       = this.inputs.add( new Input( 'specular',        3 ) );
-  this.iGloss          = this.inputs.add( new Input( 'gloss',           1 ) );
-  this.iNormal         = this.inputs.add( new Input( 'normal',          3 ) );
-  this.iOcclusion      = this.inputs.add( new Input( 'occlusion',       1 ) );
-  this.iCavity         = this.inputs.add( new Input( 'cavity',          1 ) );
-  this.iCavityStrength = this.inputs.add( new Input( 'cavityStrength',  2 ) );
-  this.iEmissive       = this.inputs.add( new Input( 'emissive',        1 ) );
-  this.iEmissiveScale  = this.inputs.add( new Input( 'emissiveScale',   1 ) );
-  this.iFresnel        = this.inputs.add( new Input( 'fresnel',         3 ) );
-
-  this.conserveEnergy  = this.inputs.add( new Flag ( 'conserveEnergy',  true  ) );
-  this.perVertexIrrad  = this.inputs.add( new Flag ( 'perVertexIrrad',  false ) );
-  this.glossNearest    = this.inputs.add( new Flag ( 'glossNearest',    false ) );
-  this.tonemap         = this.inputs.add( new Flag ( 'tonemap',         true ) );
-
-  this.config    = new Config();
-
-  this._prgcache = ProgramCache.getCache( gl );
-
-  // for program-cache
-  this._uid       = 'std';
-  this._precision = 'highp';
-  this._vertSrc   = glslify( './glsl/pbr.vert' );
-  this._fragSrc   = glslify( './glsl/pbr.frag' );
+  this.ibl        = null;
+  this.lightSetup = null;
 
 
+
+  this._chunks = [
+    this.iAlbedo         = new Input( 'albedo',          3 ),
+    this.iSpecular       = new Input( 'specular',        3 ),
+    this.iGloss          = new Input( 'gloss',           1 ),
+    this.iNormal         = new Input( 'normal',          3 ),
+    this.iOcclusion      = new Input( 'occlusion',       1 ),
+    this.iCavity         = new Input( 'cavity',          1 ),
+    this.iCavityStrength = new Input( 'cavityStrength',  2 ),
+    this.iEmissive       = new Input( 'emissive',        1 ),
+    this.iEmissiveScale  = new Input( 'emissiveScale',   1 ),
+    this.iFresnel        = new Input( 'fresnel',         3 ),
+
+    this.conserveEnergy  = new Flag ( 'conserveEnergy',  true  ),
+    this.perVertexIrrad  = new Flag ( 'perVertexIrrad',  false ),
+    this.glossNearest    = new Flag ( 'glossNearest',    false ),
+    this.tonemap         = new Flag ( 'tonemap',         true  )
+  ]
 
 
 }
 
-StandardMaterial.prototype = {
 
 
-  setIBL : function( ibl ){
-    this.ibl = ibl;
-    this.inputs.addChunks( ibl.getChunks() );
-  },
 
-
-  setLightSetup : function( setup ){
-    this.inputs.addChunks( setup.getChunks() );
-  },
-
-
-  // render time !
-  // ----------
-  prepare : function( node, camera ){
-
-    if( this._isDirty() ){
-      this.compile();
-    }
-
-    // this.
-
-    var prg = this.prg;
-    prg.use();
-
-    prg.setupInputs( this );
-
-    this.ibl.setupProgram( prg );
-
-    // matrices
-    camera.modelViewProjectionMatrix( M4, node._wmatrix );
-    prg.uMVP(          M4            );
-    prg.uWorldMatrix(  node._wmatrix );
-
-    //
-    prg.uCameraPosition( camera._wposition );
-
-  },
+StandardMaterial.prototype = Object.create( BaseMaterial.prototype );
+StandardMaterial.prototype.constructor = StandardMaterial;
 
 
 
 
-  // need recompilation
-  _isDirty : function(){
-    if( this.prg === null || this.inputs._isDirty ){
-      return true;
-    }
-    return false;
-  },
-
-
-  compile : function(){
-    if( this.prg !== null ){
-      this._prgcache.release( this.prg );
-    }
-    this.prg = this._prgcache.compile( this );
+StandardMaterial.prototype.setIBL = function( ibl ){
+  this.ibl = ibl;
+  var passes = this.getPassesPerType( Technic.COLOR );
+  for (var i = 0; i < passes.length; i++) {
+    passes[i].setIBL( ibl );
   }
-
-
-
 };
+
+
+
+StandardMaterial.prototype.setLightSetup = function( setup ){
+  this.lightSetup = setup;
+  var passes = this.getPassesPerType( Technic.COLOR );
+  for (var i = 0; i < passes.length; i++) {
+    passes[i].setLightSetup( ibl );
+  }
+};
+
+
+
+StandardMaterial.prototype.createPass = function( technic ){
+  var pass = null;
+
+  switch( technic.type )
+  {
+    //              COLOR
+    //===================
+    case Technic.COLOR :
+      pass = new ColorPass( this.gl, technic );
+      pass.inputs.addChunks( this._chunks );
+      if( this.ibl ) {
+        pass.setIBL( this.ibl );
+      }
+      if( this.lightSetup ) {
+        pass.setLightSetup( this.lightSetup );
+      }
+      break;
+
+    //              DEPTH
+    //===================
+    case Technic.DEPTH :
+      pass = new DepthPass( this.gl, technic );
+      break;
+
+  }
+  return pass;
+};
+
+
+
+
 
 module.exports = StandardMaterial;

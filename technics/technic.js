@@ -1,5 +1,5 @@
 
-var ChunksList   = require('./lib/chunks-tree' );
+var ChunksList   = require('../chunk/chunks-tree' );
 
 
 
