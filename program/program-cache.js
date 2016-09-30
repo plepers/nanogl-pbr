@@ -12,14 +12,14 @@ function ProgramCache( gl ){
 
 ProgramCache.prototype = {
 
-  compile : function( material ){
+  compile : function( pass ){
 
-    var inputs = material.inputs;
+    var inputs = pass.inputs;
 
     inputs.compile();
 
     hash = inputs.getHash();
-    hash +=  material._uid + material._precision;
+    hash +=  pass._uid + pass._precision;
     // console.log( hash )
 
     var cached = this._cache[hash];
@@ -30,10 +30,10 @@ ProgramCache.prototype = {
 
     var slots = inputs.getCode();
 
-    var vert = this.processSlots( material._vertSrc, slots );
-    var frag = this.processSlots( material._fragSrc, slots );
+    var vert = this.processSlots( pass._vertSrc, slots );
+    var frag = this.processSlots( pass._fragSrc, slots );
 
-    var defs = 'precision ' + material._precision + ' float;\n';
+    var defs = 'precision ' + pass._precision + ' float;\n';
     // console.log( frag )
     var prg = new Program( this.gl, vert, frag, defs );
     prg._usage ++;

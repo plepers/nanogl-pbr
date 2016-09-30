@@ -2,10 +2,10 @@ var expect  = require( 'expect.js' );
 
 
 var Node       = require( 'nanogl-node' );
-var DirLight   = require( '../lib/lights/directional-light' );
-var SpotLight   = require( '../lib/lights/spot-light' );
-var LightSetup = require( '../lib/lights/light-setup' );
-var ChunkList = require( '../lib/chunks-tree' );
+var DirLight   = require( '../lights/directional-light' );
+var SpotLight   = require( '../lights/spot-light' );
+var LightSetup = require( '../lights/light-setup' );
+var ChunkList = require( '../chunk/chunks-tree' );
 
 
 

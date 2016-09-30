@@ -1,16 +1,16 @@
 var Light  = require( './light' );
-var Chunk  = require( '../chunk' );
-var Enum   = require( '../enum' );
-var Flag   = require( '../flag' );
+var Chunk  = require( '../chunk/chunk' );
+var Enum   = require( '../chunk/enum' );
+var Flag   = require( '../chunk/flag' );
 
-var dirPreCode   = require( '../../glsl/templates/standard/directional-lights-pre' );
-var spotPreCode  = require( '../../glsl/templates/standard/spot-lights-pre' );
-var shadPreCode  = require( '../../glsl/templates/standard/shadow-maps-pre' );
-var preLightCode = require( '../../glsl/templates/standard/pre-light-setup' );
-var postLightCode= require( '../../glsl/templates/standard/post-light-setup' );
+var dirPreCode   = require( '../glsl/templates/standard/directional-lights-pre' );
+var spotPreCode  = require( '../glsl/templates/standard/spot-lights-pre' );
+var shadPreCode  = require( '../glsl/templates/standard/shadow-maps-pre' );
+var preLightCode = require( '../glsl/templates/standard/pre-light-setup' );
+var postLightCode= require( '../glsl/templates/standard/post-light-setup' );
 
-var spotLightCode= require( '../../glsl/templates/standard/spot-light' );
-var dirLightCode = require( '../../glsl/templates/standard/directional-light' );
+var spotLightCode= require( '../glsl/templates/standard/spot-light' );
+var dirLightCode = require( '../glsl/templates/standard/directional-light' );
 
 
 // =================================
@@ -42,7 +42,7 @@ function StandardModel(){
   // damp renv reflexion for shadowed pixel
   this.iblShadowing = new Flag( 'iblShadowing', false);
 
-  
+
   d = new DirDatas()
   this._datas[Light.TYPE_DIR] = d;
   this._dataList.push( d );
@@ -93,7 +93,7 @@ StandardModel.prototype = {
     }
 
     res.push(    this.postLightsChunk .createProxy() );
-    
+
     return res;
   }
 

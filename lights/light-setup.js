@@ -1,4 +1,4 @@
-var Enum   = require( '../enum' );
+var Enum   = require( '../chunk/enum' );
 var Bounds = require( '../bounds' );
 
 var StandardModel = require( './standard-model' );
@@ -37,11 +37,11 @@ LightSetup.prototype = {
   },
 
 
-  remove : function( l ){  
+  remove : function( l ){
     var i = this. _lights.indexOf( l );
     if( i > -1 ){
       this._lights.splice( i, 1 );
-      
+
       for ( i = 0; i < this._models.length; i++) {
         this._models[i].remove( l );
       }
