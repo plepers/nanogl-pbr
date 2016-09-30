@@ -1,7 +1,8 @@
 #pragma SLOT pf
 
-#if depthTex
-#else
+
+
+#if depthFormat( D_RGB )
   varying vec2 fragZW;
 
   vec3 encodeDepthRGB(float depth){
@@ -13,12 +14,16 @@
 #endif
 
 
+
 void main(void){
 
-  #if depthTex
-    gl_FragColor = vec4( 0.0 );
-  #else
+  #if depthFormat( D_RGB )
     gl_FragColor.xyz = encodeDepthRGB( ( fragZW.x / fragZW.y ) * 0.5 + 0.5 );
     gl_FragColor.w=0.0;
   #endif
+
+  #if depthFormat( D_DEPTH )
+    gl_FragColor = vec4( 0.0 );
+  #endif
+
 }

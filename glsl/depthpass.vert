@@ -4,8 +4,9 @@ attribute vec3 aPosition;
 
 uniform mat4 uMVP;
 
-#if depthTex
-#else
+
+
+#if depthFormat( D_RGB )
   varying vec2 fragZW;
 #endif
 
@@ -13,9 +14,7 @@ uniform mat4 uMVP;
 void main(void){
   gl_Position = uMVP * vec4( aPosition, 1.0 );
 
-  #if depthTex
-  #else
+  #if depthFormat( D_RGB )
     fragZW=gl_Position.zw;
   #endif
-
 }

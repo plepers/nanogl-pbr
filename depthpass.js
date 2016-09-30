@@ -1,9 +1,11 @@
 var Program      = require( 'nanogl/program' );
+var Config       = require( 'nanogl-state/config' );
 var glslify      = require( 'glslify' );
 
 var ProgramCache = require( './lib/program-cache' );
 var Input        = require('./lib/input' );
 var Flag         = require('./lib/flag' );
+var Enum         = require('./lib/enum' );
 var ChunksList   = require('./lib/chunks-tree' );
 
 
@@ -17,7 +19,16 @@ function DepthPass( gl ){
 
 
   this.inputs          = new ChunksList();
-  this.depthTex        = this.inputs.add( new Flag ( 'depthTex',         false ) );
+
+
+  this.depthFormat = new Enum( 'depthFormat', [
+    'D_RGB',
+    'D_DEPTH'
+  ]);
+  this.inputs.add( this.depthFormat );
+  
+
+  this.config    = new Config();
 
   this._prgcache = ProgramCache.getCache( gl );
 
@@ -33,6 +44,12 @@ function DepthPass( gl ){
 DepthPass.prototype = {
 
 
+
+  setLightSetup : function( setup ){
+    this.inputs.remove( this.depthFormat );
+    this.depthFormat = setup.depthFormat.createProxy();
+    this.inputs.add( this.depthFormat );
+  },
 
   // render time !
   // ----------
@@ -53,7 +70,10 @@ DepthPass.prototype = {
     camera.modelViewProjectionMatrix( M4, node._wmatrix );
     prg.uMVP( M4 );
 
+
   },
+
+
 
 
 
