@@ -368,12 +368,12 @@ SpotDatas.prototype.update = function( setup ){
   for (var i = 0; i < lights.length; i++) {
     var l = lights[i]
     this._directions.set( l._wdir,        i*3 )
-    this._colors    .set( l._color,       i*3 )
+    this._colors    .set( l._color,       i*4 )
     this._positions .set( l._wposition,   i*3 )
     this._spot      .set( l._spotData,    i*2 )
     this._falloff   .set( l._falloffData, i*3 )
 
-    this._colors[i*3+3] = l.iblShadowing;
+    this._colors[i*4+3] = l.iblShadowing;
 
     if( l._castShadows ){
       var shIndex = setup.shadowChunk.addLight( l );
@@ -451,8 +451,8 @@ DirDatas.prototype.update = function( setup ){
   for (var i = 0; i < lights.length; i++) {
     var l = lights[i]
     this._directions.set( l._wdir,  i*3 )
-    this._colors    .set( l._color, i*3 )
-    this._colors[i*3+3] = l.iblShadowing;
+    this._colors    .set( l._color, i*4 )
+    this._colors[i*4+3] = l.iblShadowing;
 
     if( l._castShadows ){
       var shIndex = setup.shadowChunk.addLight( l );
