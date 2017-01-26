@@ -52,13 +52,13 @@ uniform sampler2D tEnv;
 // Schlick approx
 // [Schlick 1994, "An Inexpensive BRDF Model for Physically-Based Rendering"]
 // https://github.com/EpicGames/UnrealEngine/blob/dff3c48be101bb9f84633a733ef79c91c38d9542/Engine/Shaders/BRDF.usf#L168
-vec3 F_Schlick( float VoH,vec3 specular,float gloss )
+vec3 F_Schlick( float VoH,vec3 spec,float glo )
 {
-  float dot = gloss*gloss * pow( 1.0-VoH, 5.0 );
+  float dot = glo*glo * pow( 1.0-VoH, 5.0 );
   #if HAS_fresnel
-    return( 1.0 - dot )*specular + dot*fresnel();
+    return( 1.0 - dot )*spec + dot*fresnel();
   #else
-    return( 1.0 - dot )*specular + dot;
+    return( 1.0 - dot )*spec + dot;
   #endif
 }
 
