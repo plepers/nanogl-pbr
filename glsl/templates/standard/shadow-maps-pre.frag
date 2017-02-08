@@ -178,7 +178,7 @@ float resolveShadowNoFiltering(highp float fragZ, DepthSampler depth,highp vec2 
 float calcLightOcclusions(DepthSampler depth, highp vec3 fragCoord, vec2 mapSize ){
   float s;
 
-  highp vec2 kernelOffset = uShadowKernelRotation * ( 4.0 / mapSize.x );
+  highp vec2 kernelOffset = uShadowKernelRotation * mapSize.y;
 
   // NO FILTER
   #if shadowFilter( PCFNONE )
