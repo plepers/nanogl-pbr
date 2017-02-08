@@ -39,7 +39,7 @@ uniform sampler2D tEnv;
   IN vec3 vIrradiance;
 #else
   uniform vec4 uSHCoeffs[7];
-  #pragma glslify: SampleSH    = require( ./includes/spherical-harmonics.glsl )
+  {{ require( "./spherical-harmonics.glsl" )() }}
 #endif
 
 
@@ -53,7 +53,7 @@ uniform sampler2D tEnv;
 // INCLUDES
 // =========
 
-#pragma glslify: SpecularIBL = require( ./includes/ibl.glsl )
+{{ require( "./ibl.glsl" )() }}
 
 
 

@@ -32,7 +32,8 @@ OUT mediump vec3 vWorldNormal;
 #if perVertexIrrad
   OUT vec3 vIrradiance;
   uniform vec4 uSHCoeffs[7];
-  #pragma glslify: SampleSH    = require( ./includes/spherical-harmonics.glsl )
+  
+{{ require( "./spherical-harmonics.glsl" )() }}
 #endif
 
 
