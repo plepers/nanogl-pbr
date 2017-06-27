@@ -221,13 +221,13 @@ float calcLightOcclusions(DepthSampler depth, highp vec3 fragCoord, vec2 mapSize
 
 
 
-vec3 calcShadowPosition( vec4 texelBiasVector, mat4 shadowProjection, vec3 worldNormal, float invMapSize )
+vec3 calcShadowPosition( vec4 texelBiasVector, mat4 shadowProjection, vec3 worldPos, vec3 worldNormal, float invMapSize )
 {
-  float WoP = dot( texelBiasVector, vec4( vWorldPosition, 1.0 ) );
+  float WoP = dot( texelBiasVector, vec4( worldPos, 1.0 ) );
 
   WoP *= .0005+2.0*invMapSize;
 
-  highp vec4 fragCoord = shadowProjection * vec4( vWorldPosition + WoP * worldNormal, 1.0);
+  highp vec4 fragCoord = shadowProjection * vec4( worldPos + WoP * worldNormal, 1.0);
   return fragCoord.xyz / fragCoord.w;
 }
 

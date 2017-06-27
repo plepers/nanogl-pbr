@@ -1,6 +1,5 @@
 var Program      = require( 'nanogl/program' );
 var Config       = require( 'nanogl-state/config' );
-var glslify      = require( 'glslify' );
 
 var ProgramCache = require( './lib/program-cache' );
 var Input        = require('./lib/input' );
@@ -35,8 +34,8 @@ function DepthPass( gl ){
   // for program-cache
   this._uid       = 'stddepth';
   this._precision = 'highp';
-  this._vertSrc   = glslify( './glsl/depthpass.vert' );
-  this._fragSrc   = glslify( './glsl/depthpass.frag' );
+  this._vertSrc   = require( './glsl/depthpass.vert' )();
+  this._fragSrc   = require( './glsl/depthpass.frag' )();
 
 
 }

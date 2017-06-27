@@ -39,7 +39,7 @@ uniform sampler2D tEnv;
   IN vec3 vIrradiance;
 #else
   uniform vec4 uSHCoeffs[7];
-  {{ require( "./spherical-harmonics.glsl" )() }}
+  {{ require( "./includes/spherical-harmonics.glsl" )() }}
 #endif
 
 
@@ -53,7 +53,7 @@ uniform sampler2D tEnv;
 // INCLUDES
 // =========
 
-{{ require( "./ibl.glsl" )() }}
+{{ require( "./includes/ibl.glsl" )() }}
 
 
 

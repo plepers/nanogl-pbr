@@ -33,7 +33,7 @@ OUT mediump vec3 vWorldNormal;
   OUT vec3 vIrradiance;
   uniform vec4 uSHCoeffs[7];
   
-{{ require( "./spherical-harmonics.glsl" )() }}
+{{ require( "./includes/spherical-harmonics.glsl" )() }}
 #endif
 
 
