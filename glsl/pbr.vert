@@ -1,28 +1,39 @@
 #pragma SLOT pv
 
-attribute vec3 aPosition;
-attribute vec2 aTexCoord;
-attribute vec3 aNormal;
-attribute vec3 aTangent;
-attribute vec3 aBitangent;
+
+#if __VERSION__ == 300
+  #define IN in
+  #define OUT out
+#else
+  #define IN attribute
+  #define OUT varying
+#endif
+
+
+IN vec3 aPosition;
+IN vec2 aTexCoord;
+IN vec3 aNormal;
+IN vec3 aTangent;
+IN vec3 aBitangent;
 
 uniform mat4 uMVP;
 uniform mat4 uWorldMatrix;
 
-varying vec2 vTexCoord;
-varying vec3 vWorldPosition;
+OUT vec2 vTexCoord;
+OUT vec3 vWorldPosition;
 
-varying mediump vec3 vWorldNormal;
+OUT mediump vec3 vWorldNormal;
 
 #if HAS_normal
-  varying mediump vec3 vWorldTangent;
-  varying mediump vec3 vWorldBitangent;
+  OUT mediump vec3 vWorldTangent;
+  OUT mediump vec3 vWorldBitangent;
 #endif
 
 #if perVertexIrrad
-  varying vec3 vIrradiance;
+  OUT vec3 vIrradiance;
   uniform vec4 uSHCoeffs[7];
-  #pragma glslify: SampleSH    = require( ./includes/spherical-harmonics.glsl )
+  
+{{ require( "./includes/spherical-harmonics.glsl" )() }}
 #endif
 
 

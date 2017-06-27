@@ -1,4 +1,6 @@
 
+#ifndef _H_SAMPLE_SH_
+#define _H_SAMPLE_SH_
 // ================================
 // compute Spherical Harmonics
 // ================================
@@ -32,5 +34,4 @@ vec3 SampleSH( vec3 Normal, vec4 shCoefs[7] )
 //  return max( vec3(0.0) , X0 + X1 + X2 );
 }
 
-
-#pragma glslify: export(SampleSH)
+#endif

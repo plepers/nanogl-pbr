@@ -5,20 +5,28 @@
 // #pragma Input vec3 normal
 // #pragma Enum ibl_type { NONE, SH7, SH9 }
 
+#if __VERSION__ == 300
+  #define IN in
+  out vec4 FragColor;
+  #define texture2D(a,b) texture( a, b )
+#else
+  #define IN varying
+  #define FragColor gl_FragColor
+#endif
 
 
 uniform vec3 uCameraPosition;
 
-varying vec2 vTexCoord;
-varying vec3 vWorldPosition;
+IN vec2 vTexCoord;
+IN vec3 vWorldPosition;
 
-varying mediump vec3 vWorldNormal;
+IN mediump vec3 vWorldNormal;
 
 #pragma SLOT pf
 
 #if HAS_normal
-  varying mediump vec3 vWorldTangent;
-  varying mediump vec3 vWorldBitangent;
+  IN mediump vec3 vWorldTangent;
+  IN mediump vec3 vWorldBitangent;
 #endif
 
 
@@ -28,10 +36,10 @@ varying mediump vec3 vWorldNormal;
 uniform sampler2D tEnv;
 
 #if perVertexIrrad
-  varying vec3 vIrradiance;
+  IN vec3 vIrradiance;
 #else
   uniform vec4 uSHCoeffs[7];
-  #pragma glslify: SampleSH    = require( ./includes/spherical-harmonics.glsl )
+  {{ require( "./includes/spherical-harmonics.glsl" )() }}
 #endif
 
 
@@ -45,7 +53,7 @@ uniform sampler2D tEnv;
 // INCLUDES
 // =========
 
-#pragma glslify: SpecularIBL = require( ./includes/ibl.glsl )
+{{ require( "./includes/ibl.glsl" )() }}
 
 
 
@@ -161,12 +169,12 @@ void main( void ){
 
 
   #if tonemap
-    gl_FragColor.xyz = toneMap( diffuseCoef*albedoSq + specularColor );
+    FragColor.xyz = toneMap( diffuseCoef*albedoSq + specularColor );
   #else
-    gl_FragColor.xyz = diffuseCoef*albedoSq + specularColor;
+    FragColor.xyz = diffuseCoef*albedoSq + specularColor;
   #endif
 
-  gl_FragColor.a = 1.0;
+  FragColor.a = 1.0;
 
 
 

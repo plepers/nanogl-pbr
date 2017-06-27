@@ -1,6 +1,5 @@
 var Program      = require( 'nanogl/program' );
 var Config       = require( 'nanogl-state/config' );
-var glslify      = require( 'glslify' );
 
 var ProgramCache = require( './lib/program-cache' );
 var Input        = require('./lib/input' );
@@ -36,17 +35,15 @@ function StandardMaterial( gl ){
   this.glossNearest    = this.inputs.add( new Flag ( 'glossNearest',    false ) );
   this.tonemap         = this.inputs.add( new Flag ( 'tonemap',         true ) );
 
-  this.config    = new Config();
+  this.config     = new Config();
 
-  this._prgcache = ProgramCache.getCache( gl );
+  this._prgcache  = ProgramCache.getCache( gl );
 
   // for program-cache
   this._uid       = 'std';
   this._precision = 'highp';
-  this._vertSrc   = glslify( './glsl/pbr.vert' );
-  this._fragSrc   = glslify( './glsl/pbr.frag' );
-
-
+  this._vertSrc   = require( './glsl/pbr.vert' )();
+  this._fragSrc   = require( './glsl/pbr.frag' )();
 
 
 }

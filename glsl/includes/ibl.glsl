@@ -1,8 +1,9 @@
 
+#ifndef _H_SPECULAR_IBL_
+#define _H_SPECULAR_IBL_
 
-#pragma glslify: octwrapDecode = require( ./octwrap-decode.glsl )
-#pragma glslify: decodeRGBE = require( ./decode-rgbe.glsl )
-
+{{ require( "./octwrap-decode.glsl" )() }}
+{{ require( "./decode-rgbe.glsl" )() }}
 
 const vec2 _IBL_UVM = vec2(
   0.25*(254.0/256.0),
@@ -39,4 +40,4 @@ vec3 SpecularIBL( sampler2D tEnv, vec3 skyDir, float roughness)
 
 }
 
-#pragma glslify: export(SpecularIBL)
+#endif

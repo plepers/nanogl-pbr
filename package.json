@@ -1,6 +1,6 @@
 {
   "name": "nanogl-pbr",
-  "version": "0.1.11",
+  "version": "1.0.0",
   "description": "pbr material for nanogl",
   "main": "pbr.js",
   "scripts": {
@@ -29,17 +29,16 @@
   "homepage": "https://github.com/plepers/nanogl-pbr#readme",
   "dependencies": {
     "gl-matrix": "2.3.1",
-    "nanogl": "^0.3.1",
-    "nanogl-camera": "^0.1.1",
-    "nanogl-depth-texture": "^0.1.4",
-    "nanogl-node": "^0.1.2",
-    "nanogl-state": "^0.1.11"
+    "nanogl": "1.0.0",
+    "nanogl-pf": "0.1.1",
+    "nanogl-camera": "0.1.1",
+    "nanogl-node": "0.1.2",
+    "nanogl-state": "0.1.11"
   },
   "devDependencies": {
     "browserify": "^13.0.1",
     "expect.js": "0.3.1",
     "glob": "7.0.3",
-    "glslify": "^5.0.2",
     "jshint": "2.9.1-rc1",
     "karma": "0.13.19",
     "karma-browserify": "4.4.2",
@@ -49,9 +48,24 @@
     "karma-safari-launcher": "0.1.1",
     "karma-sauce-launcher": "0.3.0",
     "mocha": "2.3.4",
+    "nanogl-template": "^1.0.3",
     "replace-ext": "0.0.1",
     "sinon": "1.17.2",
     "string-template": "1.0.0",
     "uglify-js": "2.6.1"
+  },
+  "browserify": {
+    "transform": [
+      [
+        "nanogl-template",
+        {
+          "extensions": [
+            ".vert",
+            ".frag",
+            ".glsl"
+          ]
+        }
+      ]
+    ]
   }
 }
