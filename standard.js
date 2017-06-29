@@ -35,6 +35,8 @@ function StandardMaterial( gl ){
   this.glossNearest    = this.inputs.add( new Flag ( 'glossNearest',    false ) );
   this.tonemap         = this.inputs.add( new Flag ( 'tonemap',         true ) );
 
+  this.hasDerivative   = this.inputs.add( new Flag ( 'hasDerivative',  false ) );
+
   this.config     = new Config();
 
   this._prgcache  = ProgramCache.getCache( gl );

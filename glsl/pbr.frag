@@ -1,5 +1,4 @@
-
-
+#extension GL_OES_standard_derivatives : enable
 
 
 // #pragma Input vec3 normal
@@ -25,8 +24,10 @@ IN mediump vec3 vWorldNormal;
 #pragma SLOT pf
 
 #if HAS_normal
+  #if hasDerivative == 0
   IN mediump vec3 vWorldTangent;
   IN mediump vec3 vWorldBitangent;
+  #endif
 #endif
 
 
@@ -74,13 +75,55 @@ vec3 F_Schlick( float VoH,vec3 spec,float glo )
 // ------------------------------
 //
 
-#if HAS_normal
+#if hasDerivative
+vec3 perturbWorldNormal( vec3 n ){
+  // compute derivations of the world position
+  n = 2.0 * n - 1.0;
+
+  vec3 nrm = gl_FrontFacing ? vWorldNormal : -vWorldNormal;
+  nrm = normalize( nrm );
+
+  vec3 p_dx = dFdx(vWorldPosition);
+  vec3 p_dy = dFdy(vWorldPosition);
+  // compute derivations of the texture coordinate
+  vec2 tc_dx = dFdx(vTexCoord);
+  vec2 tc_dy = dFdy(vTexCoord);
+
+  float r = 1.0 / (tc_dx.x * tc_dy.y - tc_dx.y * tc_dy.x);
+
+  // compute initial tangent and bi-tangent
+  vec3 t = normalize( tc_dy.y * p_dx - tc_dx.y * p_dy )*r;
+  vec3 b = normalize( tc_dx.x * p_dy - tc_dy.x * p_dx )*r; // sign inversion
+
+  // get new tangent from a given world normal
+  vec3 x = cross(nrm, t);
+  t = cross(x, nrm);
+  t = normalize(t);
+  // get updated bi-tangent
+  x = cross(b, nrm);
+  b = cross(nrm, x);
+  b = normalize(b);
+  mat3 tbn = mat3(t, b, nrm);
+  return tbn * n;
+}
+#elif HAS_normal
 vec3 perturbWorldNormal(vec3 n){
   n = 2.0*n - 1.0;
   vec3 nrm = gl_FrontFacing ? vWorldNormal : -vWorldNormal;
   return normalize(vWorldTangent * n.x + vWorldBitangent*n.y + nrm * n.z );
 }
 #endif
+
+
+// #if HAS_normal
+// vec3 perturbWorldNormal(vec3 n){
+//   n = 2.0*n - 1.0;
+//   vec3 nrm = normalize( gl_FrontFacing ? vWorldNormal : -vWorldNormal );
+//   // return normalize(vWorldTangent * n.x + vWorldBitangent*n.y + nrm * n.z );
+//   return tbnFromDerivative() * n;
+
+// }
+// #endif
 
 
 // ------------------------------

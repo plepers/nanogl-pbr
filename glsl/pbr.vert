@@ -13,8 +13,10 @@
 IN vec3 aPosition;
 IN vec2 aTexCoord;
 IN vec3 aNormal;
+#if hasDerivative == 0
 IN vec3 aTangent;
 IN vec3 aBitangent;
+#endif
 
 uniform mat4 uMVP;
 uniform mat4 uWorldMatrix;
@@ -25,14 +27,16 @@ OUT vec3 vWorldPosition;
 OUT mediump vec3 vWorldNormal;
 
 #if HAS_normal
+  #if hasDerivative == 0
   OUT mediump vec3 vWorldTangent;
   OUT mediump vec3 vWorldBitangent;
+  #endif
 #endif
 
 #if perVertexIrrad
   OUT vec3 vIrradiance;
   uniform vec4 uSHCoeffs[7];
-  
+
 {{ require( "./includes/spherical-harmonics.glsl" )() }}
 #endif
 
@@ -55,8 +59,10 @@ void main( void ){
 
   vWorldNormal    = rotate( uWorldMatrix, aNormal );
   #if HAS_normal
+    #if hasDerivative == 0
     vWorldTangent   = rotate( uWorldMatrix, aTangent );
     vWorldBitangent = rotate( uWorldMatrix, aBitangent );
+    #endif
   #endif
 
   #if perVertexIrrad
