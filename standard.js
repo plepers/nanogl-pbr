@@ -4,6 +4,7 @@ var Config       = require( 'nanogl-state/config' );
 var ProgramCache = require( './lib/program-cache' );
 var Input        = require('./lib/input' );
 var Flag         = require('./lib/flag' );
+var Enum         = require('./lib/enum' );
 var ChunksList   = require('./lib/chunks-tree' );
 
 
@@ -33,7 +34,19 @@ function StandardMaterial( gl ){
   this.conserveEnergy  = this.inputs.add( new Flag ( 'conserveEnergy',  true  ) );
   this.perVertexIrrad  = this.inputs.add( new Flag ( 'perVertexIrrad',  false ) );
   this.glossNearest    = this.inputs.add( new Flag ( 'glossNearest',    false ) );
-  this.tonemap         = this.inputs.add( new Flag ( 'tonemap',         true ) );
+
+  this.gammaMode       = new Enum( 'gammaMode',[
+    'GAMMA_NONE',
+    'GAMMA_STD',
+    'GAMMA_2_2',
+    'GAMMA_TB'
+  ]);
+  this.inputs.add( this.gammaMode );
+
+  this.iGamma      = this.inputs.add( new Input( 'gamma',       1 ) );
+  this.iExposure   = this.inputs.add( new Input( 'exposure',    1 ) );
+  
+
 
   this.config     = new Config();
 
@@ -51,9 +64,9 @@ function StandardMaterial( gl ){
 StandardMaterial.prototype = {
 
 
+
   setIBL : function( ibl ){
     this.ibl = ibl;
-    this.inputs.addChunks( ibl.getChunks() );
   },
 
 
