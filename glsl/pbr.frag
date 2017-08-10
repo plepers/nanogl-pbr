@@ -115,24 +115,6 @@ vec3 perturbWorldNormal(vec3 n){
 #endif
 
 
-// #if HAS_normal
-// vec3 perturbWorldNormal(vec3 n){
-//   n = 2.0*n - 1.0;
-//   vec3 nrm = normalize( gl_FrontFacing ? vWorldNormal : -vWorldNormal );
-//   // return normalize(vWorldTangent * n.x + vWorldBitangent*n.y + nrm * n.z );
-//   return tbnFromDerivative() * n;
-
-// }
-// #endif
-
-
-// ------------------------------
-//
-vec3 toneMap(vec3 c){
-  vec3 sqrtc = sqrt( c );
-  return(sqrtc-sqrtc*c) + c*(0.4672*c+vec3(0.5328));
-}
-
 //                MAIN
 // ===================
 
@@ -156,10 +138,7 @@ void main( void ){
   #if perVertexIrrad
     vec3 diffuseCoef = vIrradiance;
   #else
-    vec3 diffuseCoef=SampleSH(worldNormal, uSHCoeffs );
-    #if HAS_iblExpo
-      diffuseCoef = iblExpo().x * pow( diffuseCoef, vec3( iblExpo().y ) );
-    #endif
+    vec3 diffuseCoef = SampleSH(worldNormal, uSHCoeffs );
   #endif
 
 
@@ -170,9 +149,6 @@ void main( void ){
   vec3 viewDir = normalize( uCameraPosition - vWorldPosition );
   vec3 worldReflect = reflect( -viewDir, worldNormal );
   vec3 specularColor = SpecularIBL( tEnv, worldReflect, 1.0-gloss() );
-  #if HAS_iblExpo
-    specularColor = iblExpo().x * pow( specularColor, vec3( iblExpo().y ) );
-  #endif
 
 
   #pragma SLOT lightsf
@@ -211,15 +187,34 @@ void main( void ){
   #endif
 
 
-  #if tonemap
-    FragColor.xyz = toneMap( diffuseCoef*albedoSq + specularColor );
-  #else
-    FragColor.xyz = diffuseCoef*albedoSq + specularColor;
+
+  FragColor.xyz = diffuseCoef*albedoSq + specularColor;
+
+
+  #if HAS_exposure
+    FragColor.xyz *= vec3( exposure() );
   #endif
 
+
+  #if gammaMode( GAMMA_STD ) && HAS_gamma
+    FragColor.xyz = pow( FragColor.xyz, vec3( gamma() ) );
+  #endif
+
+  #if gammaMode( GAMMA_2_2 )
+    FragColor.xyz = pow( FragColor.xyz, vec3( 1.0/2.2 ) );
+  #endif
+
+  #if gammaMode( GAMMA_TB )
+    {
+      vec3 c = FragColor.xyz;
+      vec3 sqrtc = sqrt( c );
+      FragColor.xyz = (sqrtc-sqrtc*c) + c*(0.4672*c+vec3(0.5328));
+    }
+  #endif
+
+
+
+
   FragColor.a = 1.0;
-
-
-
 
 }

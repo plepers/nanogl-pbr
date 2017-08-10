@@ -7,25 +7,15 @@ function IBL( env, sh ){
   this.env   = env;
   this.sh    = sh;
 
-  this._expoInput   = new Input( 'iblExpo', 2, Input.ALL );
 
 }
 
 IBL.prototype = {
 
-
-  getChunks : function(){
-    return [
-      this._expoInput  .createProxy()
-    ];
-  },
-
-
   setupProgram : function( prg ){
     if( prg.tEnv )      prg.tEnv(       this.env );
     if( prg.uSHCoeffs ) prg.uSHCoeffs(  this.sh  );
   }
-
 
 };
 
@@ -35,9 +25,9 @@ IBL.convert = function( sh, expo ){
   }
   var SqrtPI = Math.sqrt(Math.PI);
   var C0 = 1.0 / (2 * SqrtPI);
-  var C1 = Math.sqrt(3) / (3 * SqrtPI);
+  var C1 = Math.sqrt(3)  / (3 * SqrtPI);
   var C2 = Math.sqrt(15) / (8 * SqrtPI);
-  var C3 = Math.sqrt(5) / (16 * SqrtPI);
+  var C3 = Math.sqrt(5)  / (16 * SqrtPI);
   var C4 = 0.5 * C2;
 
   var res = new Float32Array(7 * 4);
