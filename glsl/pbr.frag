@@ -93,7 +93,7 @@ vec3 perturbWorldNormal( vec3 n ){
 
   // compute initial tangent and bi-tangent
   vec3 t = normalize( tc_dy.y * p_dx - tc_dx.y * p_dy )*r;
-  vec3 b = normalize( tc_dx.x * p_dy - tc_dy.x * p_dx )*r; // sign inversion
+  vec3 b = normalize( tc_dx.x * p_dy - tc_dy.x * p_dx )*r;
 
   // get new tangent from a given world normal
   vec3 x = cross(nrm, t);
