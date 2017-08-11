@@ -1,4 +1,4 @@
-#extension GL_OES_standard_derivatives : enable
+// #extension GL_OES_standard_derivatives : enable
 
 
 // #pragma Input vec3 normal
@@ -24,7 +24,7 @@ IN mediump vec3 vWorldNormal;
 #pragma SLOT pf
 
 #if HAS_normal
-  #if hasDerivative == 0
+  #if useDerivatives == 0
   IN mediump vec3 vWorldTangent;
   IN mediump vec3 vWorldBitangent;
   #endif
@@ -56,7 +56,7 @@ uniform sampler2D tEnv;
 
 {{ require( "./includes/ibl.glsl" )() }}
 
-
+{{ require( "./includes/perturb-normal.glsl" )() }}
 
 // Schlick approx
 // [Schlick 1994, "An Inexpensive BRDF Model for Physically-Based Rendering"]
@@ -74,45 +74,45 @@ vec3 F_Schlick( float VoH,vec3 spec,float glo )
 
 // ------------------------------
 //
+// COMMON METHOD INCLUDE IN EXTERNAL FILE
+// #if useDerivatives
+// vec3 perturbWorldNormal( vec3 n ){
+//   // compute derivations of the world position
+//   n = 2.0 * n - 1.0;
 
-#if hasDerivative
-vec3 perturbWorldNormal( vec3 n ){
-  // compute derivations of the world position
-  n = 2.0 * n - 1.0;
+//   vec3 nrm = gl_FrontFacing ? vWorldNormal : -vWorldNormal;
+//   nrm = normalize( nrm );
 
-  vec3 nrm = gl_FrontFacing ? vWorldNormal : -vWorldNormal;
-  nrm = normalize( nrm );
+//   vec3 p_dx = dFdx(vWorldPosition);
+//   vec3 p_dy = dFdy(vWorldPosition);
+//   // compute derivations of the texture coordinate
+//   vec2 tc_dx = dFdx(vTexCoord);
+//   vec2 tc_dy = dFdy(vTexCoord);
 
-  vec3 p_dx = dFdx(vWorldPosition);
-  vec3 p_dy = dFdy(vWorldPosition);
-  // compute derivations of the texture coordinate
-  vec2 tc_dx = dFdx(vTexCoord);
-  vec2 tc_dy = dFdy(vTexCoord);
+//   float r = 1.0 / (tc_dx.x * tc_dy.y - tc_dx.y * tc_dy.x);
 
-  float r = 1.0 / (tc_dx.x * tc_dy.y - tc_dx.y * tc_dy.x);
+//   // compute initial tangent and bi-tangent
+//   vec3 t = normalize( tc_dy.y * p_dx - tc_dx.y * p_dy )*r;
+//   vec3 b = normalize( tc_dx.x * p_dy - tc_dy.x * p_dx )*r;
 
-  // compute initial tangent and bi-tangent
-  vec3 t = normalize( tc_dy.y * p_dx - tc_dx.y * p_dy )*r;
-  vec3 b = normalize( tc_dx.x * p_dy - tc_dy.x * p_dx )*r;
-
-  // get new tangent from a given world normal
-  vec3 x = cross(nrm, t);
-  t = cross(x, nrm);
-  t = normalize(t);
-  // get updated bi-tangent
-  x = cross(b, nrm);
-  b = cross(nrm, x);
-  b = normalize(b);
-  mat3 tbn = mat3(t, b, nrm);
-  return tbn * n;
-}
-#elif HAS_normal
-vec3 perturbWorldNormal(vec3 n){
-  n = 2.0*n - 1.0;
-  vec3 nrm = gl_FrontFacing ? vWorldNormal : -vWorldNormal;
-  return normalize(vWorldTangent * n.x + vWorldBitangent*n.y + nrm * n.z );
-}
-#endif
+//   // get new tangent from a given world normal
+//   vec3 x = cross(nrm, t);
+//   t = cross(x, nrm);
+//   t = normalize(t);
+//   // get updated bi-tangent
+//   x = cross(b, nrm);
+//   b = cross(nrm, x);
+//   b = normalize(b);
+//   mat3 tbn = mat3(t, b, nrm);
+//   return tbn * n;
+// }
+// #elif HAS_normal
+// vec3 perturbWorldNormal(vec3 n){
+//   n = 2.0*n - 1.0;
+//   vec3 nrm = gl_FrontFacing ? vWorldNormal : -vWorldNormal;
+//   return normalize(vWorldTangent * n.x + vWorldBitangent*n.y + nrm * n.z );
+// }
+// #endif
 
 
 //                MAIN
@@ -122,13 +122,13 @@ void main( void ){
 
   #pragma SLOT f
 
-
   // -----------
+  vec3 nrm = gl_FrontFacing ? vWorldNormal : -vWorldNormal;
   vec3 worldNormal =
     #if HAS_normal
-      perturbWorldNormal( normal() );
+      perturbWorldNormal( nrm, normal() );
     #else
-      gl_FrontFacing ? vWorldNormal : -vWorldNormal;
+      nrm;
     #endif
   worldNormal = normalize( worldNormal );
 
@@ -173,6 +173,9 @@ void main( void ){
 
 
   #if HAS_cavity
+    #ifndef cavityStrength
+      #define cavityStrength(k) vec2(1.0)
+    #endif
     diffuseCoef   *= cavity() * cavityStrength().r + (1.0-cavityStrength().r);
     specularColor *= cavity() * cavityStrength().g + (1.0-cavityStrength().g);
   #endif
@@ -212,6 +215,18 @@ void main( void ){
     }
   #endif
 
+  #if gammaMode( GAMMA_TB )
+    {
+      vec3 c = FragColor.xyz;
+      vec3 sqrtc = sqrt( c );
+      FragColor.xyz = (sqrtc-sqrtc*c) + c*(0.4672*c+vec3(0.5328));
+    }
+  #endif
+
+
+
+
+  FragColor.a = 1.0;
 
 
 

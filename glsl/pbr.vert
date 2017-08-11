@@ -13,7 +13,7 @@
 IN vec3 aPosition;
 IN vec2 aTexCoord;
 IN vec3 aNormal;
-#if hasDerivative == 0
+#if useDerivatives == 0
 IN vec3 aTangent;
 IN vec3 aBitangent;
 #endif
@@ -27,7 +27,7 @@ OUT vec3 vWorldPosition;
 OUT mediump vec3 vWorldNormal;
 
 #if HAS_normal
-  #if hasDerivative == 0
+  #if useDerivatives == 0
   OUT mediump vec3 vWorldTangent;
   OUT mediump vec3 vWorldBitangent;
   #endif
@@ -59,7 +59,7 @@ void main( void ){
 
   vWorldNormal    = rotate( uWorldMatrix, aNormal );
   #if HAS_normal
-    #if hasDerivative == 0
+    #if useDerivatives == 0
     vWorldTangent   = rotate( uWorldMatrix, aTangent );
     vWorldBitangent = rotate( uWorldMatrix, aBitangent );
     #endif
@@ -67,9 +67,6 @@ void main( void ){
 
   #if perVertexIrrad
     vIrradiance = SampleSH( normalize( vWorldNormal ), uSHCoeffs );
-    #if HAS_iblExpo
-      vIrradiance = iblExpo().x * pow( vIrradiance, vec3( iblExpo().y ) );
-    #endif
   #endif
 
 

@@ -35,6 +35,9 @@ function StandardMaterial( gl ){
   this.perVertexIrrad  = this.inputs.add( new Flag ( 'perVertexIrrad',  false ) );
   this.glossNearest    = this.inputs.add( new Flag ( 'glossNearest',    false ) );
 
+
+  this.useDerivatives  = this.inputs.add( new Flag ( 'useDerivatives', false ) );
+
   this.gammaMode       = new Enum( 'gammaMode',[
     'GAMMA_NONE',
     'GAMMA_STD',
@@ -45,27 +48,33 @@ function StandardMaterial( gl ){
 
   this.iGamma      = this.inputs.add( new Input( 'gamma',       1 ) );
   this.iExposure   = this.inputs.add( new Input( 'exposure',    1 ) );
-  
 
-
-  this.hasDerivative   = this.inputs.add( new Flag ( 'hasDerivative',  false ) );
 
   this.config     = new Config();
 
   this._prgcache  = ProgramCache.getCache( gl );
 
   // for program-cache
+  this.version   = (gl.texImage3D !== undefined ) ? '300 es' : undefined;
+
   this._uid       = 'std';
   this._precision = 'highp';
   this._vertSrc   = require( './glsl/pbr.vert' )();
   this._fragSrc   = require( './glsl/pbr.frag' )();
 
 
+
 }
 
 StandardMaterial.prototype = {
 
-
+  _getExt: function( ){
+    var ext = '';
+    if( this.useDerivatives._val === true ){
+      ext += '#extension GL_OES_standard_derivatives : enable\n';
+    }
+    return ext;
+  },
 
   setIBL : function( ibl ){
     this.ibl = ibl;
