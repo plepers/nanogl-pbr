@@ -1,4 +1,7 @@
 
+#ifndef _H_OCTWRAP_DECODE_
+#define _H_OCTWRAP_DECODE_
+
 vec2 octwrapDecode( vec3 v ) {
   // Project the sphere onto the octahedron, and then onto the xy plan
   vec2 p = v.xy / dot(  abs( v ) , vec3(1.0) );
@@ -11,4 +14,4 @@ vec2 octwrapDecode( vec3 v ) {
   return p;
 }
 
-#pragma glslify: export(octwrapDecode)
+#endif

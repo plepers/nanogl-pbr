@@ -23,7 +23,7 @@
 
   {{= if(obj.shadowIndex>-1){ }}
   {
-    vec3 fragCoord = calcShadowPosition( uShadowTexelBiasVector[{{@shadowIndex}}], uShadowMatrices[{{@shadowIndex}}] , worldNormal, uShadowMapSize[{{@shadowIndex}}].y );
+    vec3 fragCoord = calcShadowPosition( uShadowTexelBiasVector[{{@shadowIndex}}], uShadowMatrices[{{@shadowIndex}}] , vWorldPosition, worldNormal, uShadowMapSize[{{@shadowIndex}}].y );
     float shOccl = calcLightOcclusions(tShadowMap{{@shadowIndex}},fragCoord,uShadowMapSize[{{@shadowIndex}}]);
     dContrib *= shOccl;
     sContrib  *= shOccl;

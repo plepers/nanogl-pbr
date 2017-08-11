@@ -5,20 +5,28 @@
 // #pragma Input vec3 normal
 // #pragma Enum ibl_type { NONE, SH7, SH9 }
 
+#if __VERSION__ == 300
+  #define IN in
+  out vec4 FragColor;
+  #define texture2D(a,b) texture( a, b )
+#else
+  #define IN varying
+  #define FragColor gl_FragColor
+#endif
 
 
 uniform vec3 uCameraPosition;
 
-varying vec2 vTexCoord;
-varying vec3 vWorldPosition;
+IN vec2 vTexCoord;
+IN vec3 vWorldPosition;
 
-varying mediump vec3 vWorldNormal;
+IN mediump vec3 vWorldNormal;
 
 #pragma SLOT pf
 
 #if HAS_normal
-  varying mediump vec3 vWorldTangent;
-  varying mediump vec3 vWorldBitangent;
+  IN mediump vec3 vWorldTangent;
+  IN mediump vec3 vWorldBitangent;
 #endif
 
 
@@ -28,10 +36,10 @@ varying mediump vec3 vWorldNormal;
 uniform sampler2D tEnv;
 
 #if perVertexIrrad
-  varying vec3 vIrradiance;
+  IN vec3 vIrradiance;
 #else
   uniform vec4 uSHCoeffs[7];
-  #pragma glslify: SampleSH    = require( ./includes/spherical-harmonics.glsl )
+  {{ require( "./includes/spherical-harmonics.glsl" )() }}
 #endif
 
 
@@ -45,7 +53,7 @@ uniform sampler2D tEnv;
 // INCLUDES
 // =========
 
-#pragma glslify: SpecularIBL = require( ./includes/ibl.glsl )
+{{ require( "./includes/ibl.glsl" )() }}
 
 
 
@@ -75,13 +83,6 @@ vec3 perturbWorldNormal(vec3 n){
 #endif
 
 
-// ------------------------------
-//
-vec3 toneMap(vec3 c){
-  vec3 sqrtc = sqrt( c );
-  return(sqrtc-sqrtc*c) + c*(0.4672*c+vec3(0.5328));
-}
-
 //                MAIN
 // ===================
 
@@ -105,10 +106,7 @@ void main( void ){
   #if perVertexIrrad
     vec3 diffuseCoef = vIrradiance;
   #else
-    vec3 diffuseCoef=SampleSH(worldNormal, uSHCoeffs );
-    #if HAS_iblExpo
-      diffuseCoef = iblExpo().x * pow( diffuseCoef, vec3( iblExpo().y ) );
-    #endif
+    vec3 diffuseCoef = SampleSH(worldNormal, uSHCoeffs );
   #endif
 
 
@@ -119,9 +117,6 @@ void main( void ){
   vec3 viewDir = normalize( uCameraPosition - vWorldPosition );
   vec3 worldReflect = reflect( -viewDir, worldNormal );
   vec3 specularColor = SpecularIBL( tEnv, worldReflect, 1.0-gloss() );
-  #if HAS_iblExpo
-    specularColor = iblExpo().x * pow( specularColor, vec3( iblExpo().y ) );
-  #endif
 
 
   #pragma SLOT lightsf
@@ -146,6 +141,9 @@ void main( void ){
 
 
   #if HAS_cavity
+    #ifndef cavityStrength
+      #define cavityStrength(k) vec2(1.0)
+    #endif
     diffuseCoef   *= cavity() * cavityStrength().r + (1.0-cavityStrength().r);
     specularColor *= cavity() * cavityStrength().g + (1.0-cavityStrength().g);
   #endif
@@ -159,16 +157,35 @@ void main( void ){
     diffuseCoef += vec3( e ) * albedo();
   #endif
 
+  
 
-  #if tonemap
-    gl_FragColor.xyz = toneMap( diffuseCoef*albedoSq + specularColor );
-  #else
-    gl_FragColor.xyz = diffuseCoef*albedoSq + specularColor;
+  FragColor.xyz = diffuseCoef*albedoSq + specularColor;
+
+
+  #if HAS_exposure
+    FragColor.xyz *= vec3( exposure() );
   #endif
 
-  gl_FragColor.a = 1.0;
+  
+  #if gammaMode( GAMMA_STD ) && HAS_gamma
+    FragColor.xyz = pow( FragColor.xyz, vec3( gamma() ) );
+  #endif
+
+  #if gammaMode( GAMMA_2_2 )
+    FragColor.xyz = pow( FragColor.xyz, vec3( 1.0/2.2 ) );
+  #endif
+
+  #if gammaMode( GAMMA_TB )
+    {
+      vec3 c = FragColor.xyz;
+      vec3 sqrtc = sqrt( c );
+      FragColor.xyz = (sqrtc-sqrtc*c) + c*(0.4672*c+vec3(0.5328));
+    }
+  #endif
 
 
 
+
+  FragColor.a = 1.0;
 
 }

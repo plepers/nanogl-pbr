@@ -1,10 +1,10 @@
 var Program      = require( 'nanogl/program' );
 var Config       = require( 'nanogl-state/config' );
-var glslify      = require( 'glslify' );
 
 var ProgramCache = require( './lib/program-cache' );
 var Input        = require('./lib/input' );
 var Flag         = require('./lib/flag' );
+var Enum         = require('./lib/enum' );
 var ChunksList   = require('./lib/chunks-tree' );
 
 
@@ -34,19 +34,31 @@ function StandardMaterial( gl ){
   this.conserveEnergy  = this.inputs.add( new Flag ( 'conserveEnergy',  true  ) );
   this.perVertexIrrad  = this.inputs.add( new Flag ( 'perVertexIrrad',  false ) );
   this.glossNearest    = this.inputs.add( new Flag ( 'glossNearest',    false ) );
-  this.tonemap         = this.inputs.add( new Flag ( 'tonemap',         true ) );
 
-  this.config    = new Config();
+  this.gammaMode       = new Enum( 'gammaMode',[
+    'GAMMA_NONE',
+    'GAMMA_STD',
+    'GAMMA_2_2',
+    'GAMMA_TB'
+  ]);
+  this.inputs.add( this.gammaMode );
 
-  this._prgcache = ProgramCache.getCache( gl );
+  this.iGamma      = this.inputs.add( new Input( 'gamma',       1 ) );
+  this.iExposure   = this.inputs.add( new Input( 'exposure',    1 ) );
+  
+
+
+  this.config     = new Config();
+
+  this._prgcache  = ProgramCache.getCache( gl );
 
   // for program-cache
+  this.version   = (gl.texImage3D !== undefined ) ? '300 es' : undefined;
+  
   this._uid       = 'std';
   this._precision = 'highp';
-  this._vertSrc   = glslify( './glsl/pbr.vert' );
-  this._fragSrc   = glslify( './glsl/pbr.frag' );
-
-
+  this._vertSrc   = require( './glsl/pbr.vert' )();
+  this._fragSrc   = require( './glsl/pbr.frag' )();
 
 
 }
@@ -54,9 +66,9 @@ function StandardMaterial( gl ){
 StandardMaterial.prototype = {
 
 
+
   setIBL : function( ibl ){
     this.ibl = ibl;
-    this.inputs.addChunks( ibl.getChunks() );
   },
 
 

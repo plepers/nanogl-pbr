@@ -38,8 +38,17 @@ module.exports = function(config) {
     browserify: {
       debug: true,
       transform: [
-        'glslify'
+      [
+        "nanogl-template",
+        {
+          "extensions": [
+            ".vert",
+            ".frag",
+            ".glsl"
+          ]
+        }
       ]
+    ]
     },
 
     // test results reporter to use
