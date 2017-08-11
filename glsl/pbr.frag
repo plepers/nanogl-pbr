@@ -141,6 +141,9 @@ void main( void ){
 
 
   #if HAS_cavity
+    #ifndef cavityStrength
+      #define cavityStrength(k) vec2(1.0)
+    #endif
     diffuseCoef   *= cavity() * cavityStrength().r + (1.0-cavityStrength().r);
     specularColor *= cavity() * cavityStrength().g + (1.0-cavityStrength().g);
   #endif

@@ -53,6 +53,8 @@ function StandardMaterial( gl ){
   this._prgcache  = ProgramCache.getCache( gl );
 
   // for program-cache
+  this.version   = (gl.texImage3D !== undefined ) ? '300 es' : undefined;
+  
   this._uid       = 'std';
   this._precision = 'highp';
   this._vertSrc   = require( './glsl/pbr.vert' )();

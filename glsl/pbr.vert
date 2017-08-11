@@ -61,9 +61,6 @@ void main( void ){
 
   #if perVertexIrrad
     vIrradiance = SampleSH( normalize( vWorldNormal ), uSHCoeffs );
-    #if HAS_iblExpo
-      vIrradiance = iblExpo().x * pow( vIrradiance, vec3( iblExpo().y ) );
-    #endif
   #endif
 
 
