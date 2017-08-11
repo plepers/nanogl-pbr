@@ -1,6 +1,3 @@
-// #extension GL_OES_standard_derivatives : enable
-
-
 // #pragma Input vec3 normal
 // #pragma Enum ibl_type { NONE, SH7, SH9 }
 
