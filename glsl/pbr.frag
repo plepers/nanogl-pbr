@@ -1,7 +1,3 @@
-
-
-
-
 // #pragma Input vec3 normal
 // #pragma Enum ibl_type { NONE, SH7, SH9 }
 
@@ -25,8 +21,10 @@ IN mediump vec3 vWorldNormal;
 #pragma SLOT pf
 
 #if HAS_normal
+  #if useDerivatives == 0
   IN mediump vec3 vWorldTangent;
   IN mediump vec3 vWorldBitangent;
+  #endif
 #endif
 
 
@@ -55,7 +53,7 @@ uniform sampler2D tEnv;
 
 {{ require( "./includes/ibl.glsl" )() }}
 
-
+{{ require( "./includes/perturb-normal.glsl" )() }}
 
 // Schlick approx
 // [Schlick 1994, "An Inexpensive BRDF Model for Physically-Based Rendering"]
@@ -71,18 +69,6 @@ vec3 F_Schlick( float VoH,vec3 spec,float glo )
 }
 
 
-// ------------------------------
-//
-
-#if HAS_normal
-vec3 perturbWorldNormal(vec3 n){
-  n = 2.0*n - 1.0;
-  vec3 nrm = gl_FrontFacing ? vWorldNormal : -vWorldNormal;
-  return normalize(vWorldTangent * n.x + vWorldBitangent*n.y + nrm * n.z );
-}
-#endif
-
-
 //                MAIN
 // ===================
 
@@ -90,13 +76,13 @@ void main( void ){
 
   #pragma SLOT f
 
-
   // -----------
+  vec3 nrm = gl_FrontFacing ? vWorldNormal : -vWorldNormal;
   vec3 worldNormal =
     #if HAS_normal
-      perturbWorldNormal( normal() );
+      perturbWorldNormal( nrm, normal() );
     #else
-      gl_FrontFacing ? vWorldNormal : -vWorldNormal;
+      nrm;
     #endif
   worldNormal = normalize( worldNormal );
 
@@ -157,7 +143,7 @@ void main( void ){
     diffuseCoef += vec3( e ) * albedo();
   #endif
 
-  
+
 
   FragColor.xyz = diffuseCoef*albedoSq + specularColor;
 
@@ -166,7 +152,7 @@ void main( void ){
     FragColor.xyz *= vec3( exposure() );
   #endif
 
-  
+
   #if gammaMode( GAMMA_STD ) && HAS_gamma
     FragColor.xyz = pow( FragColor.xyz, vec3( gamma() ) );
   #endif
@@ -183,6 +169,18 @@ void main( void ){
     }
   #endif
 
+  #if gammaMode( GAMMA_TB )
+    {
+      vec3 c = FragColor.xyz;
+      vec3 sqrtc = sqrt( c );
+      FragColor.xyz = (sqrtc-sqrtc*c) + c*(0.4672*c+vec3(0.5328));
+    }
+  #endif
+
+
+
+
+  FragColor.a = 1.0;
 
 
 
