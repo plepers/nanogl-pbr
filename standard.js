@@ -34,9 +34,7 @@ function StandardMaterial( gl ){
   this.conserveEnergy  = this.inputs.add( new Flag ( 'conserveEnergy',  true  ) );
   this.perVertexIrrad  = this.inputs.add( new Flag ( 'perVertexIrrad',  false ) );
   this.glossNearest    = this.inputs.add( new Flag ( 'glossNearest',    false ) );
-
-
-  this.useDerivatives  = this.inputs.add( new Flag ( 'useDerivatives', false ) );
+  this.useDerivatives  = this.inputs.add( new Flag ( 'useDerivatives',  false ) );
 
   this.gammaMode       = new Enum( 'gammaMode',[
     'GAMMA_NONE',
@@ -62,19 +60,10 @@ function StandardMaterial( gl ){
   this._vertSrc   = require( './glsl/pbr.vert' )();
   this._fragSrc   = require( './glsl/pbr.frag' )();
 
-
-
 }
 
 StandardMaterial.prototype = {
 
-  _getExt: function( ){
-    var ext = '';
-    if( this.useDerivatives._val === true ){
-      ext += '#extension GL_OES_standard_derivatives : enable\n';
-    }
-    return ext;
-  },
 
   setIBL : function( ibl ){
     this.ibl = ibl;

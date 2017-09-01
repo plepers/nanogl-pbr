@@ -1,5 +1,4 @@
-// #pragma Input vec3 normal
-// #pragma Enum ibl_type { NONE, SH7, SH9 }
+
 
 #if __VERSION__ == 300
   #define IN in
@@ -11,20 +10,24 @@
 #endif
 
 
+#pragma SLOT pf
+
+#if useDerivatives && __VERSION__ != 300
+  #extension GL_OES_standard_derivatives : enable
+#endif 
+
 uniform vec3 uCameraPosition;
+
 
 IN vec2 vTexCoord;
 IN vec3 vWorldPosition;
 
 IN mediump vec3 vWorldNormal;
 
-#pragma SLOT pf
 
-#if HAS_normal
-  #if useDerivatives == 0
+#if HAS_normal && useDerivatives == 0
   IN mediump vec3 vWorldTangent;
   IN mediump vec3 vWorldBitangent;
-  #endif
 #endif
 
 
@@ -77,10 +80,14 @@ void main( void ){
   #pragma SLOT f
 
   // -----------
-  vec3 nrm = gl_FrontFacing ? vWorldNormal : -vWorldNormal;
+  vec3 nrm = normalize( gl_FrontFacing ? vWorldNormal : -vWorldNormal );
   vec3 worldNormal =
     #if HAS_normal
-      perturbWorldNormal( nrm, normal() );
+      #if useDerivatives
+        perturbWorldNormalDerivatives( nrm, normal(), vTexCoord );
+      #else
+        perturbWorldNormal( nrm, normal(), vWorldTangent, vWorldBitangent );
+      #endif
     #else
       nrm;
     #endif
@@ -176,13 +183,6 @@ void main( void ){
       FragColor.xyz = (sqrtc-sqrtc*c) + c*(0.4672*c+vec3(0.5328));
     }
   #endif
-
-
-
-
-  FragColor.a = 1.0;
-
-
 
   FragColor.a = 1.0;
 
