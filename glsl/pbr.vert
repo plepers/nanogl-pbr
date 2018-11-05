@@ -1,4 +1,8 @@
-#pragma SLOT pv
+#pragma SLOT version
+
+#pragma SLOT definitions
+
+#pragma SLOT precision
 
 
 #if __VERSION__ == 300
@@ -10,13 +14,12 @@
 #endif
 
 
+#pragma SLOT pv
+
+
 IN vec3 aPosition;
 IN vec2 aTexCoord;
 IN vec3 aNormal;
-#if useDerivatives == 0
-IN vec3 aTangent;
-IN vec3 aBitangent;
-#endif
 
 uniform mat4 uMVP;
 uniform mat4 uWorldMatrix;
@@ -26,18 +29,21 @@ OUT vec3 vWorldPosition;
 
 OUT mediump vec3 vWorldNormal;
 
+
 #if HAS_normal
   #if useDerivatives == 0
+  IN vec3 aTangent;
+  IN vec3 aBitangent;
   OUT mediump vec3 vWorldTangent;
   OUT mediump vec3 vWorldBitangent;
   #endif
 #endif
 
+
 #if perVertexIrrad
   OUT vec3 vIrradiance;
   uniform vec4 uSHCoeffs[7];
-
-{{ require( "./includes/spherical-harmonics.glsl" )() }}
+  {{ require( "./includes/spherical-harmonics.glsl" )() }}
 #endif
 
 
