@@ -46,7 +46,7 @@
     "karma-firefox-launcher": "0.1.7",
     "karma-mocha": "0.2.1",
     "karma-safari-launcher": "0.1.1",
-    "karma-sauce-launcher": "0.3.0",
+    "karma-sauce-launcher": "1.2.0",
     "mocha": "2.3.4",
     "nanogl-template": "^1.0.3",
     "replace-ext": "0.0.1",
