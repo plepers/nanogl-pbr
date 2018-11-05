@@ -65,6 +65,7 @@ uniform sampler2D tEnv;
 
 {{ require( "./includes/ibl.glsl" )() }}
 {{ require( "./includes/perturb-normal.glsl" )() }}
+{{ require( "./includes/tonemap.glsl" )() }}
 
 
 // Schlick approx
@@ -181,34 +182,9 @@ void main( void ){
   FragColor.xyz = diffuseCoef*albedoSq + specularColor;
 
 
-  #if HAS_exposure
-    FragColor.xyz *= vec3( exposure() );
-  #endif
+  EXPOSURE(FragColor.rgb);
+  GAMMA_CORRECTION(FragColor.rgb);
 
-
-  #if gammaMode( GAMMA_STD ) && HAS_gamma
-    FragColor.xyz = pow( FragColor.xyz, vec3( gamma() ) );
-  #endif
-
-  #if gammaMode( GAMMA_2_2 )
-    FragColor.xyz = pow( FragColor.xyz, vec3( 1.0/2.2 ) );
-  #endif
-
-  #if gammaMode( GAMMA_TB )
-    {
-      vec3 c = FragColor.xyz;
-      vec3 sqrtc = sqrt( c );
-      FragColor.xyz = (sqrtc-sqrtc*c) + c*(0.4672*c+vec3(0.5328));
-    }
-  #endif
-
-  #if gammaMode( GAMMA_TB )
-    {
-      vec3 c = FragColor.xyz;
-      vec3 sqrtc = sqrt( c );
-      FragColor.xyz = (sqrtc-sqrtc*c) + c*(0.4672*c+vec3(0.5328));
-    }
-  #endif
 
   FragColor.a = 1.0;
 
