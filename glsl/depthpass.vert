@@ -1,3 +1,8 @@
+
+#pragma SLOT definitions
+#pragma SLOT precision
+
+
 #pragma SLOT pv
 
 attribute vec3 aPosition;

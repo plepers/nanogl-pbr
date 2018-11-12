@@ -1,8 +1,15 @@
+#pragma SLOT version
 
+#pragma SLOT definitions
+
+#if useDerivatives && __VERSION__ != 300
+  #extension GL_OES_standard_derivatives : enable
+#endif 
+
+#pragma SLOT precision
 
 #if __VERSION__ == 300
   #define IN in
-  out vec4 FragColor;
   #define texture2D(a,b) texture( a, b )
 #else
   #define IN varying
@@ -10,11 +17,13 @@
 #endif
 
 
+
+#if __VERSION__ == 300
+  out vec4 FragColor;
+#endif
+
 #pragma SLOT pf
 
-#if useDerivatives && __VERSION__ != 300
-  #extension GL_OES_standard_derivatives : enable
-#endif 
 
 uniform vec3 uCameraPosition;
 
@@ -55,8 +64,9 @@ uniform sampler2D tEnv;
 // =========
 
 {{ require( "./includes/ibl.glsl" )() }}
-
 {{ require( "./includes/perturb-normal.glsl" )() }}
+{{ require( "./includes/tonemap.glsl" )() }}
+
 
 // Schlick approx
 // [Schlick 1994, "An Inexpensive BRDF Model for Physically-Based Rendering"]
@@ -72,6 +82,37 @@ vec3 F_Schlick( float VoH,vec3 spec,float glo )
 }
 
 
+
+#if HAS_normal
+  #define COMPUTE_NORMAL(k) ComputeWorldNormal( normal() )
+
+  vec3 ComputeWorldNormal( vec3 nrmmap ){
+    vec3 nrm = normalize( gl_FrontFacing ? vWorldNormal : -vWorldNormal );
+    #if useDerivatives
+      return normalize( perturbWorldNormalDerivatives( nrm, nrmmap, vTexCoord ) );
+    #else
+      return normalize( perturbWorldNormal( nrm, nrmmap, vWorldTangent, vWorldBitangent ) );
+    #endif
+  }
+
+#else
+  #define COMPUTE_NORMAL(k) ComputeWorldNormal( )
+  vec3 ComputeWorldNormal(){
+    return normalize( gl_FrontFacing ? vWorldNormal : -vWorldNormal );
+  }
+#endif
+
+
+
+vec3 ComputeIBLDiffuse( vec3 worldNormal ){
+  #if perVertexIrrad
+    return vIrradiance;
+  #else
+    return SampleSH(worldNormal, uSHCoeffs );
+  #endif
+}
+
+
 //                MAIN
 // ===================
 
@@ -80,28 +121,14 @@ void main( void ){
   #pragma SLOT f
 
   // -----------
-  vec3 nrm = normalize( gl_FrontFacing ? vWorldNormal : -vWorldNormal );
-  vec3 worldNormal =
-    #if HAS_normal
-      #if useDerivatives
-        perturbWorldNormalDerivatives( nrm, normal(), vTexCoord );
-      #else
-        perturbWorldNormal( nrm, normal(), vWorldTangent, vWorldBitangent );
-      #endif
-    #else
-      nrm;
-    #endif
-  worldNormal = normalize( worldNormal );
+  vec3 worldNormal = COMPUTE_NORMAL();
+
 
 
   // SH Irradiance diffuse coeff
   // -------------
-  #if perVertexIrrad
-    vec3 diffuseCoef = vIrradiance;
-  #else
-    vec3 diffuseCoef = SampleSH(worldNormal, uSHCoeffs );
-  #endif
 
+  vec3 diffuseCoef = ComputeIBLDiffuse( worldNormal );
 
 
   // IBL reflexion
@@ -155,34 +182,9 @@ void main( void ){
   FragColor.xyz = diffuseCoef*albedoSq + specularColor;
 
 
-  #if HAS_exposure
-    FragColor.xyz *= vec3( exposure() );
-  #endif
+  EXPOSURE(FragColor.rgb);
+  GAMMA_CORRECTION(FragColor.rgb);
 
-
-  #if gammaMode( GAMMA_STD ) && HAS_gamma
-    FragColor.xyz = pow( FragColor.xyz, vec3( gamma() ) );
-  #endif
-
-  #if gammaMode( GAMMA_2_2 )
-    FragColor.xyz = pow( FragColor.xyz, vec3( 1.0/2.2 ) );
-  #endif
-
-  #if gammaMode( GAMMA_TB )
-    {
-      vec3 c = FragColor.xyz;
-      vec3 sqrtc = sqrt( c );
-      FragColor.xyz = (sqrtc-sqrtc*c) + c*(0.4672*c+vec3(0.5328));
-    }
-  #endif
-
-  #if gammaMode( GAMMA_TB )
-    {
-      vec3 c = FragColor.xyz;
-      vec3 sqrtc = sqrt( c );
-      FragColor.xyz = (sqrtc-sqrtc*c) + c*(0.4672*c+vec3(0.5328));
-    }
-  #endif
 
   FragColor.a = 1.0;
 

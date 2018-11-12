@@ -1,6 +1,6 @@
 {
   "name": "nanogl-pbr",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "pbr material for nanogl",
   "main": "pbr.js",
   "scripts": {
@@ -40,13 +40,13 @@
     "expect.js": "0.3.1",
     "glob": "7.0.3",
     "jshint": "2.9.1-rc1",
-    "karma": "0.13.19",
+    "karma": "3.1.1",
     "karma-browserify": "4.4.2",
     "karma-chrome-launcher": "0.2.2",
     "karma-firefox-launcher": "0.1.7",
     "karma-mocha": "0.2.1",
     "karma-safari-launcher": "0.1.1",
-    "karma-sauce-launcher": "0.3.0",
+    "karma-sauce-launcher": "1.2.0",
     "mocha": "2.3.4",
     "nanogl-template": "^1.0.3",
     "replace-ext": "0.0.1",
