@@ -10,7 +10,7 @@
 
   #if HAS_exposure
     #define EXPOSURE(color) color *= vec3( exposure() );
-  #elif
+  #else
     #define EXPOSURE(color)
   #endif
 
