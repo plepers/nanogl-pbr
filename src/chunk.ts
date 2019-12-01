@@ -1,10 +1,14 @@
+import Program    from 'nanogl/program'
+
+import ChunksTree from './chunks-tree' 
+import ChunkSlots from './chunks-slots'
 
 
-class Chunk {
+abstract class Chunk {
 
   children: Chunk[];
-  parent?: Chunk;
-  list: any;
+  parent: Chunk | null;
+  list: ChunksTree | null;
 
   _hasCode: boolean;
   _hasSetup: boolean;
@@ -38,14 +42,10 @@ class Chunk {
 
 
 
-  genCode(chunks) {
-    return '';
-  }
+  abstract genCode(slots : ChunkSlots ):void;
 
 
-  getHash() {
-    return '';
-  }
+  abstract getHash() : string;
 
 
   setup(prg : Program ) {
@@ -53,9 +53,9 @@ class Chunk {
   }
 
 
-  add( child : Chunk ) {
+  add<T extends Chunk>( child : T ) : T {
     if (this.children.indexOf(child) > -1) {
-      return;
+      return child;
     }
     this.children.push(child);
     child.setList(this.list);
@@ -69,7 +69,7 @@ class Chunk {
   }
 
 
-  remove(child) {
+  remove(child : Chunk) {
     var i = this.children.indexOf(child);
     if (i > -1) {
       this.children.splice(i, 1);
@@ -80,7 +80,7 @@ class Chunk {
   }
 
 
-  setList(list) {
+  setList(list: ChunksTree | null ) {
     this.list = list;
     this.invalidate();
 
@@ -91,7 +91,7 @@ class Chunk {
   }
 
 
-  traverse(setups, codes, chunks) {
+  traverse(setups : Chunk[], codes : Chunk[], chunks : Chunk[]) {
 
     if (chunks.indexOf(this) === -1) {
 
@@ -124,7 +124,7 @@ class Chunk {
 
 
   createProxy() {
-    var p = new Proxy(this);
+    var p = new ChunkProxy(this);
     for (var i = 0; i < this.children.length; i++) {
       p.add(this.children[i].createProxy());
     }
@@ -133,7 +133,7 @@ class Chunk {
   }
 
 
-  releaseProxy(p) {
+  releaseProxy(p:ChunkProxy) {
     var i = this._proxies.indexOf(p);
     if (i > -1) {
       this._proxies.splice(i, 1);
@@ -152,40 +152,30 @@ class Chunk {
   }
 
 
-};
-
-// =======================================
-//                    PROXIES
-// =======================================
+}
 
 
-class ChunkProxy extends Chunk {
-  _ref: any;
 
+export class ChunkProxy<TChunk extends Chunk = Chunk> extends Chunk {
 
-  constructor(ref) {
+  _ref: TChunk;
+
+  constructor(ref: TChunk) {
     super(ref._hasCode, ref._hasSetup);
     this._ref = ref;
   }
 
 
-  genCode(chunk) { this._ref.genCode(chunk); }
+  genCode(chunk: ChunkSlots): void { this._ref.genCode(chunk); }
   getHash() { return this._ref.getHash(); }
-  setup(prg) { this._ref.setup(prg); }
+  setup(prg: Program) { this._ref.setup(prg); }
 
   release() {
     this._ref.releaseProxy(this);
-    this._ref = null;
   }
 
 }
 
 
-// =======================================
-//                  MODULE
-// =======================================
 
-
-// Chunk.Proxy = Proxy;
-
-export = Chunk;
+export default Chunk;
