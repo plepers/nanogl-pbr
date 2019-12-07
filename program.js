@@ -6,7 +6,7 @@ class Program extends NGLProgram {
         this._currentMaterial = null;
     }
     setupInputs(material) {
-        var params = material.inputs._setups;
+        const params = material.inputs._setups;
         var forceUpdate = true;
         for (var i = 0; i < params.length; i++) {
             if (params[i]._invalid || forceUpdate) {

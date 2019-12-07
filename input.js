@@ -89,9 +89,9 @@ export class Uniform extends Chunk {
         this._value = new Float32Array(size);
         this.token = this.name;
     }
-    set() {
-        for (var i = 0; i < arguments.length; i++) {
-            this._value[i] = arguments[i];
+    set(...args) {
+        for (var i = 0; i < args.length; i++) {
+            this._value[i] = args[i];
         }
         this._invalid = true;
     }

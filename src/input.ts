@@ -226,9 +226,9 @@ export class Uniform extends Chunk implements IInputParam {
 
 
 
-  set() {
-    for (var i = 0; i < arguments.length; i++) {
-      this._value[i] = arguments[i];
+  set( ...args : number[] ) {
+    for (var i = 0; i < args.length; i++) {
+      this._value[i] = args[i];
     }
     this._invalid = true;
   }
