@@ -1,0 +1,33 @@
+import Node from 'nanogl-node';
+import Texture from 'nanogl/texture';
+import Fbo from 'nanogl/fbo';
+import RB from 'nanogl/renderbuffer';
+import { mat4 } from 'gl-matrix';
+import { GLContext } from 'nanogl/types';
+import Camera from 'nanogl-camera';
+import Bounds from './bounds';
+import LightType from './light-types';
+declare abstract class Light extends Node {
+    gl: GLContext;
+    _type: LightType;
+    _color: Float32Array;
+    _wdir: Float32Array;
+    _castShadows: boolean;
+    _fbo: Fbo | null;
+    _camera: Camera | null;
+    _shadowmapSize: number;
+    iblShadowing: number;
+    constructor(gl: GLContext);
+    getShadowProjection(bounds: Bounds): mat4;
+    abstract projectionFromBounds(bounds: Bounds): void;
+    abstract _createCamera(): Camera;
+    abstract getTexelBiasVector(): Float32Array;
+    castShadows(flag: boolean): void;
+    hasDepthShadowmap(): boolean;
+    getShadowmap(): Texture | RB | null;
+    _initShadowMapping(): void;
+    _releaseShadowMapping(): void;
+    prepareShadowmap(): void;
+    boundsInLocalSpace(bounds: Bounds): Float32Array;
+}
+export default Light;

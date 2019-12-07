@@ -1,8 +1,8 @@
 var expect  = require( 'expect.js' );
 
 
-var Input     = require( '../lib/input' );
-var ChunkList = require( '../lib/chunks-tree' );
+import Input    from '../input'
+import ChunkList from '../chunks-tree'
 
 
 
