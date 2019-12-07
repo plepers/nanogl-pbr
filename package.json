@@ -1,6 +1,6 @@
 {
   "name": "nanogl-pbr",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "pbr material for nanogl",
   "main": "pbr.js",
   "scripts": {
