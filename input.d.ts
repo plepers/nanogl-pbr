@@ -38,7 +38,7 @@ export declare class Uniform extends Chunk implements IInputParam {
     _input: Input | null;
     _value: Float32Array;
     constructor(name: string, size: InputSize);
-    set(): void;
+    set(...args: number[]): void;
     genCode(slots: ChunkSlots): void;
     setup(prg: Program): void;
     getHash(): string;

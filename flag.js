@@ -18,7 +18,7 @@ class Flag extends Chunk {
         }
     }
     genCode(slots) {
-        const c = `#define ${this.name} ${this._val}\n`;
+        const c = `#define ${this.name} ${~~this._val}\n`;
         slots.add('definitions', c);
     }
     getHash() {

@@ -39,14 +39,14 @@ class Flag extends Chunk {
 
   genCode(slots : ChunkSlots) {
     // PF
-    const c = `#define ${this.name} ${this._val}\n`;
-    slots.add('definitions', c);
+    const c = `#define ${this.name} ${~~this._val}\n`;
+    slots.add('definitions', c); 
 
   }
 
 
   getHash() {
-    return `${this.name}-${this._val}`;
+    return `${this.name}-${~~this._val}`;
   }
 
 }
