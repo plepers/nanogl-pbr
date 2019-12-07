@@ -12,20 +12,17 @@ class Flag extends Chunk {
         this.set(false);
     }
     set(val = false) {
-        val = !!val;
         if (this._val !== val) {
             this._val = val;
             this.invalidate();
         }
     }
     genCode(slots) {
-        let c;
-        c = '#define ' + this.name + ' ' + (~~this._val) + '\n';
+        const c = `#define ${this.name} ${this._val}\n`;
         slots.add('definitions', c);
     }
     getHash() {
-        return this.name + '-' +
-            (~~this._val);
+        return `${this.name}-${this._val}`;
     }
 }
 export default Flag;

@@ -11,7 +11,7 @@ class ShaderPrecision extends Chunk {
         return 'p' + this.fprecision;
     }
     genCode(slots) {
-        var s = `precision ${this.fprecision} float;\n`;
+        const s = `precision ${this.fprecision} float;\n`;
         slots.add('precision', s);
     }
 }

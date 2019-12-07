@@ -30,7 +30,6 @@ class Flag extends Chunk {
 
 
   set(val : boolean = false) {
-    val = !!val;
     if (this._val !== val) {
       this._val = val;
       this.invalidate();
@@ -39,18 +38,15 @@ class Flag extends Chunk {
 
 
   genCode(slots : ChunkSlots) {
-    let c;
-
     // PF
-    c = '#define ' + this.name + ' ' + (~~this._val) + '\n';
+    const c = `#define ${this.name} ${this._val}\n`;
     slots.add('definitions', c);
 
   }
 
 
   getHash() {
-    return this.name + '-' +
-      (~~this._val);
+    return `${this.name}-${this._val}`;
   }
 
 }

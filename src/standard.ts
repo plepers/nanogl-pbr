@@ -53,10 +53,10 @@ export default class StandardMaterial {
   iGamma         : Input
   iExposure      : Input
 
-  conserveEnergy: Flag
-  perVertexIrrad: Flag
-  glossNearest  : Flag
-  useDerivatives: Flag
+  conserveEnergy : Flag
+  perVertexIrrad : Flag
+  glossNearest   : Flag
+  useDerivatives : Flag
 
   gammaMode: GammaModeEnum
   
@@ -67,6 +67,7 @@ export default class StandardMaterial {
 
 
   constructor( gl : GLContext ){
+
     this.ibl = null;
     this.prg = null;
 

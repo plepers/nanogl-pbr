@@ -17,10 +17,10 @@ class Program extends NGLProgram {
   }
 
   setupInputs(material : IMaterial) {
-    var params = material.inputs._setups;
+    const params = material.inputs._setups;
 
     // update only _invalid inputs
-    // todo for textures, etx must be rebound to unit
+    // todo for textures, tex must be rebound to unit
     var forceUpdate = true;//material !== this._currentMaterial;
 
     for (var i = 0; i < params.length; i++) {

@@ -27,7 +27,7 @@ class Enum<T extends readonly string[]> extends Chunk {
 
     if (this._val !== val) {
       if (val !== null && this.values.indexOf(val) === -1) {
-        throw new Error('invalide Enum value :' + val);
+        throw new Error(`invalide Enum value :${val}`);
       }
       this._val = val;
       this.invalidate();
@@ -40,20 +40,18 @@ class Enum<T extends readonly string[]> extends Chunk {
     // PF
     let c = '';
 
-
     for (var i = 0; i < this.values.length; i++) {
-      c += '#define ' + this.values[i] + ' ' + (i + 1) + '\n';
+      c += `#define ${this.values[i]} ${i}${1}\n`;
     }
-    c += '#define VAL_' + this.name + ' ' + this._val + '\n';
-    c += '#define ' + this.name + '(k) VAL_' + this.name + ' == k\n';
+    c += `#define VAL_${this.name} ${this._val}\n`;
+    c += `#define ${this.name}(k) VAL_${this.name} == k\n`;
     slots.add('definitions', c);
 
   }
 
 
   getHash() {
-    return this.values.indexOf(this._val) + '/' +
-      this.name;
+    return `${this.values.indexOf(this._val)}/${this.name}`;
   }
 
 }
