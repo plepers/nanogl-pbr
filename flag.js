@@ -22,7 +22,7 @@ class Flag extends Chunk {
         slots.add('definitions', c);
     }
     getHash() {
-        return `${this.name}-${this._val}`;
+        return `${this.name}-${~~this._val}`;
     }
 }
 export default Flag;
