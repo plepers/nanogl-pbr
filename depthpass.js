@@ -1,96 +1,51 @@
-var Program      = require( 'nanogl/program' );
-var Config       = require( 'nanogl-state/config' );
-
-var ProgramCache = require( './lib/program-cache' );
-var Input        = require('./lib/input' );
-var Flag         = require('./lib/flag' );
-var Enum         = require('./lib/enum' );
-var ChunksList   = require('./lib/chunks-tree' );
-
-
-var M4           = require( 'gl-matrix' ).mat4.create();
-
-
-
-function DepthPass( gl ){
-  this.ibl = null;
-  this.prg = null;
-
-
-  this.inputs          = new ChunksList();
-
-
-  this.depthFormat = new Enum( 'depthFormat', [
-    'D_RGB',
-    'D_DEPTH'
-  ]);
-  this.inputs.add( this.depthFormat );
-  
-
-  this.config    = new Config();
-
-  this._prgcache = ProgramCache.getCache( gl );
-
-  // for program-cache
-  this._uid       = 'stddepth';
-  this._precision = 'highp';
-  this._vertSrc   = require( './glsl/depthpass.vert' )();
-  this._fragSrc   = require( './glsl/depthpass.frag' )();
-
-
+import Config from 'nanogl-state/config';
+import ProgramCache from './program-cache';
+import Enum from './enum';
+import ChunksList from './chunks-tree';
+import { mat4 } from 'gl-matrix';
+import VertShader from './glsl/depthpass.vert';
+import FragShader from './glsl/depthpass.frag';
+import DepthFormat from './depth-format-enum';
+const M4 = mat4.create();
+class DepthPass {
+    constructor(gl) {
+        this.prg = null;
+        this.inputs = new ChunksList();
+        this.depthFormat = new Enum('depthFormat', DepthFormat);
+        this.actualDepthFormat = this.depthFormat;
+        this.inputs.add(this.depthFormat);
+        this.config = new Config();
+        this._prgcache = ProgramCache.getCache(gl);
+        this._uid = 'stddepth';
+        this._precision = 'highp';
+        this._vertSrc = VertShader();
+        this._fragSrc = FragShader();
+    }
+    setLightSetup(setup) {
+        this.inputs.remove(this.actualDepthFormat);
+        this.actualDepthFormat = setup.depthFormat.createProxy();
+        this.inputs.add(this.actualDepthFormat);
+    }
+    prepare(node, camera) {
+        if (this.prg === null)
+            return;
+        if (this._isDirty()) {
+            this.compile();
+        }
+        var prg = this.prg;
+        prg.use();
+        prg.setupInputs(this);
+        camera.modelViewProjectionMatrix(M4, node._wmatrix);
+        prg.uMVP(M4);
+    }
+    _isDirty() {
+        return (this.prg === null || this.inputs._isDirty);
+    }
+    compile() {
+        if (this.prg !== null) {
+            this._prgcache.release(this.prg);
+        }
+        this.prg = this._prgcache.compile(this);
+    }
 }
-
-DepthPass.prototype = {
-
-
-
-  setLightSetup : function( setup ){
-    this.inputs.remove( this.depthFormat );
-    this.depthFormat = setup.depthFormat.createProxy();
-    this.inputs.add( this.depthFormat );
-  },
-
-  // render time !
-  // ----------
-  prepare : function( node, camera ){
-
-    if( this._isDirty() ){
-      this.compile();
-    }
-
-    // this.
-
-    var prg = this.prg;
-    prg.use();
-
-    prg.setupInputs( this );
-
-    // matrices
-    camera.modelViewProjectionMatrix( M4, node._wmatrix );
-    prg.uMVP( M4 );
-
-
-  },
-
-
-
-
-
-  // need recompilation
-  _isDirty : function(){
-    return ( this.prg === null || this.inputs._isDirty );
-  },
-
-
-  compile : function(){
-    if( this.prg !== null ){
-      this._prgcache.release( this.prg );
-    }
-    this.prg = this._prgcache.compile( this );
-  }
-
-
-
-};
-
-module.exports = DepthPass;
+export default DepthPass;
