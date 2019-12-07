@@ -12,6 +12,7 @@ import SpotLight        from './spot-light'
 import DirectionalLight from './directional-light'
 import PointLight       from './point-light'
 import Chunk, { ChunkProxy } from './chunk'
+import { ShadowFilteringEnum, ShadowFiltering } from './shadow-filtering-enum'
 
 import dirPreCode from './glsl/templates/standard/directional-lights-pre.frag'
 import spotPreCode from './glsl/templates/standard/spot-lights-pre.frag'
@@ -24,7 +25,6 @@ import pointLightCode from './glsl/templates/standard/point-light.frag'
 import shadPreCode from './glsl/templates/standard/shadow-maps-pre.frag'
 import preLightCode from './glsl/templates/standard/pre-light-setup.frag'
 import postLightCode from './glsl/templates/standard/post-light-setup.frag'
-import ShadowFiltering, { ShadowFilteringEnum } from './shadow-filtering-enum'
 
 
 
@@ -39,8 +39,8 @@ class StandardModel implements ILightModel {
   preLightsChunk: PreLightsChunk;
   postLightsChunk: PostLightsChunk;
   shadowChunk: ShadowsChunk;
+  shadowFilter: ShadowFilteringEnum
 
-  shadowFilter: ShadowFilteringEnum;
   iblShadowing: Flag;
 
   private _datas: Record<string, BaseLightData>;
@@ -59,8 +59,6 @@ class StandardModel implements ILightModel {
     this.shadowChunk = new ShadowsChunk(this);
 
     this.shadowFilter = new Enum('shadowFilter', ShadowFiltering );
-
-
 
     // damp renv reflexion for shadowed pixel
     this.iblShadowing = new Flag('iblShadowing', false);

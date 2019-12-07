@@ -2,6 +2,7 @@ import Enum from './enum';
 import Flag from './flag';
 import LightType from './light-types';
 import Chunk from './chunk';
+import { ShadowFiltering } from './shadow-filtering-enum';
 import dirPreCode from './glsl/templates/standard/directional-lights-pre.frag';
 import spotPreCode from './glsl/templates/standard/spot-lights-pre.frag';
 import pointPreCode from './glsl/templates/standard/point-lights-pre.frag';
@@ -11,7 +12,6 @@ import pointLightCode from './glsl/templates/standard/point-light.frag';
 import shadPreCode from './glsl/templates/standard/shadow-maps-pre.frag';
 import preLightCode from './glsl/templates/standard/pre-light-setup.frag';
 import postLightCode from './glsl/templates/standard/post-light-setup.frag';
-import ShadowFiltering from './shadow-filtering-enum';
 class StandardModel {
     constructor() {
         this._datas = {};

@@ -1,11 +1,11 @@
 import Chunk from './chunk';
 import ChunkSlots from './chunks-slots';
-declare class Enum<TEnum = any> extends Chunk {
+declare class Enum<T extends readonly string[]> extends Chunk {
     name: string;
-    values: (keyof TEnum)[];
+    values: T;
     private _val;
-    constructor(name: string, penum: TEnum);
-    set(val: keyof TEnum): void;
+    constructor(name: string, penum: T);
+    set(val: T[number]): void;
     genCode(slots: ChunkSlots): void;
     getHash(): string;
 }

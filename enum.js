@@ -3,9 +3,7 @@ class Enum extends Chunk {
     constructor(name, penum) {
         super(true, false);
         this.name = name;
-        var keys = Object.keys(penum);
-        keys = keys.filter(k => isNaN(parseInt(k.toString())));
-        this.values = keys;
+        this.values = penum;
         this._val = this.values[0];
     }
     set(val) {

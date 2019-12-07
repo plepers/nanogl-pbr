@@ -2,32 +2,28 @@
 import Chunk from './chunk'
 import ChunkSlots from './chunks-slots'
 
-class Enum<TEnum=any> extends Chunk {
+class Enum<T extends readonly string[]> extends Chunk {
   
   name: string;
-  values: (keyof TEnum)[]
+  values: T;
   
-  private _val: keyof TEnum;
+  private _val: T[number];
 
 
-  constructor(name : string, penum : TEnum ) {
+  constructor(name : string, penum : T ) {
 
     super(true, false);
 
     this.name = name;
 
-
-    var keys = Object.keys(penum) as (keyof TEnum)[];
-    keys = keys.filter(k => isNaN(parseInt(k.toString())));
-    
-    this.values = keys;
+    this.values = penum;
     this._val = this.values[0]
 
   }
 
 
 
-  set( val : keyof TEnum ) {
+  set( val : T[number] ) {
 
     if (this._val !== val) {
       if (val !== null && this.values.indexOf(val) === -1) {

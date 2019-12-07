@@ -10,7 +10,7 @@ import { mat4 } from 'gl-matrix';
 import getVert from './glsl/pbr.vert';
 import getFrag from './glsl/pbr.frag';
 import { isWebgl2 } from 'nanogl/types';
-import GammaMode from './gamma-mode-enum';
+import { GammaModes } from './gamma-mode-enum';
 const M4 = mat4.create();
 const MAT_ID = 'std';
 export default class StandardMaterial {
@@ -39,7 +39,7 @@ export default class StandardMaterial {
         this.perVertexIrrad = this.inputs.add(new Flag('perVertexIrrad', false));
         this.glossNearest = this.inputs.add(new Flag('glossNearest', false));
         this.useDerivatives = this.inputs.add(new Flag('useDerivatives', false));
-        this.gammaMode = this.inputs.add(new Enum('gammaMode', GammaMode));
+        this.gammaMode = this.inputs.add(new Enum('gammaMode', GammaModes));
         this.config = new GLConfig();
         this._prgcache = ProgramCache.getCache(gl);
         this._vertSrc = getVert();

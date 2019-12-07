@@ -19,7 +19,7 @@ import Node from 'nanogl-node'
 import Camera from 'nanogl-camera'
 import { ICameraLens } from 'nanogl-camera/ICameraLens'
 import Program from './program'
-import GammaMode, { GammaModeEnum } from './gamma-mode-enum'
+import { GammaModes, GammaModeEnum } from './gamma-mode-enum'
 
 
 const M4 = mat4.create();
@@ -98,7 +98,7 @@ export default class StandardMaterial {
     this.glossNearest    = this.inputs.add( new Flag ( 'glossNearest',    false ) );
     this.useDerivatives  = this.inputs.add( new Flag ( 'useDerivatives',  false ) );
 
-    this.gammaMode       = this.inputs.add( new Enum( 'gammaMode',GammaMode ));
+    this.gammaMode       = this.inputs.add( new Enum( 'gammaMode', GammaModes ));
 
 
     this.config     = new GLConfig();

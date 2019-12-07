@@ -3,20 +3,20 @@ import Chunk from './chunk';
 import Swizzle from './swizzle';
 import ChunkSlots from './chunks-slots';
 import Program from 'nanogl/program';
-declare const enum ShaderType {
+export declare const enum ShaderType {
     FRAGMENT = 1,
     VERTEX = 2,
     ALL = 3
 }
 declare type InputSize = 1 | 2 | 3 | 4;
-interface IInputParam {
+export interface IInputParam {
     name: string;
     size: InputSize;
     token: string;
     _input: Input | null;
 }
 declare type InputParam = IInputParam & Chunk;
-declare class Sampler extends Chunk implements IInputParam {
+export declare class Sampler extends Chunk implements IInputParam {
     name: string;
     size: InputSize;
     token: string;
@@ -31,7 +31,7 @@ declare class Sampler extends Chunk implements IInputParam {
     setup(prg: Program): void;
     getHash(): string;
 }
-declare class Uniform extends Chunk implements IInputParam {
+export declare class Uniform extends Chunk implements IInputParam {
     name: string;
     size: InputSize;
     token: string;
@@ -43,7 +43,7 @@ declare class Uniform extends Chunk implements IInputParam {
     setup(prg: Program): void;
     getHash(): string;
 }
-declare class Attribute extends Chunk implements IInputParam {
+export declare class Attribute extends Chunk implements IInputParam {
     name: string;
     size: InputSize;
     token: string;
@@ -52,7 +52,7 @@ declare class Attribute extends Chunk implements IInputParam {
     genCode(slots: ChunkSlots): void;
     getHash(): string;
 }
-declare class Constant extends Chunk implements IInputParam {
+export declare class Constant extends Chunk implements IInputParam {
     name: string;
     size: InputSize;
     token: string;
@@ -63,7 +63,7 @@ declare class Constant extends Chunk implements IInputParam {
     _stringifyValue(): string;
     getHash(): string;
 }
-declare class Input extends Chunk {
+export default class Input extends Chunk {
     static readonly Sampler: typeof Sampler;
     static readonly Uniform: typeof Uniform;
     static readonly Attribute: typeof Attribute;
@@ -87,4 +87,4 @@ declare class Input extends Chunk {
     genCode(slots: ChunkSlots): void;
     genAvailable(slots: ChunkSlots): void;
 }
-export default Input;
+export {};

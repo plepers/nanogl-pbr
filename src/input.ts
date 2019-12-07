@@ -6,32 +6,18 @@ import Swizzle from './swizzle'
 import ChunkSlots from './chunks-slots'
 import Program from 'nanogl/program'
 
-// -----------------
-
-const NONE_MODE = 0,
-  CONSTANT_MODE = 1,
-  UNIFORM_MODE = 2,
-  SAMPLER_MODE = 3,
-  ATTRIB_MODE = 4;
 
 
-var DECL_TYPES = [
-  '', '',
-  'uniform',
-  'uniform',
-  'attribute'
-];
-
-var TYPES = [
+const TYPES = [
   null,
   'float',
   'vec2',
   'vec3',
   'vec4'
-];
+] as const;
 
 
-const enum ShaderType {
+export const enum ShaderType {
   FRAGMENT = 1,
   VERTEX = 2,
   ALL = FRAGMENT | VERTEX,
@@ -93,7 +79,6 @@ function _addPreCode(slots: ChunkSlots, type: ShaderType, code: string) {
 
 
 
-
 // function genMacroDef(param: InputParam) {
 //   var c = '#define ' + this.name + '(k) ' + param.token;
 //   if (this.param.size > 1) {
@@ -106,7 +91,7 @@ function _addPreCode(slots: ChunkSlots, type: ShaderType, code: string) {
 
 
 
-interface IInputParam {
+export interface IInputParam {
 
   name: string;
   size: InputSize;
@@ -134,7 +119,7 @@ function isAttribute(x: string | Attribute): x is Attribute {
 
 
 
-class Sampler extends Chunk implements IInputParam {
+export class Sampler extends Chunk implements IInputParam {
 
   name: string;
   size: InputSize;
@@ -167,7 +152,7 @@ class Sampler extends Chunk implements IInputParam {
       this.uvsToken = texCoords;
     }
 
-    this.token = 'VAL_' + this.name + this.uvsToken;
+    this.token = `VAL_${this.name}${this.uvsToken}`;
   }
 
 
@@ -184,12 +169,12 @@ class Sampler extends Chunk implements IInputParam {
       c;
 
     // PF
-    c = 'uniform sampler2D ' + name + ';\n';
+    c = `uniform sampler2D ${name};\n`;
     _addPreCode(slots, this._input.shader, c);
     // slots.add( 'pf', c );
 
     // F
-    c = 'vec4 ' + this.token + ' = texture2D( ' + name + ', ' + this.uvsToken + ');\n';
+    c = `vec4 ${this.token} = texture2D( ${name}, ${this.uvsToken});\n`;
     _addCode(slots, this._input.shader, c);
     // slots.add( 'f', c );
 
@@ -203,8 +188,7 @@ class Sampler extends Chunk implements IInputParam {
 
 
   getHash() {
-    return (this._linkAttrib ? '' : this.texCoords) + '-' +
-      this.name;
+    return `${this._linkAttrib ? '' : this.texCoords}-${this.name}`;
   }
 }
 
@@ -218,7 +202,7 @@ class Sampler extends Chunk implements IInputParam {
 //
 //
 
-class Uniform extends Chunk implements IInputParam {
+export class Uniform extends Chunk implements IInputParam {
   
   name: string;
   size: InputSize;
@@ -255,7 +239,7 @@ class Uniform extends Chunk implements IInputParam {
     var c;
 
     // PF
-    c = 'uniform ' + TYPES[this.size] + ' ' + this.token + ';\n';
+    c = `uniform ${TYPES[this.size]} ${this.token};\n`;
     _addPreCode(slots, this._input.shader, c);
     // slots.add( 'pf', c );
 
@@ -269,8 +253,7 @@ class Uniform extends Chunk implements IInputParam {
 
 
   getHash() {
-    return this.size + '-' +
-      this.name;
+    return `${this.size}-${this.name}`;
   }
 
 }
@@ -286,7 +269,7 @@ class Uniform extends Chunk implements IInputParam {
 //
 
 
-class Attribute extends Chunk implements IInputParam {
+export class Attribute extends Chunk implements IInputParam {
 
   name: string;
   size: InputSize;
@@ -299,7 +282,7 @@ class Attribute extends Chunk implements IInputParam {
     this._input = null;
     this.name = name;
     this.size = size;
-    this.token = 'v_' + this.name;
+    this.token = `v_${this.name}`;
   }
 
 
@@ -308,28 +291,26 @@ class Attribute extends Chunk implements IInputParam {
   genCode(slots : ChunkSlots) {
 
     var c;
+    const typeId = TYPES[this.size];
 
     // PF
-    c = 'varying ' + TYPES[this.size] + ' ' + this.token + ';\n';
+    c = `varying ${typeId} ${this.token};\n`;
     slots.add('pf', c);
 
-
     // PV
-    c = 'attribute ' + TYPES[this.size] + ' ' + this.name + ';\n';
-    c += 'varying   ' + TYPES[this.size] + ' ' + this.token + ';\n';
+    c = `attribute ${typeId} ${this.name};\n`;
+    c += `varying   ${typeId} ${this.token};\n`;
     slots.add('pv', c);
 
-
     // V
-    c = this.token + ' = ' + this.name + ';\n';
+    c = `${this.token} = ${this.name};\n`;
     slots.add('v', c);
 
   }
 
 
   getHash() {
-    return this.size + '-' +
-      this.name;
+    return `${this.size}-${this.name}`;
   }
 
 }
@@ -343,7 +324,7 @@ class Attribute extends Chunk implements IInputParam {
 //
 
 
-class Constant extends Chunk implements IInputParam {
+export class Constant extends Chunk implements IInputParam {
   
   name: string;
   size: InputSize;
@@ -356,14 +337,14 @@ class Constant extends Chunk implements IInputParam {
 
     this._input = null;
 
-    this.name = 'CONST_' + (0 | (Math.random() * 0x7FFFFFFF)).toString(16);
+    this.name = `CONST_${(0 | (Math.random() * 0x7FFFFFFF)).toString(16)}`;
     if (Array.isArray(value)) {
       this.size = <InputSize>value.length;
     } else {
       this.size = 1;
     }
     this.value = value;
-    this.token = 'VAR_' + this.name;
+    this.token = `VAR_${this.name}`;
   }
 
 
@@ -373,7 +354,7 @@ class Constant extends Chunk implements IInputParam {
     var c;
 
     // PF
-    c = '#define ' + this.token + ' ' + TYPES[this.size] + '(' + this._stringifyValue() + ')\n';
+    c = `#define ${this.token} ${TYPES[this.size]}(${this._stringifyValue()})\n`;
     _addPreCode(slots, this._input.shader, c);
     // slots.add( 'pf', c );
 
@@ -391,15 +372,14 @@ class Constant extends Chunk implements IInputParam {
 
 
   getHash() {
-    return this._stringifyValue() + '-' +
-      this.size + '-';
+    return `${this._stringifyValue()}-${this.size}-`;
   }
 
 }
 
 
 
-class Input extends Chunk {
+export default class Input extends Chunk {
 
 
 static readonly Sampler = Sampler;
@@ -492,9 +472,7 @@ static readonly ALL = ShaderType.ALL;
 
 
   getHash(): string {
-    var hash = this.size + '-' +
-      this.comps + '-' +
-      this.name;
+    var hash = `${this.size}-${this.comps}-${this.name}`;
 
     return hash;
   }
@@ -508,7 +486,7 @@ static readonly ALL = ShaderType.ALL;
 
       var c = `#define ${this.name}(k) ${this.param.token}`;
       if (this.param.size > 1) {
-        c += '.' + this.comps;
+        c += `.${this.comps}`;
       }
 
       _addPreCode(slots, this.shader, c);
@@ -519,15 +497,11 @@ static readonly ALL = ShaderType.ALL;
 
 
   genAvailable(slots: ChunkSlots) {
-    var val = (this.param === null) ? '0' : '1';
-    var def = '#define HAS_' + this.name + ' ' + val + '\n';
+    const val = (this.param === null) ? '0' : '1';
+    const def = `#define HAS_${this.name} ${val}\n`;
 
     slots.add('definitions', def);
 
   }
 
 }
-
-
-
-export default Input

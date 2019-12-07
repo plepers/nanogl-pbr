@@ -1,10 +1,10 @@
 
 import Enum from "./enum";
 
-enum DepthFormat {
-    D_RGB,
-    D_DEPTH
-}
+export const DepthFormat = [
+    'D_RGB',
+    'D_DEPTH'
+] as const
 
 
 export type DepthFormatEnum = Enum<typeof DepthFormat>

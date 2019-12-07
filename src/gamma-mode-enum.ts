@@ -1,12 +1,11 @@
 import Enum from "./enum";
 
-enum GammaMode {
-  GAMMA_NONE,
-  GAMMA_STD,
-  GAMMA_2_2,
-  GAMMA_TB
-}
 
-export type GammaModeEnum = Enum<typeof GammaMode>
+export const GammaModes = [
+  'GAMMA_NONE',
+  'GAMMA_STD',
+  'GAMMA_2_2',
+  'GAMMA_TB',
+] as const
 
-export default GammaMode;
+export type GammaModeEnum = Enum<typeof GammaModes>
