@@ -1,6 +1,6 @@
 import Program    from 'nanogl/program'
-import ChunksTree from './chunks-tree' 
-import ChunkSlots from './chunks-slots'
+import ChunksTree from './ChunksCollection' 
+import ChunkSlots from './ChunksSlots'
 
 
 

@@ -1,8 +1,8 @@
 import Program from 'nanogl/program'
 import { GLContext } from 'nanogl/types'
 import GLConfig from 'nanogl-state/config'
-import ChunkSlots from './chunks-slots'
-import IMaterial from './interfaces/material';
+import ChunkSlots from './ChunksSlots'
+import IMaterial from './interfaces/IMaterial';
 
 const PRAGMA_SLOT = '#pragma SLOT';
 const PRAGMA_REGEX = /^\s*#pragma SLOT\s\w+\s*$/gm;

@@ -1,9 +1,9 @@
 import Texture from 'nanogl/texture'
 
-import Chunk from './chunk'
+import Chunk from './Chunk'
 
-import Swizzle from './swizzle'
-import ChunkSlots from './chunks-slots'
+import Swizzle from './Swizzle'
+import ChunkSlots from './ChunksSlots'
 import Program from 'nanogl/program'
 
 

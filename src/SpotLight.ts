@@ -1,7 +1,7 @@
-import Light from './light'
+import Light from './Light'
 import Camera from 'nanogl-camera'
-import LightType from './light-types'
-import Bounds from './bounds'
+import LightType from './LightType'
+import Bounds from './Bounds'
 import { GLContext } from 'nanogl/types';
 import PerspectiveLens from 'nanogl-camera/perspective-lens'
 

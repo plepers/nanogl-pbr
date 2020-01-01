@@ -1,6 +1,6 @@
 
-import Chunk from './chunk'
-import ChunkSlots from './chunks-slots'
+import Chunk from './Chunk'
+import ChunkSlots from './ChunksSlots'
 
 
 class Flag extends Chunk {

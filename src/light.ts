@@ -7,8 +7,8 @@ import PF from 'nanogl-pf'
 import { mat4, vec3 } from 'gl-matrix';
 import { GLContext, isWebgl2 } from 'nanogl/types';
 import Camera from 'nanogl-camera'
-import Bounds from './bounds'
-import LightType from './light-types'
+import Bounds from './Bounds'
+import LightType from './LightType'
 import { ICameraLens } from 'nanogl-camera/ICameraLens';
 
 

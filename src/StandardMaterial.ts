@@ -1,25 +1,25 @@
 import GLConfig       from  'nanogl-state/config'
 
-import ProgramCache from './program-cache'
-import Input        from './input'
-import Flag         from './flag'
-import Enum         from './enum'
-import Precision    from './shader-precision'
-import Version      from './shader-version'
-import ChunksList   from './chunks-tree'
+import ProgramCache from './ProgramCache'
+import Input        from './Input'
+import Flag         from './Flag'
+import Enum         from './Enum'
+import Precision    from './ShaderPrecision'
+import Version      from './ShaderVersion'
+import ChunksList   from './ChunksCollection'
 import { mat4 } from 'gl-matrix'
 
 
 import getVert from './glsl/pbr.vert'
 import getFrag from './glsl/pbr.frag'
 import { GLContext, isWebgl2 } from 'nanogl/types'
-import IBL from './ibl'
-import LightSetup from './light-setup'
+import IBL from './Ibl'
+import LightSetup from './LightSetup'
 import Node from 'nanogl-node'
 import Camera from 'nanogl-camera'
 import { ICameraLens } from 'nanogl-camera/ICameraLens'
 import Program from 'nanogl/program'
-import { GammaModes, GammaModeEnum } from './gamma-mode-enum'
+import { GammaModes, GammaModeEnum } from './GammaModeEnum'
 
 
 const M4 = mat4.create();

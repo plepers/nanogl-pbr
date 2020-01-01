@@ -1,10 +1,10 @@
-import Light from './light'
+import Light from './Light'
 import Camera from 'nanogl-camera'
 import { mat4 } from 'gl-matrix';
 import { GLContext } from 'nanogl/types';
-import LightType from './light-types'
+import LightType from './LightType'
 import { ICameraLens } from 'nanogl-camera/ICameraLens';
-import Bounds from './bounds';
+import Bounds from './Bounds';
 
 const BiasVector = new Float32Array(4);
 

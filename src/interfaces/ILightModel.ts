@@ -1,6 +1,6 @@
-import Light from "../light";
-import Chunk from "../chunk";
-import LightSetup from "../light-setup";
+import Light from "../Light";
+import Chunk from "../Chunk";
+import LightSetup from "../LightSetup";
 
 
 export default interface ILightModel{

@@ -1,5 +1,5 @@
 
-import Enum from "./enum";
+import Enum from "./Enum";
 
 export const DepthFormat = [
     'D_RGB',

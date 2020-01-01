@@ -2,23 +2,23 @@ import Config       from 'nanogl-state/config'
 import Node       from 'nanogl-node'
 import Camera       from 'nanogl-camera'
 
-import ProgramCache from './program-cache'
+import ProgramCache from './ProgramCache'
 import { GLContext } from 'nanogl/types';
-import Input        from'./input'
-import Flag         from'./flag'
-import Enum         from'./enum'
-import ChunksList   from'./chunks-tree'
+import Input        from'./Input'
+import Flag         from'./Flag'
+import Enum         from'./Enum'
+import ChunksList   from'./ChunksCollection'
 
 import { mat4 } from 'gl-matrix';
-import { GlslPrecision } from './interfaces/precision';
-import IMaterial from './interfaces/material';
+import { GlslPrecision } from './interfaces/GlslPrecision';
+import IMaterial from './interfaces/IMaterial';
 
 import VertShader from './glsl/depthpass.vert';
 import FragShader from './glsl/depthpass.frag';
 import Program from 'nanogl/program'
-import LightSetup from './light-setup';
+import LightSetup from './LightSetup';
 import { ICameraLens } from 'nanogl-camera/ICameraLens';
-import DepthFormat, { DepthFormatEnum } from './depth-format-enum';
+import DepthFormat, { DepthFormatEnum } from './DepthFormatEnum';
 
 const M4           = mat4.create();
 

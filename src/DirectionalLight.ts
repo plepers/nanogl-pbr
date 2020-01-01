@@ -1,8 +1,8 @@
-import Light from './light'
+import Light from './Light'
 import Camera from 'nanogl-camera'
 import { GLContext } from 'nanogl/types';
-import LightType from './light-types'
-import Bounds from './bounds'
+import LightType from './LightType'
+import Bounds from './Bounds'
 import OrthographicLens from 'nanogl-camera/ortho-lens'
 
 

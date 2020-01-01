@@ -2,10 +2,10 @@ var expect  = require( 'expect.js' );
 
 
 import Node       from 'nanogl-node' 
-import DirLight   from '../directional-light' 
-import SpotLight   from '../spot-light' 
-import LightSetup from '../light-setup' 
-import ChunkList from '../chunks-tree' 
+import DirLight   from '../DirectionalLight' 
+import SpotLight   from '../SpotLight' 
+import LightSetup from '../LightSetup' 
+import ChunkList from '../ChunksCollection' 
 
 
 

@@ -1,5 +1,5 @@
-import Chunk from './chunk'
-import ChunkSlots from './chunks-slots'
+import Chunk from './Chunk'
+import ChunkSlots from './ChunksSlots'
 import Program from 'nanogl/program';
 
 
