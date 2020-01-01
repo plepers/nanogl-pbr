@@ -145,7 +145,7 @@ export class Sampler extends Chunk implements IInputParam {
 
     if (isAttribute(texCoords)) {
       this._linkAttrib = true;
-      this.add(texCoords);
+      this.addChild(texCoords);
       this.uvsToken = texCoords.token;
     } else {
       this._linkAttrib = false;
@@ -162,7 +162,7 @@ export class Sampler extends Chunk implements IInputParam {
   }
 
 
-  genCode(slots : ChunkSlots) {
+  _genCode(slots : ChunkSlots) {
     if( this._input == null ) return;
 
     var name = this.name,
@@ -187,7 +187,7 @@ export class Sampler extends Chunk implements IInputParam {
   }
 
 
-  getHash() {
+  _getHash() {
     return `${this._linkAttrib ? '' : this.texCoords}-${this.name}`;
   }
 }
@@ -234,7 +234,7 @@ export class Uniform extends Chunk implements IInputParam {
   }
 
 
-  genCode(slots : ChunkSlots) {
+  _genCode(slots : ChunkSlots) {
     if( this._input === null ) return;
     var c;
 
@@ -252,7 +252,7 @@ export class Uniform extends Chunk implements IInputParam {
   }
 
 
-  getHash() {
+  _getHash() {
     return `${this.size}-${this.name}`;
   }
 
@@ -288,7 +288,7 @@ export class Attribute extends Chunk implements IInputParam {
 
 
 
-  genCode(slots : ChunkSlots) {
+  _genCode(slots : ChunkSlots) {
 
     var c;
     const typeId = TYPES[this.size];
@@ -309,7 +309,7 @@ export class Attribute extends Chunk implements IInputParam {
   }
 
 
-  getHash() {
+  _getHash() {
     return `${this.size}-${this.name}`;
   }
 
@@ -349,7 +349,7 @@ export class Constant extends Chunk implements IInputParam {
 
 
 
-  genCode(slots : ChunkSlots) {
+  _genCode(slots : ChunkSlots) {
     if( this._input === null ) return;
     var c;
 
@@ -371,7 +371,7 @@ export class Constant extends Chunk implements IInputParam {
   }
 
 
-  getHash() {
+  _getHash() {
     return `${this._stringifyValue()}-${this.size}-`;
   }
 
@@ -417,11 +417,11 @@ static readonly ALL = ShaderType.ALL;
 
   attach(param: InputParam, comps: Swizzle = 'rgba') {
     if (this.param) {
-      this.remove(this.param);
+      this.removeChild(this.param);
     }
     param._input = this;
     this.param = param;
-    this.add(param);
+    this.addChild(param);
     this.comps = _trimComps(comps, this.size);
   }
 
@@ -429,7 +429,7 @@ static readonly ALL = ShaderType.ALL;
   detach() {
     if (this.param !== null) {
       this.param._input = null;
-      this.remove(this.param);
+      this.removeChild(this.param);
     }
     this.param = null;
   }
@@ -471,14 +471,14 @@ static readonly ALL = ShaderType.ALL;
   // ===================================================
 
 
-  getHash(): string {
+  _getHash(): string {
     var hash = `${this.size}-${this.comps}-${this.name}`;
 
     return hash;
   }
 
 
-  genCode(slots: ChunkSlots) {
+  _genCode(slots: ChunkSlots) {
 
     this.genAvailable(slots);
 
@@ -490,6 +490,7 @@ static readonly ALL = ShaderType.ALL;
       }
 
       _addPreCode(slots, this.shader, c);
+
     }
 
   }

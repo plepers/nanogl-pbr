@@ -11,7 +11,7 @@ import LightSetup from './light-setup';
 import Node from 'nanogl-node';
 import Camera from 'nanogl-camera';
 import { ICameraLens } from 'nanogl-camera/ICameraLens';
-import Program from './program';
+import Program from 'nanogl/program';
 import { GammaModeEnum } from './gamma-mode-enum';
 export default class StandardMaterial {
     ibl: IBL | null;

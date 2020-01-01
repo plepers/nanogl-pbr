@@ -15,7 +15,7 @@ class Enum extends Chunk {
             this.invalidate();
         }
     }
-    genCode(slots) {
+    _genCode(slots) {
         let c = '';
         for (var i = 0; i < this.values.length; i++) {
             c += `#define ${this.values[i]} ${i}${1}\n`;
@@ -24,7 +24,7 @@ class Enum extends Chunk {
         c += `#define ${this.name}(k) VAL_${this.name} == k\n`;
         slots.add('definitions', c);
     }
-    getHash() {
+    _getHash() {
         return `${this.values.indexOf(this._val)}/${this.name}`;
     }
 }

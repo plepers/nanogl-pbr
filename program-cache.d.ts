@@ -1,4 +1,4 @@
-import Program from './program';
+import Program from 'nanogl/program';
 import { GLContext } from 'nanogl/types';
 import ChunkSlots from './chunks-slots';
 import IMaterial from './interfaces/material';

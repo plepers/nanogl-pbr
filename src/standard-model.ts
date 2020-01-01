@@ -11,7 +11,7 @@ import LightType        from './light-types'
 import SpotLight        from './spot-light'
 import DirectionalLight from './directional-light'
 import PointLight       from './point-light'
-import Chunk, { ChunkProxy } from './chunk'
+import Chunk from './chunk'
 import { ShadowFilteringEnum, ShadowFiltering } from './shadow-filtering-enum'
 
 import dirPreCode from './glsl/templates/standard/directional-lights-pre.frag'
@@ -114,7 +114,7 @@ class StandardModel implements ILightModel {
   }
 
   getChunks() {
-    const res: ChunkProxy[] = [];
+    const res: Chunk[] = [];
 
     res.push(this.iblShadowing.createProxy());
     res.push(this.shadowFilter.createProxy());
@@ -147,13 +147,13 @@ class PreLightsChunk extends Chunk {
 
 
 
-  genCode(slots: ChunkSlots) {
+  _genCode(slots: ChunkSlots) {
     const code = preLightCode(this)
     slots.add('lightsf', code);
   }
 
 
-  getHash() {
+  _getHash() {
     return '0';
   }
 }
@@ -169,12 +169,12 @@ class PostLightsChunk extends Chunk {
     super(true, false);
   }
 
-  genCode(slots: ChunkSlots) {
+  _genCode(slots: ChunkSlots) {
     const code = postLightCode(this)
     slots.add('lightsf', code);
   }
 
-  getHash() {
+  _getHash() {
     return '0';
   }
 
@@ -224,7 +224,7 @@ class ShadowsChunk extends Chunk {
 
 
 
-  genCode(slots: ChunkSlots) {
+  _genCode(slots: ChunkSlots) {
 
     if (this.shadowCount > 0) {
       slots.add('pf', shadPreCode(this));
@@ -256,7 +256,7 @@ class ShadowsChunk extends Chunk {
   }
 
 
-  getHash() {
+  _getHash() {
     return '' + this.shadowCount;
   }
 
@@ -331,7 +331,7 @@ abstract class LightDatas<TLight extends Light> extends Chunk {
   }
 
 
-  genCode(slots: ChunkSlots) {
+  _genCode(slots: ChunkSlots) {
 
     let code = this.preCodeTemplate!({
       count: this.lights.length
@@ -354,7 +354,7 @@ abstract class LightDatas<TLight extends Light> extends Chunk {
 
 
 
-  getHash() {
+  _getHash() {
     let h = this.type + '' + this.lights.length;
     for (var i = 0; i < this.lights.length; i++) {
       if (this.lights[i]._castShadows) {

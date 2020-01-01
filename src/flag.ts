@@ -37,7 +37,7 @@ class Flag extends Chunk {
   }
 
 
-  genCode(slots : ChunkSlots) {
+  _genCode(slots : ChunkSlots) {
     // PF
     const c = `#define ${this.name} ${~~this._val}\n`;
     slots.add('definitions', c); 
@@ -45,7 +45,7 @@ class Flag extends Chunk {
   }
 
 
-  getHash() {
+  _getHash() {
     return `${this.name}-${~~this._val}`;
   }
 

@@ -71,11 +71,11 @@ class PreLightsChunk extends Chunk {
     constructor() {
         super(true, false);
     }
-    genCode(slots) {
+    _genCode(slots) {
         const code = preLightCode(this);
         slots.add('lightsf', code);
     }
-    getHash() {
+    _getHash() {
         return '0';
     }
 }
@@ -83,11 +83,11 @@ class PostLightsChunk extends Chunk {
     constructor() {
         super(true, false);
     }
-    genCode(slots) {
+    _genCode(slots) {
         const code = postLightCode(this);
         slots.add('lightsf', code);
     }
-    getHash() {
+    _getHash() {
         return '0';
     }
 }
@@ -106,7 +106,7 @@ class ShadowsChunk extends Chunk {
         this._utexelBiasVector = null;
         this._ushadowmapSizes = null;
     }
-    genCode(slots) {
+    _genCode(slots) {
         if (this.shadowCount > 0) {
             slots.add('pf', shadPreCode(this));
         }
@@ -126,7 +126,7 @@ class ShadowsChunk extends Chunk {
         }
         return i;
     }
-    getHash() {
+    _getHash() {
         return '' + this.shadowCount;
     }
     check() {
@@ -174,7 +174,7 @@ class LightDatas extends Chunk {
             this.invalidate();
         }
     }
-    genCode(slots) {
+    _genCode(slots) {
         let code = this.preCodeTemplate({
             count: this.lights.length
         });
@@ -185,7 +185,7 @@ class LightDatas extends Chunk {
         }
         slots.add('lightsf', code);
     }
-    getHash() {
+    _getHash() {
         let h = this.type + '' + this.lights.length;
         for (var i = 0; i < this.lights.length; i++) {
             if (this.lights[i]._castShadows) {

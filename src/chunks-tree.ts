@@ -1,16 +1,17 @@
 import Chunk from './chunk'
 import ChunkSlots from './chunks-slots'
+import Program from 'nanogl/program';
 
 
 
 
 class RootChunk extends Chunk {
   
-  getHash(): string {
+  _getHash(): string {
     return '';
   }
 
-  genCode(slots: ChunkSlots): void {}
+  _genCode(slots: ChunkSlots): void {}
   
   constructor(){
     super();
@@ -21,21 +22,20 @@ class RootChunk extends Chunk {
 
 class ChunksTree{
 
-  _root: Chunk;
   _isDirty: boolean;
 
-  _setups: Chunk[];
-  _codes : Chunk[];
-  _flat  : Chunk[];
+  _chunks  : Chunk[];
+
+  _all     : Chunk[];
+  _actives : Chunk[];
+  _setups  : Chunk[];
 
   constructor(){
 
-    this._setups = [];
-    this._codes  = [];
-    this._flat   = [];
-
-    this._root   = new RootChunk();
-    this._root.list = this;
+    this._chunks  = [];
+    this._all     = [];
+    this._actives = [];
+    this._setups  = [];
 
     this._isDirty = true;
   }
@@ -43,49 +43,80 @@ class ChunksTree{
 
 
   add<T extends Chunk>( chunk : T ) : T {
-    return this._root.add( chunk );
+    if( this._chunks.indexOf( chunk ) === -1 ){
+      this._chunks.push( chunk );
+      this._isDirty = true;
+    }
+    return chunk;
   }
-
+  
+  
   remove( chunk : Chunk ){
-    return this._root.remove( chunk );
-  }
-
-
-  addChunks( chunks : Chunk[] ){
-    for (var i = 0; i < chunks.length; i++) {
-      this._root.add( chunks[i] );
+    const i = this._chunks.indexOf( chunk )
+    if( i > -1 ) {
+      this._chunks.splice( i, 1 );
+      this._isDirty = true;
     }
   }
 
 
-
-  compile(){
-    this._flatten();
+  addChunks( chunks : Chunk[] ){
+    for ( const c of chunks ) {
+      this.add( c );
+    }
   }
 
 
-  _flatten(){
-    const setups = this._setups,
-          codes  = this._codes,
-          chunks = this._flat;
+  compile(){
+    this._collectChunks();
+  }
 
-    setups.length = 0;
-    codes .length = 0;
-    chunks.length = 0;
 
-    this._root.traverse( setups, codes, chunks );
+  _collectChunks(){
+    const all     = this._all,
+          setups  = this._setups,
+          actives = this._actives;
+
+
+    // TODO unregister all : remove from lists
+    for( const chunk of all ){
+      chunk.removeList( this );
+    }
+
+    actives .length = 0;
+    all     .length = 0;
+
+
+    for (const chunk of this._chunks ) {
+      chunk.collectChunks( all, actives );
+    }
+
+    for( const chunk of actives ){
+      chunk.hasSetup && setups.push( chunk );
+    }
+
+    for( const chunk of all ){
+      chunk.addList( this );
+    }
 
     this._isDirty = false;
 
   }
 
 
-  getHash(){
-    let codes = this._codes,
-        res    = '';
+  setupProgram( prg : Program ){
+    for ( const chunk of this._setups) {
+      chunk.setup( prg );
+    }
+  }
 
-    for (var i = 0; i < codes.length; i++) {
-      res += codes[i].getHash();
+
+  getHash(){
+    let res    = '';
+
+    for ( const chunk of this._actives ){
+      if( chunk.hasCode )
+        res += chunk.getHash();
     }
 
     return res;
@@ -94,11 +125,10 @@ class ChunksTree{
 
   getCode(){
 
-    const codes  = this._codes,
-          slots = new ChunkSlots();
+    const slots = new ChunkSlots();
 
-    for (var i = 0; i < codes.length; i++) {
-      codes[i].genCode( slots );
+    for ( const chunk of this._actives ){
+      chunk.hasCode && chunk.genCode( slots );
     }
 
     return slots;

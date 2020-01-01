@@ -1,50 +1,118 @@
 import Program    from 'nanogl/program'
-
 import ChunksTree from './chunks-tree' 
 import ChunkSlots from './chunks-slots'
 
 
+
 abstract class Chunk {
 
-  children: Chunk[];
-  parent: Chunk | null;
-  list: ChunksTree | null;
+  private   _lists: Set<ChunksTree>;
 
-  _hasCode: boolean;
-  _hasSetup: boolean;
-  _invalid: boolean;
+  // is generate glsl code
+  protected _hasCode : boolean;
+
+  // is setup program (uniforms)
+  protected _hasSetup: boolean;
   
-  _proxies: ChunkProxy[];
+  // setup is invalid (need reupload uniform)
+  protected _invalid : boolean;
+  
+  // 
+  protected _ref: this | null;
+
+  protected _children: Chunk[];
 
   constructor(hasCode: boolean = false, hasSetup: boolean = false) {
 
-    this.list = null;
-    
-    this.children = [];
-    this.parent = null;
+    this._ref = null;
 
-    // is generate glsl code
-    this._hasCode = hasCode;
-
-    // is setup program (uniforms)
+    this._lists    = new Set();
+    this._hasCode  = hasCode;
     this._hasSetup = hasSetup;
+    this._invalid  = true;
+    this._children = []
 
-    // setup is invalid (need reupload uniform)
-    this._invalid = true;
+  }
 
-    // optional proxies
-    this._proxies = [];
+  /*
+   * populate given array with this chunk and all it's descendant
+   * all array 
+   */
+  collectChunks( all : Chunk[], actives : Chunk[] ){
+    all.push( this );
+    if( this._ref !== null ) {
+      this._ref.collectChunks( all, actives );
+    } else {
+      for (const child of this._children ) {
+        child.collectChunks( all, actives );
+      }
+      actives.push( this );
+    }
+  }
 
 
+  addChild<T extends Chunk>( child : T ) : T {
+    if (this._children.indexOf(child) > -1) {
+      return child;
+    }
+    this._children.push(child);
+    this.invalidate();
+    return child;
+  }
 
+
+  removeChild( child : Chunk ){
+    var i = this._children.indexOf(child);
+    if (i > -1) {
+      this._children.splice(i, 1);
+    }
+    this.invalidate();
   }
 
 
 
-  abstract genCode(slots : ChunkSlots ):void;
+  genCode(slots : ChunkSlots ):void{
+    if( this._ref !== null ) {
+      this._ref.genCode( slots );
+    } else {
+      this._genCode( slots );
+    }
+  }
 
+  getHash():string{
+    if( this._ref !== null ) {
+      return this._ref.getHash();
+    } else {
+      return this._getHash();
+    }
+  }
 
-  abstract getHash() : string;
+  get hasCode():boolean{
+    if( this._ref !== null ) {
+      return this._ref.hasCode;
+    } else {
+      return this._hasCode;
+    }
+  }
+
+  get hasSetup():boolean{
+    if( this._ref !== null ) {
+      return this._ref.hasSetup;
+    } else {
+      return this._hasSetup;
+    }
+  }
+
+  get isInvalid():boolean{
+    if( this._ref !== null ) {
+      return this._ref.isInvalid;
+    } else {
+      return this._invalid;
+    }
+  }
+
+  protected abstract _genCode( slots : ChunkSlots ):void;
+  protected abstract _getHash() : string;
 
 
   setup(prg : Program ) {
@@ -52,128 +120,38 @@ abstract class Chunk {
   }
 
 
-  add<T extends Chunk>( child : T ) : T {
-    if (this.children.indexOf(child) > -1) {
-      return child;
-    }
-    this.children.push(child);
-    child.setList(this.list);
-    child.parent = this;
-    for (var i = 0; i < this._proxies.length; i++) {
-      this._proxies[i].add(child.createProxy());
-    }
-
-    this.invalidate();
-    return child;
+  addList(list: ChunksTree ) {
+    this._lists.add( list );
   }
 
-
-  remove(child : Chunk) {
-    var i = this.children.indexOf(child);
-    if (i > -1) {
-      this.children.splice(i, 1);
-      child.parent = null;
-      child.removeProxies();
-    }
-    this.invalidate();
+  removeList(list: ChunksTree ) {
+    this._lists.delete( list );
   }
-
-
-  setList(list: ChunksTree | null ) {
-    this.list = list;
-    this.invalidate();
-
-    for (var i = 0; i < this.children.length; i++) {
-      this.children[i].setList(list);
-    }
-
-  }
-
-
-  traverse(setups : Chunk[], codes : Chunk[], chunks : Chunk[]) {
-
-    if (chunks.indexOf(this) === -1) {
-
-      for (var i = 0; i < this.children.length; i++) {
-        this.children[i].traverse(setups, codes, chunks);
-      }
-
-      if (this._hasSetup) {
-        setups.push(this);
-      }
-
-      if (this._hasCode) {
-        codes.push(this);
-      }
-
-      chunks.push(this);
-    }
-
-  }
-
 
   invalidate() {
-    if (this.list) {
-      this.list._isDirty = true;
+    for( const l of this._lists.values() ){
+      l._isDirty = true;
     }
-    for (var i = 0; i < this._proxies.length; i++) {
-      this._proxies[i].invalidate();
-    }
+  }
+
+
+  proxy( ref : this|null = null ){
+    if( this._ref === ref ) return;
+    this._ref = ref;
+    this.invalidate();
   }
 
 
   createProxy() {
-    var p = new ChunkProxy(this);
-    for (var i = 0; i < this.children.length; i++) {
-      p.add(this.children[i].createProxy());
-    }
-    this._proxies.push(p);
+    const Class : new()=>Chunk = <any>Chunk;
+    const p = new Class();
+    p.proxy( this );
     return p;
   }
 
 
-  releaseProxy(p:ChunkProxy) {
-    var i = this._proxies.indexOf(p);
-    if (i > -1) {
-      this._proxies.splice(i, 1);
-    }
-  }
-
-
-  removeProxies() {
-
-    for (var i = 0; i < this._proxies.length; i++) {
-      var p = this._proxies[i];
-      if (p.parent !== null) {
-        p.parent.remove(p);
-      }
-    }
-  }
-
-
 }
 
-
-
-export class ChunkProxy<TChunk extends Chunk = Chunk> extends Chunk {
-
-  _ref: TChunk;
-
-  constructor(ref: TChunk) {
-    super(ref._hasCode, ref._hasSetup);
-    this._ref = ref;
-  }
-
-
-  genCode(chunk: ChunkSlots): void { this._ref.genCode(chunk); }
-  getHash() { return this._ref.getHash(); }
-  setup(prg: Program) { this._ref.setup(prg); }
-
-  release() {
-    this._ref.releaseProxy(this);
-  }
-
-}
 
 
 

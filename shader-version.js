@@ -8,10 +8,10 @@ class ShaderVersion extends Chunk {
         this.version = v;
         this.invalidate();
     }
-    getHash() {
+    _getHash() {
         return 'v' + this.version;
     }
-    genCode(slots) {
+    _genCode(slots) {
         var s = `#version ${this.version}\n`;
         slots.add('version', s);
     }

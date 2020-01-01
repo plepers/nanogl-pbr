@@ -1,4 +1,4 @@
-import Program from './program'
+import Program from 'nanogl/program'
 import { GLContext } from 'nanogl/types'
 import GLConfig from 'nanogl-state/config'
 import ChunkSlots from './chunks-slots'
@@ -37,19 +37,12 @@ class ProgramCache {
 
     const hash = inputs.getHash();
 
-    const cached = this._cache[hash];
-    if (cached !== undefined) {
-      cached.usage++;
-      return cached;
-    }
-
     const slots = inputs.getCode();
 
     const vert = this.processSlots(material._vertSrc, slots);
     const frag = this.processSlots(material._fragSrc, slots);
 
     const prg = new Program(this.gl, vert, frag);
-    prg._usage++;
 
     this._cache[hash] = prg;
 
@@ -63,24 +56,19 @@ class ProgramCache {
   }
 
 
-  _addProgram( prg : Program, hash : string ) {
-    this._cache[hash] = prg;
-  }
 
 
-  processSlots( code : string, slots : ChunkSlots ) : string {
+  processSlots( source : string, slots : ChunkSlots ) : string {
 
-    for (var i = 0; i < slots.slots.length; i++) {
-      var scode = slots.slots[i].code;
-      var key = slots.slots[i].key;
-      code = code.replace(PRAGMA_SLOT + ' ' + key, scode);
+    for (const {code, key} of slots.slots) {
+      source = source.replace(PRAGMA_SLOT + ' ' + key, code);
     }
 
     // cleanup unmatched slots
     PRAGMA_REGEX.lastIndex = 0;
-    code = code.replace(PRAGMA_REGEX, '');
+    source = source.replace(PRAGMA_REGEX, '');
 
-    return code;
+    return source;
   }
 
 };

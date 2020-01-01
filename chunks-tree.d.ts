@@ -1,17 +1,19 @@
 import Chunk from './chunk';
 import ChunkSlots from './chunks-slots';
+import Program from 'nanogl/program';
 declare class ChunksTree {
-    _root: Chunk;
     _isDirty: boolean;
+    _chunks: Chunk[];
+    _all: Chunk[];
+    _actives: Chunk[];
     _setups: Chunk[];
-    _codes: Chunk[];
-    _flat: Chunk[];
     constructor();
     add<T extends Chunk>(chunk: T): T;
     remove(chunk: Chunk): void;
     addChunks(chunks: Chunk[]): void;
     compile(): void;
-    _flatten(): void;
+    _collectChunks(): void;
+    setupProgram(prg: Program): void;
     getHash(): string;
     getCode(): ChunkSlots;
 }

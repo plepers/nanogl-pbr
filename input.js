@@ -52,7 +52,7 @@ export class Sampler extends Chunk {
         this.size = 4;
         if (isAttribute(texCoords)) {
             this._linkAttrib = true;
-            this.add(texCoords);
+            this.addChild(texCoords);
             this.uvsToken = texCoords.token;
         }
         else {
@@ -64,7 +64,7 @@ export class Sampler extends Chunk {
     set(t) {
         this._tex = t;
     }
-    genCode(slots) {
+    _genCode(slots) {
         if (this._input == null)
             return;
         var name = this.name, c;
@@ -76,7 +76,7 @@ export class Sampler extends Chunk {
     setup(prg) {
         prg[this.name](this._tex);
     }
-    getHash() {
+    _getHash() {
         return `${this._linkAttrib ? '' : this.texCoords}-${this.name}`;
     }
 }
@@ -95,7 +95,7 @@ export class Uniform extends Chunk {
         }
         this._invalid = true;
     }
-    genCode(slots) {
+    _genCode(slots) {
         if (this._input === null)
             return;
         var c;
@@ -106,7 +106,7 @@ export class Uniform extends Chunk {
         prg[this.name](this._value);
         this._invalid = false;
     }
-    getHash() {
+    _getHash() {
         return `${this.size}-${this.name}`;
     }
 }
@@ -118,7 +118,7 @@ export class Attribute extends Chunk {
         this.size = size;
         this.token = `v_${this.name}`;
     }
-    genCode(slots) {
+    _genCode(slots) {
         var c;
         const typeId = TYPES[this.size];
         c = `varying ${typeId} ${this.token};\n`;
@@ -129,7 +129,7 @@ export class Attribute extends Chunk {
         c = `${this.token} = ${this.name};\n`;
         slots.add('v', c);
     }
-    getHash() {
+    _getHash() {
         return `${this.size}-${this.name}`;
     }
 }
@@ -147,7 +147,7 @@ export class Constant extends Chunk {
         this.value = value;
         this.token = `VAR_${this.name}`;
     }
-    genCode(slots) {
+    _genCode(slots) {
         if (this._input === null)
             return;
         var c;
@@ -163,7 +163,7 @@ export class Constant extends Chunk {
             return a.map(_floatStr).join(',');
         }
     }
-    getHash() {
+    _getHash() {
         return `${this._stringifyValue()}-${this.size}-`;
     }
 }
@@ -178,17 +178,17 @@ export default class Input extends Chunk {
     }
     attach(param, comps = 'rgba') {
         if (this.param) {
-            this.remove(this.param);
+            this.removeChild(this.param);
         }
         param._input = this;
         this.param = param;
-        this.add(param);
+        this.addChild(param);
         this.comps = _trimComps(comps, this.size);
     }
     detach() {
         if (this.param !== null) {
             this.param._input = null;
-            this.remove(this.param);
+            this.removeChild(this.param);
         }
         this.param = null;
     }
@@ -212,11 +212,11 @@ export default class Input extends Chunk {
         this.attach(p, comps);
         return p;
     }
-    getHash() {
+    _getHash() {
         var hash = `${this.size}-${this.comps}-${this.name}`;
         return hash;
     }
-    genCode(slots) {
+    _genCode(slots) {
         this.genAvailable(slots);
         if (this.param !== null) {
             var c = `#define ${this.name}(k) ${this.param.token}`;

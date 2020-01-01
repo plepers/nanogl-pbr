@@ -27,9 +27,9 @@ export declare class Sampler extends Chunk implements IInputParam {
     uvsToken: string;
     constructor(name: string, texCoords: Attribute | string);
     set(t: Texture): void;
-    genCode(slots: ChunkSlots): void;
+    _genCode(slots: ChunkSlots): void;
     setup(prg: Program): void;
-    getHash(): string;
+    _getHash(): string;
 }
 export declare class Uniform extends Chunk implements IInputParam {
     name: string;
@@ -39,9 +39,9 @@ export declare class Uniform extends Chunk implements IInputParam {
     _value: Float32Array;
     constructor(name: string, size: InputSize);
     set(...args: number[]): void;
-    genCode(slots: ChunkSlots): void;
+    _genCode(slots: ChunkSlots): void;
     setup(prg: Program): void;
-    getHash(): string;
+    _getHash(): string;
 }
 export declare class Attribute extends Chunk implements IInputParam {
     name: string;
@@ -49,8 +49,8 @@ export declare class Attribute extends Chunk implements IInputParam {
     token: string;
     _input: Input | null;
     constructor(name: string, size: InputSize);
-    genCode(slots: ChunkSlots): void;
-    getHash(): string;
+    _genCode(slots: ChunkSlots): void;
+    _getHash(): string;
 }
 export declare class Constant extends Chunk implements IInputParam {
     name: string;
@@ -59,9 +59,9 @@ export declare class Constant extends Chunk implements IInputParam {
     _input: Input | null;
     value: ArrayLike<number> | number;
     constructor(value: ArrayLike<number> | number);
-    genCode(slots: ChunkSlots): void;
+    _genCode(slots: ChunkSlots): void;
     _stringifyValue(): string;
-    getHash(): string;
+    _getHash(): string;
 }
 export default class Input extends Chunk {
     static readonly Sampler: typeof Sampler;
@@ -83,8 +83,8 @@ export default class Input extends Chunk {
     attachUniform(name: string, size?: InputSize, comps?: Swizzle): Uniform;
     attachAttribute(name: string, size?: InputSize, comps?: Swizzle): Attribute;
     attachConstant(value: ArrayLike<number> | number, comps?: Swizzle): Constant;
-    getHash(): string;
-    genCode(slots: ChunkSlots): void;
+    _getHash(): string;
+    _genCode(slots: ChunkSlots): void;
     genAvailable(slots: ChunkSlots): void;
 }
 export {};

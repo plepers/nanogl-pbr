@@ -17,11 +17,11 @@ class Flag extends Chunk {
             this.invalidate();
         }
     }
-    genCode(slots) {
+    _genCode(slots) {
         const c = `#define ${this.name} ${~~this._val}\n`;
         slots.add('definitions', c);
     }
-    getHash() {
+    _getHash() {
         return `${this.name}-${~~this._val}`;
     }
 }

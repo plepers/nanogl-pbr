@@ -4,7 +4,7 @@ import Flag from './flag';
 import LightSetup from './light-setup';
 import ILightModel from './interfaces/light-model';
 import ChunkSlots from './chunks-slots';
-import Chunk, { ChunkProxy } from './chunk';
+import Chunk from './chunk';
 import { ShadowFilteringEnum } from './shadow-filtering-enum';
 declare class StandardModel implements ILightModel {
     preLightsChunk: PreLightsChunk;
@@ -21,17 +21,17 @@ declare class StandardModel implements ILightModel {
     add(l: Light): void;
     remove(l: Light): void;
     update(): void;
-    getChunks(): ChunkProxy<Chunk>[];
+    getChunks(): Chunk[];
 }
 declare class PreLightsChunk extends Chunk {
     constructor();
-    genCode(slots: ChunkSlots): void;
-    getHash(): string;
+    _genCode(slots: ChunkSlots): void;
+    _getHash(): string;
 }
 declare class PostLightsChunk extends Chunk {
     constructor();
-    genCode(slots: ChunkSlots): void;
-    getHash(): string;
+    _genCode(slots: ChunkSlots): void;
+    _getHash(): string;
 }
 declare class ShadowsChunk extends Chunk {
     lightModel: StandardModel;
@@ -44,9 +44,9 @@ declare class ShadowsChunk extends Chunk {
     _utexelBiasVector: Float32Array | null;
     _ushadowmapSizes: Float32Array | null;
     constructor(lightModel: StandardModel);
-    genCode(slots: ChunkSlots): void;
+    _genCode(slots: ChunkSlots): void;
     addLight(light: Light): number;
-    getHash(): string;
+    _getHash(): string;
     check(): void;
     setup(prg: Program): void;
 }

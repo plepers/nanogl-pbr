@@ -1,56 +1,79 @@
 import Chunk from './chunk';
 import ChunkSlots from './chunks-slots';
 class RootChunk extends Chunk {
-    getHash() {
+    _getHash() {
         return '';
     }
-    genCode(slots) { }
+    _genCode(slots) { }
     constructor() {
         super();
     }
 }
 class ChunksTree {
     constructor() {
+        this._chunks = [];
+        this._all = [];
+        this._actives = [];
         this._setups = [];
-        this._codes = [];
-        this._flat = [];
-        this._root = new RootChunk();
-        this._root.list = this;
         this._isDirty = true;
     }
     add(chunk) {
-        return this._root.add(chunk);
+        if (this._chunks.indexOf(chunk) === -1) {
+            this._chunks.push(chunk);
+            this._isDirty = true;
+        }
+        return chunk;
     }
     remove(chunk) {
-        return this._root.remove(chunk);
+        const i = this._chunks.indexOf(chunk);
+        if (i > -1) {
+            this._chunks.splice(i, 1);
+            this._isDirty = true;
+        }
     }
     addChunks(chunks) {
-        for (var i = 0; i < chunks.length; i++) {
-            this._root.add(chunks[i]);
+        for (const c of chunks) {
+            this.add(c);
         }
     }
     compile() {
-        this._flatten();
+        this._collectChunks();
     }
-    _flatten() {
-        const setups = this._setups, codes = this._codes, chunks = this._flat;
-        setups.length = 0;
-        codes.length = 0;
-        chunks.length = 0;
-        this._root.traverse(setups, codes, chunks);
+    _collectChunks() {
+        const all = this._all, setups = this._setups, actives = this._actives;
+        for (const chunk of all) {
+            chunk.removeList(this);
+        }
+        actives.length = 0;
+        all.length = 0;
+        for (const chunk of this._chunks) {
+            chunk.collectChunks(all, actives);
+        }
+        for (const chunk of actives) {
+            chunk.hasSetup && setups.push(chunk);
+        }
+        for (const chunk of all) {
+            chunk.addList(this);
+        }
         this._isDirty = false;
     }
+    setupProgram(prg) {
+        for (const chunk of this._setups) {
+            chunk.setup(prg);
+        }
+    }
     getHash() {
-        let codes = this._codes, res = '';
-        for (var i = 0; i < codes.length; i++) {
-            res += codes[i].getHash();
+        let res = '';
+        for (const chunk of this._actives) {
+            if (chunk.hasCode)
+                res += chunk.getHash();
         }
         return res;
     }
     getCode() {
-        const codes = this._codes, slots = new ChunkSlots();
-        for (var i = 0; i < codes.length; i++) {
-            codes[i].genCode(slots);
+        const slots = new ChunkSlots();
+        for (const chunk of this._actives) {
+            chunk.hasCode && chunk.genCode(slots);
         }
         return slots;
     }

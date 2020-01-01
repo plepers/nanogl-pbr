@@ -35,7 +35,7 @@ class Enum<T extends readonly string[]> extends Chunk {
   }
 
 
-  genCode(slots : ChunkSlots) {
+  _genCode(slots : ChunkSlots) {
 
     // PF
     let c = '';
@@ -50,7 +50,7 @@ class Enum<T extends readonly string[]> extends Chunk {
   }
 
 
-  getHash() {
+  _getHash() {
     return `${this.values.indexOf(this._val)}/${this.name}`;
   }
 

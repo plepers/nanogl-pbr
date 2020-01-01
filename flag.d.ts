@@ -7,7 +7,7 @@ declare class Flag extends Chunk {
     enable(): void;
     disable(): void;
     set(val?: boolean): void;
-    genCode(slots: ChunkSlots): void;
-    getHash(): string;
+    _genCode(slots: ChunkSlots): void;
+    _getHash(): string;
 }
 export default Flag;

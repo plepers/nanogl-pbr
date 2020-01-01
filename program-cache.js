@@ -1,4 +1,4 @@
-import Program from './program';
+import Program from 'nanogl/program';
 const PRAGMA_SLOT = '#pragma SLOT';
 const PRAGMA_REGEX = /^\s*#pragma SLOT\s\w+\s*$/gm;
 class ProgramCache {

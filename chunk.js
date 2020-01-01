@@ -1,99 +1,103 @@
 class Chunk {
     constructor(hasCode = false, hasSetup = false) {
-        this.list = null;
-        this.children = [];
-        this.parent = null;
+        this._ref = null;
+        this._lists = new Set();
         this._hasCode = hasCode;
         this._hasSetup = hasSetup;
         this._invalid = true;
-        this._proxies = [];
+        this._children = [];
     }
-    setup(prg) {
+    collectChunks(all, actives) {
+        all.push(this);
+        if (this._ref !== null) {
+            this._ref.collectChunks(all, actives);
+        }
+        else {
+            for (const child of this._children) {
+                child.collectChunks(all, actives);
+            }
+            actives.push(this);
+        }
     }
-    add(child) {
-        if (this.children.indexOf(child) > -1) {
+    addChild(child) {
+        if (this._children.indexOf(child) > -1) {
             return child;
         }
-        this.children.push(child);
-        child.setList(this.list);
-        child.parent = this;
-        for (var i = 0; i < this._proxies.length; i++) {
-            this._proxies[i].add(child.createProxy());
-        }
+        this._children.push(child);
         this.invalidate();
         return child;
     }
-    remove(child) {
-        var i = this.children.indexOf(child);
+    removeChild(child) {
+        var i = this._children.indexOf(child);
         if (i > -1) {
-            this.children.splice(i, 1);
-            child.parent = null;
-            child.removeProxies();
+            this._children.splice(i, 1);
         }
         this.invalidate();
     }
-    setList(list) {
-        this.list = list;
-        this.invalidate();
-        for (var i = 0; i < this.children.length; i++) {
-            this.children[i].setList(list);
+    genCode(slots) {
+        if (this._ref !== null) {
+            this._ref.genCode(slots);
+        }
+        else {
+            this._genCode(slots);
         }
     }
-    traverse(setups, codes, chunks) {
-        if (chunks.indexOf(this) === -1) {
-            for (var i = 0; i < this.children.length; i++) {
-                this.children[i].traverse(setups, codes, chunks);
-            }
-            if (this._hasSetup) {
-                setups.push(this);
-            }
-            if (this._hasCode) {
-                codes.push(this);
-            }
-            chunks.push(this);
+    getHash() {
+        if (this._ref !== null) {
+            return this._ref.getHash();
         }
+        else {
+            return this._getHash();
+        }
+    }
+    get hasCode() {
+        if (this._ref !== null) {
+            return this._ref.hasCode;
+        }
+        else {
+            return this._hasCode;
+        }
+    }
+    get hasSetup() {
+        if (this._ref !== null) {
+            return this._ref.hasSetup;
+        }
+        else {
+            return this._hasSetup;
+        }
+    }
+    get isInvalid() {
+        if (this._ref !== null) {
+            return this._ref.isInvalid;
+        }
+        else {
+            return this._invalid;
+        }
+    }
+    setup(prg) {
+    }
+    addList(list) {
+        this._lists.add(list);
+    }
+    removeList(list) {
+        this._lists.delete(list);
     }
     invalidate() {
-        if (this.list) {
-            this.list._isDirty = true;
+        for (const l of this._lists.values()) {
+            l._isDirty = true;
         }
-        for (var i = 0; i < this._proxies.length; i++) {
-            this._proxies[i].invalidate();
-        }
+    }
+    proxy(ref = null) {
+        if (this._ref === ref)
+            return;
+        this._ref = ref;
+        this.invalidate();
     }
     createProxy() {
-        var p = new ChunkProxy(this);
-        for (var i = 0; i < this.children.length; i++) {
-            p.add(this.children[i].createProxy());
-        }
-        this._proxies.push(p);
+        const Class = Chunk;
+        const p = new Class();
+        p.proxy(this);
         return p;
-    }
-    releaseProxy(p) {
-        var i = this._proxies.indexOf(p);
-        if (i > -1) {
-            this._proxies.splice(i, 1);
-        }
-    }
-    removeProxies() {
-        for (var i = 0; i < this._proxies.length; i++) {
-            var p = this._proxies[i];
-            if (p.parent !== null) {
-                p.parent.remove(p);
-            }
-        }
-    }
-}
-export class ChunkProxy extends Chunk {
-    constructor(ref) {
-        super(ref._hasCode, ref._hasSetup);
-        this._ref = ref;
-    }
-    genCode(chunk) { this._ref.genCode(chunk); }
-    getHash() { return this._ref.getHash(); }
-    setup(prg) { this._ref.setup(prg); }
-    release() {
-        this._ref.releaseProxy(this);
     }
 }
 export default Chunk;

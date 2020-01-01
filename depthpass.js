@@ -12,7 +12,6 @@ class DepthPass {
         this.prg = null;
         this.inputs = new ChunksList();
         this.depthFormat = new Enum('depthFormat', DepthFormat);
-        this.actualDepthFormat = this.depthFormat;
         this.inputs.add(this.depthFormat);
         this.config = new Config();
         this._prgcache = ProgramCache.getCache(gl);
@@ -22,9 +21,8 @@ class DepthPass {
         this._fragSrc = FragShader();
     }
     setLightSetup(setup) {
-        this.inputs.remove(this.actualDepthFormat);
-        this.actualDepthFormat = setup.depthFormat.createProxy();
-        this.inputs.add(this.actualDepthFormat);
+        var _a;
+        this.depthFormat.proxy((_a = setup) === null || _a === void 0 ? void 0 : _a.depthFormat);
     }
     prepare(node, camera) {
         if (this.prg === null)

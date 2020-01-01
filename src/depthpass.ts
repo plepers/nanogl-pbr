@@ -15,10 +15,9 @@ import IMaterial from './interfaces/material';
 
 import VertShader from './glsl/depthpass.vert';
 import FragShader from './glsl/depthpass.frag';
-import Program from './program'
+import Program from 'nanogl/program'
 import LightSetup from './light-setup';
 import { ICameraLens } from 'nanogl-camera/ICameraLens';
-import { ChunkProxy } from './chunk';
 import DepthFormat, { DepthFormatEnum } from './depth-format-enum';
 
 const M4           = mat4.create();
@@ -40,8 +39,6 @@ class DepthPass implements IMaterial {
   _precision: GlslPrecision;
   prg: Program | null;
 
-  private actualDepthFormat: DepthFormatEnum | ChunkProxy<DepthFormatEnum>;
-
   constructor( gl : GLContext ){
     
     this.prg = null;
@@ -51,8 +48,6 @@ class DepthPass implements IMaterial {
 
 
     this.depthFormat = new Enum( 'depthFormat', DepthFormat );
-
-    this.actualDepthFormat = this.depthFormat;
 
     this.inputs.add( this.depthFormat );
     
@@ -74,9 +69,7 @@ class DepthPass implements IMaterial {
 
 
   setLightSetup( setup : LightSetup ){
-    this.inputs.remove( this.actualDepthFormat );
-    this.actualDepthFormat = setup.depthFormat.createProxy();
-    this.inputs.add( this.actualDepthFormat );
+    this.depthFormat.proxy( setup?.depthFormat );
   }
 
   // render time !
