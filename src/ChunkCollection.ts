@@ -12,28 +12,28 @@ export const enum DirtyFlag {
 
 
 export default class ChunkCollection {
+  
+  readonly baseHash: string;
 
-  // _isDirty: boolean;
   _dirtyFlags : DirtyFlag = DirtyFlag.All;
 
-  _chunks  : Chunk[];
-  _all     : Chunk[];
-  _actives : Chunk[];
-  _setups  : Chunk[];
+  _chunks  : Chunk[] = [];
+  _all     : Chunk[] = [];
+  _actives : Chunk[] = [];
+  _setups  : Chunk[] = [];
+  _codes   : Chunk[] = [];
 
+  _cachedSlots : ChunkSlots|null = null;
 
-  constructor(){
-    this._chunks  = [];
-    this._all     = [];
-    this._actives = [];
-    this._setups  = [];
+  constructor( baseHash : string ){
+    this.baseHash = baseHash;
   }
 
 
   add<T extends Chunk>( chunk : T ) : T {
     if( this._chunks.indexOf( chunk ) === -1 ){
       this._chunks.push( chunk );
-      this.invalidate( DirtyFlag.All );
+      this.invalidate( DirtyFlag.Hierarchy );
     }
     return chunk;
   }
@@ -43,7 +43,7 @@ export default class ChunkCollection {
     const i = this._chunks.indexOf( chunk )
     if( i > -1 ) {
       this._chunks.splice( i, 1 );
-      this.invalidate( DirtyFlag.All );
+      this.invalidate( DirtyFlag.Hierarchy );
     }
   }
 
@@ -55,11 +55,11 @@ export default class ChunkCollection {
   }
 
 
-  compile(){
-    if( ( this._dirtyFlags & DirtyFlag.Hierarchy ) !== 0 ){
-      this._collectChunks();
-    }
-  }
+  // updateChunks(){
+  //   if( ( this._dirtyFlags & DirtyFlag.Hierarchy ) !== 0 ){
+  //     this._collectChunks();
+  //   }
+  // }
 
 
   invalidate( flag : DirtyFlag ){
@@ -74,6 +74,7 @@ export default class ChunkCollection {
   _collectChunks(){
     const all     = this._all,
           setups  = this._setups,
+          codes   = this._codes,
           actives = this._actives;
 
 
@@ -82,8 +83,10 @@ export default class ChunkCollection {
       chunk.removeList( this );
     }
 
-    actives .length = 0;
     all     .length = 0;
+    setups  .length = 0;
+    codes   .length = 0;
+    actives .length = 0;
 
 
     for (const chunk of this._chunks ) {
@@ -92,6 +95,7 @@ export default class ChunkCollection {
 
     for( const chunk of actives ){
       chunk.hasSetup && setups.push( chunk );
+      chunk.hasCode  && codes .push( chunk );
     }
 
     for( const chunk of all ){
@@ -99,6 +103,7 @@ export default class ChunkCollection {
     }
 
     this._dirtyFlags &= ~DirtyFlag.Hierarchy;
+    this._dirtyFlags |= DirtyFlag.Code;
 
   }
 
@@ -110,27 +115,40 @@ export default class ChunkCollection {
   }
 
 
-  getHash(){
-    let res    = '';
+//   getHash(){
+//     let res    = '';
 
-    for ( const chunk of this._actives ){
-      if( chunk.hasCode )
-        res += chunk.getHash();
+//     for ( const chunk of this._actives ){
+//       if( chunk.hasCode )
+//         res += chunk.getHash();
+//     }
+
+//     return res;
+//   }
+
+
+  getCode() : ChunkSlots {
+
+    if( ( this._dirtyFlags & DirtyFlag.Hierarchy ) !== 0 ){
+      this._collectChunks();
     }
 
-    return res;
-  }
+    if( this._cachedSlots === null || ( this._dirtyFlags & DirtyFlag.Code ) !== 0 )  {
 
+      const slots = new ChunkSlots();
+      slots.hash = this.baseHash;
 
-  getCode(){
+      for ( const chunk of this._codes ){
+        chunk.genCode( slots );
+        slots.hash += chunk.getHash();
+      }
 
-    const slots = new ChunkSlots();
+      this._cachedSlots = slots;
 
-    for ( const chunk of this._actives ){
-      chunk.hasCode && chunk.genCode( slots );
+      this._dirtyFlags &= ~DirtyFlag.Code;
+  
     }
-
-    return slots;
+    return this._cachedSlots;
   }
 
 

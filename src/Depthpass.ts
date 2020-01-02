@@ -7,7 +7,6 @@ import { GLContext } from 'nanogl/types';
 import Input        from'./Input'
 import Flag         from'./Flag'
 import Enum         from'./Enum'
-import ChunksList   from'./ChunkCollection'
 
 import { mat4 } from 'gl-matrix';
 import { GlslPrecision } from './interfaces/GlslPrecision';
@@ -19,6 +18,8 @@ import Program from 'nanogl/program'
 import LightSetup from './LightSetup';
 import { ICameraLens } from 'nanogl-camera/ICameraLens';
 import DepthFormat, { DepthFormatEnum } from './DepthFormatEnum';
+import ChunkCollection from './ChunkCollection';
+import IProgramSource from './ProgramSource';
 
 const M4           = mat4.create();
 
@@ -28,7 +29,7 @@ class DepthPass implements IMaterial {
   
   _vertSrc: string;
   _fragSrc: string;
-  inputs: ChunksList;
+  inputs: ChunkCollection;
 
 
   depthFormat: DepthFormatEnum;
@@ -44,7 +45,7 @@ class DepthPass implements IMaterial {
     this.prg = null;
 
 
-    this.inputs          = new ChunksList();
+    this.inputs          = new ChunkCollection( 'stddepth' );
 
 
     this.depthFormat = new Enum( 'depthFormat', DepthFormat );
@@ -106,12 +107,30 @@ class DepthPass implements IMaterial {
   }
 
 
+  getProgram() : Program {
+    if( this._isDirty() ){
+      this.compile();
+    }
+    return this.prg!;
+  }
+
+
   compile(){
     if( this.prg !== null ){
       this._prgcache.release( this.prg );
     }
-    this.prg = this._prgcache.compile( this );
+
+    // this.inputs.updateChunks();
+
+    const prgSource : IProgramSource = {
+      vertexSource   : this._vertSrc,
+      fragmentSource : this._fragSrc,
+      slots          : this.inputs.getCode(),
+    }
+
+    this.prg = this._prgcache.compile( prgSource );
   }
+
 
 
 

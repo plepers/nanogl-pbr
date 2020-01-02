@@ -6,7 +6,7 @@ import Flag         from './Flag'
 import Enum         from './Enum'
 import Precision    from './ShaderPrecision'
 import Version      from './ShaderVersion'
-import ChunksList   from './ChunkCollection'
+import ChunkCollection   from './ChunkCollection'
 import { mat4 } from 'gl-matrix'
 
 
@@ -20,6 +20,7 @@ import Camera from 'nanogl-camera'
 import { ICameraLens } from 'nanogl-camera/ICameraLens'
 import Program from 'nanogl/program'
 import { GammaModes, GammaModeEnum } from './GammaModeEnum'
+import IProgramSource from './ProgramSource'
 
 
 const M4 = mat4.create();
@@ -35,7 +36,7 @@ export default class StandardMaterial {
 
   _mask: number
 
-  inputs: ChunksList
+  inputs: ChunkCollection
   version: Version
   precision: Precision
   shaderid: Flag
@@ -75,7 +76,7 @@ export default class StandardMaterial {
 
     const webgl2 = isWebgl2(gl);
 
-    this.inputs          = new ChunksList();
+    this.inputs          = new ChunkCollection( MAT_ID );
 
     this.version         = this.inputs.add( new Version( webgl2? '300 es' : '100' ) );
     this.precision       = this.inputs.add( new Precision( 'mediump' ) );
@@ -160,12 +161,28 @@ export default class StandardMaterial {
     return false;
   }
 
+  getProgram() : Program {
+    if( this._isDirty() ){
+      this.compile();
+    }
+    return this.prg!;
+  }
+
 
   compile(){
     if( this.prg !== null ){
       this._prgcache.release( this.prg );
     }
-    this.prg = this._prgcache.compile( this );
+
+    // this.inputs.updateChunks();
+
+    const prgSource : IProgramSource = {
+      vertexSource   : this._vertSrc,
+      fragmentSource : this._fragSrc,
+      slots          : this.inputs.getCode(),
+    }
+
+    this.prg = this._prgcache.compile( prgSource );
   }
 
 

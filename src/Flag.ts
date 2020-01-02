@@ -39,9 +39,9 @@ class Flag extends Chunk {
 
 
   _genCode(slots : ChunkSlots) {
-    // PF
-    const c = `#define ${this.name} ${~~this._val}\n`;
-    slots.add('definitions', c); 
+    
+    const c = `#define ${this.name} ${~~this._val}`;
+    slots.add('definitions', c);
 
   }
 

@@ -3,9 +3,24 @@ import { GLContext } from 'nanogl/types'
 import GLConfig from 'nanogl-state/config'
 import ChunkSlots from './ChunksSlots'
 import IMaterial from './interfaces/IMaterial';
+import IProgramSource from './ProgramSource';
 
 const PRAGMA_SLOT = '#pragma SLOT';
 const PRAGMA_REGEX = /^\s*#pragma SLOT\s\w+\s*$/gm;
+
+
+function processSlots( source : string, slots : ChunkSlots ) : string {
+
+  for (const {code, key} of slots.slots) {
+      source = source.replace(PRAGMA_SLOT + ' ' + key, code);
+  }
+
+  // cleanup unmatched slots
+  PRAGMA_REGEX.lastIndex = 0;
+  source = source.replace(PRAGMA_REGEX, '');
+
+  return source;
+}
 
 
 
@@ -30,17 +45,17 @@ class ProgramCache {
   }
 
 
-  compile(material : IMaterial) : Program {
+  compile(source : IProgramSource) : Program {
 
-    const inputs = material.inputs;
-    inputs.compile();
+    const hash = source.slots.hash;
 
-    const hash = inputs.getHash();
+    const cached = this._cache[hash];
+    if (cached !== undefined) {
+      return cached;
+    }
 
-    const slots = inputs.getCode();
-
-    const vert = this.processSlots(material._vertSrc, slots);
-    const frag = this.processSlots(material._fragSrc, slots);
+    const vert = processSlots( source.vertexSource  , source.slots );
+    const frag = processSlots( source.fragmentSource, source.slots );
 
     const prg = new Program(this.gl, vert, frag);
 
@@ -50,6 +65,7 @@ class ProgramCache {
 
   }
 
+
   // called by materials when prg is not used anymore
   release( prg : Program ) {
     // TODO: implement PrgCache.release
@@ -57,20 +73,7 @@ class ProgramCache {
 
 
 
-
-  processSlots( source : string, slots : ChunkSlots ) : string {
-
-    for (const {code, key} of slots.slots) {
-      source = source.replace(PRAGMA_SLOT + ' ' + key, code);
-    }
-
-    // cleanup unmatched slots
-    PRAGMA_REGEX.lastIndex = 0;
-    source = source.replace(PRAGMA_REGEX, '');
-
-    return source;
-  }
-
+  
 };
 
 

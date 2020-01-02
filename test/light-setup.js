@@ -50,7 +50,7 @@ describe( "LightSetup", function(){
         list.add( chunks[i] )
       }
 
-      list.compile()
+      list.getCode()
     });
 
 
@@ -89,7 +89,7 @@ describe( "LightSetup", function(){
         list.add( chunks[i] )
       }
 
-      list.compile()
+      list.getCode()
     });
 
 

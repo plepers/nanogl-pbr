@@ -8,11 +8,13 @@ class ChunkSlots {
 
   slots: Slot[];
   slotsMap: Record<string, Slot>;
+  hash: string;
 
 
   constructor() {
-    this.slots = [];
+    this.slots    = [];
     this.slotsMap = {};
+    this.hash     = '';
   }
 
 
