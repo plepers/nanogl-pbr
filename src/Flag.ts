@@ -33,7 +33,7 @@ class Flag<T extends string = string> extends Chunk {
   set(val : boolean = false) {
     if (this._val !== val) {
       this._val = val;
-      this.invalidate(DirtyFlag.Code);
+      this.invalidateCode();
     }
   }
 

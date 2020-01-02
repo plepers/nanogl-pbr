@@ -19,73 +19,54 @@ import LightSetup from './LightSetup';
 import { ICameraLens } from 'nanogl-camera/ICameraLens';
 import DepthFormat, { DepthFormatEnum } from './DepthFormatEnum';
 import ChunkCollection from './ChunkCollection';
-import IProgramSource from './ProgramSource';
+import IProgramSource, { ShaderSource } from './interfaces/IProgramSource';
+import BaseMaterial from './BaseMaterial';
+import ShaderPrecision from './ShaderPrecision';
 
 const M4           = mat4.create();
 
 
 
-class DepthPass implements IMaterial {
+export default class DepthPass extends BaseMaterial {
   
-  _vertSrc: string;
-  _fragSrc: string;
-  inputs: ChunkCollection;
-
-
   depthFormat: DepthFormatEnum;
 
-  config: Config;
-  _prgcache: ProgramCache;
-  _uid: string;
-  _precision: GlslPrecision;
-  prg: Program | null;
 
+
+  _shaderSource: ShaderSource
+  precision: ShaderPrecision;
+
+  getShaderSource(): ShaderSource {
+    return this._shaderSource;
+  }
+  
   constructor( gl : GLContext ){
     
-    this.prg = null;
+    super( gl, 'stddepth' );
 
-
-    this.inputs          = new ChunkCollection( 'stddepth' );
-
-
-    this.depthFormat = new Enum( 'depthFormat', DepthFormat );
-
-    this.inputs.add( this.depthFormat );
+    this.depthFormat  = this.inputs.add( new Enum( 'depthFormat', DepthFormat ) );
+    this.precision    = this.inputs.add( new ShaderPrecision( 'highp' ) );
     
-
-    this.config    = new Config();
-
-    this._prgcache = ProgramCache.getCache( gl );
-
-    // for program-cache
-    this._uid       = 'stddepth';
-    this._precision = 'highp';
-    this._vertSrc   = VertShader();
-    this._fragSrc   = FragShader();
-
+    this._shaderSource = {
+      uid  : 'stddepth',
+      vert : VertShader(),
+      frag : FragShader(),
+    }
 
   }
-
-
-
-
+  
+  
+  
+  
   setLightSetup( setup : LightSetup ){
     this.depthFormat.proxy( setup?.depthFormat );
   }
-
+  
   // render time !
   // ----------
   prepare( node :Node, camera : Camera<ICameraLens> ){
-
-    if( this.prg === null ) return;
     
-    if( this._isDirty() ){
-      this.compile();
-    }
-
-    // this.
-
-    var prg = this.prg;
+    var prg = this.getProgram();
     prg.use();
 
     prg.setupInputs( this );
@@ -98,42 +79,5 @@ class DepthPass implements IMaterial {
   }
 
 
-
-
-
-  // need recompilation
-  _isDirty(){
-    return ( this.prg === null || this.inputs.isInvalid() );
-  }
-
-
-  getProgram() : Program {
-    if( this._isDirty() ){
-      this.compile();
-    }
-    return this.prg!;
-  }
-
-
-  compile(){
-    if( this.prg !== null ){
-      this._prgcache.release( this.prg );
-    }
-
-    // this.inputs.updateChunks();
-
-    const prgSource : IProgramSource = {
-      vertexSource   : this._vertSrc,
-      fragmentSource : this._fragSrc,
-      slots          : this.inputs.getCode(),
-    }
-
-    this.prg = this._prgcache.compile( prgSource );
-  }
-
-
-
-
 }
 
-export default DepthPass

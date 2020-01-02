@@ -1,4 +1,4 @@
-
+//@ts-check
 
 var expect  = require( 'expect.js' );
 var sinon  = require( 'sinon' );
@@ -10,10 +10,10 @@ import {CodeChunk} from './utils/TestChunks'
 
 describe( "Chunk", function(){
 
-  let collection= new ChunkCollection('x')
+  let collection= new ChunkCollection()
 
   beforeEach( function(){
-    collection = new ChunkCollection('x')
+    collection = new ChunkCollection()
   });
 
   describe( "code gen", function(){
@@ -29,7 +29,7 @@ describe( "Chunk", function(){
       collection.add( chunk );
       var code = collection.getCode();
       
-      expect( code.hash ).to.be( 'x-A-' );
+      expect( code.hash ).to.be( '-A-' );
     });
 
 
@@ -80,7 +80,7 @@ describe( "Chunk", function(){
       collection.add( chunk );
       var code = collection.getCode();
       
-      expect( code.hash ).to.be( 'x-B-' );
+      expect( code.hash ).to.be( '-B-' );
     });
 
 
@@ -251,7 +251,7 @@ describe( "Chunk", function(){
       collection.getCode();
       collection.add( new CodeChunk( 'X' ) );
 
-      expect( collection._dirtyFlags ).to.be( DirtyFlag.Hierarchy );
+      expect( collection._invalidList ).to.be( true );
     });
 
 
@@ -261,7 +261,7 @@ describe( "Chunk", function(){
       collection.getCode();
       collection.remove( chunk );
 
-      expect( collection._dirtyFlags ).to.be( DirtyFlag.Hierarchy );
+      expect( collection._invalidList ).to.be( true );
     });
 
 
@@ -270,7 +270,7 @@ describe( "Chunk", function(){
       collection.getCode();
       chunk.proxy( proxy );
 
-      expect( collection._dirtyFlags ).to.be( DirtyFlag.Hierarchy );
+      expect( collection._invalidList ).to.be( true );
     });
 
 
@@ -279,7 +279,8 @@ describe( "Chunk", function(){
       collection.getCode();
       chunk.setCode('B');
 
-      expect( collection._dirtyFlags ).to.be( DirtyFlag.Code );
+      expect( collection._invalidList ).to.be( false );
+      expect( collection._invalidCode ).to.be( true );
     });
 
 
@@ -287,7 +288,8 @@ describe( "Chunk", function(){
       collection.add( chunk );
       collection.getCode();
 
-      expect( collection._dirtyFlags ).to.be( 0 );
+      expect( collection._invalidList ).to.be( false );
+      expect( collection._invalidCode ).to.be( false );
     });
 
     it( 'dirty flags should be 0 when proxied chunk code change', function(){
@@ -344,7 +346,7 @@ describe( "Chunk", function(){
     beforeEach( function(){
       chunk = new CodeChunk( 'A' )
       proxy = new CodeChunk( 'C' )
-      collection2 = new ChunkCollection('y')
+      collection2 = new ChunkCollection()
       // chunk.proxy( proxy );
     });
 
@@ -356,8 +358,8 @@ describe( "Chunk", function(){
       var code1 = collection.getCode();
       var code2 = collection2.getCode();
       
-      expect( code1.hash ).to.be( 'x-A-' );
-      expect( code2.hash ).to.be( 'y-A-' );
+      expect( code1.hash ).to.be( '-A-' );
+      expect( code2.hash ).to.be( '-A-' );
     });
 
 

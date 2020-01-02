@@ -421,8 +421,8 @@ static readonly ALL = ShaderType.ALL;
     }
     param._input = this;
     this.param = param;
-    this.addChild(param);
     this.comps = _trimComps(comps, this.size);
+    this.addChild(param);
   }
 
 

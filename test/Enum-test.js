@@ -1,4 +1,4 @@
-
+//@ts-check
 
 var expect  = require( 'expect.js' );
 var sinon  = require( 'sinon' );
@@ -11,10 +11,10 @@ import Enum from '../Enum';
 
 describe( "Enum", function(){
 
-  let collection= new ChunkCollection('x')
+  let collection= new ChunkCollection()
 
   beforeEach( function(){
-    collection = new ChunkCollection('x')
+    collection = new ChunkCollection()
   });
 
   describe( "code gen", function(){
@@ -39,7 +39,7 @@ describe( "Enum", function(){
       collection.add( penum );
       var code = collection.getCode();
       
-      expect( code.hash ).to.be( 'xMyEnum0' );
+      expect( code.hash ).to.be( 'MyEnum0' );
     });
 
 

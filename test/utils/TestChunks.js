@@ -20,6 +20,6 @@ export class CodeChunk extends Chunk {
   
   setCode( code ){
     this.code = code;
-    this.invalidate( DirtyFlag.Code );
+    this.invalidateCode();
   }
 }

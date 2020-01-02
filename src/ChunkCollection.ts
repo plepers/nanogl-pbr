@@ -13,27 +13,25 @@ export const enum DirtyFlag {
 
 export default class ChunkCollection {
   
-  readonly baseHash: string;
-
-  _dirtyFlags : DirtyFlag = DirtyFlag.All;
-
+  // _dirtyFlags : DirtyFlag = DirtyFlag.All;
+  private _invalidList : boolean = true;
+  private _invalidCode : boolean = true;
+  private _revision : number = 0;
+  
   _chunks  : Chunk[] = [];
   _all     : Chunk[] = [];
   _actives : Chunk[] = [];
   _setups  : Chunk[] = [];
   _codes   : Chunk[] = [];
-
+  
   _cachedSlots : ChunkSlots|null = null;
-
-  constructor( baseHash : string ){
-    this.baseHash = baseHash;
-  }
-
+  
+  
 
   add<T extends Chunk>( chunk : T ) : T {
     if( this._chunks.indexOf( chunk ) === -1 ){
       this._chunks.push( chunk );
-      this.invalidate( DirtyFlag.Hierarchy );
+      this.invalidateList();
     }
     return chunk;
   }
@@ -43,7 +41,7 @@ export default class ChunkCollection {
     const i = this._chunks.indexOf( chunk )
     if( i > -1 ) {
       this._chunks.splice( i, 1 );
-      this.invalidate( DirtyFlag.Hierarchy );
+      this.invalidateList();
     }
   }
 
@@ -62,12 +60,24 @@ export default class ChunkCollection {
   // }
 
 
-  invalidate( flag : DirtyFlag ){
-    this._dirtyFlags |= flag;
+  invalidateList(){
+    this._invalidList = true;
+    this.invalidateCode();
+  }
+
+  invalidateCode(){
+    if( !this._invalidCode ){
+      this._invalidCode = true;
+      this._revision++;
+    }
   }
 
   isInvalid(){
-    return this._dirtyFlags !== 0;
+    return this._invalidList || this._invalidCode;
+  }
+
+  getRevision(){
+    return this._revision;
   }
 
 
@@ -78,7 +88,6 @@ export default class ChunkCollection {
           actives = this._actives;
 
 
-    // TODO unregister all : remove from lists
     for( const chunk of all ){
       chunk.removeList( this );
     }
@@ -102,8 +111,7 @@ export default class ChunkCollection {
       chunk.addList( this );
     }
 
-    this._dirtyFlags &= ~DirtyFlag.Hierarchy;
-    this._dirtyFlags |= DirtyFlag.Code;
+    this._invalidList = false;
 
   }
 
@@ -115,28 +123,15 @@ export default class ChunkCollection {
   }
 
 
-//   getHash(){
-//     let res    = '';
+  getCode( base? : ChunkSlots ) : ChunkSlots {
 
-//     for ( const chunk of this._actives ){
-//       if( chunk.hasCode )
-//         res += chunk.getHash();
-//     }
-
-//     return res;
-//   }
-
-
-  getCode() : ChunkSlots {
-
-    if( ( this._dirtyFlags & DirtyFlag.Hierarchy ) !== 0 ){
+    if( this._invalidList ){
       this._collectChunks();
     }
 
-    if( this._cachedSlots === null || ( this._dirtyFlags & DirtyFlag.Code ) !== 0 )  {
+    if( this._cachedSlots === null || this._invalidCode )  {
 
       const slots = new ChunkSlots();
-      slots.hash = this.baseHash;
 
       for ( const chunk of this._codes ){
         chunk.genCode( slots );
@@ -145,9 +140,15 @@ export default class ChunkCollection {
 
       this._cachedSlots = slots;
 
-      this._dirtyFlags &= ~DirtyFlag.Code;
+      this._invalidCode = false;
   
     }
+    
+    if( base !== undefined ){
+      base.merge( this._cachedSlots );
+      return base;
+    }
+
     return this._cachedSlots;
   }
 

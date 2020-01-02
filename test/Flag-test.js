@@ -11,10 +11,10 @@ import Flag from '../Flag';
 
 describe( "Flag", function(){
 
-  let collection= new ChunkCollection('x')
+  let collection= new ChunkCollection()
 
   beforeEach( function(){
-    collection = new ChunkCollection('x')
+    collection = new ChunkCollection()
   });
 
   describe( "code gen", function(){
@@ -31,7 +31,7 @@ describe( "Flag", function(){
       collection.add( flag );
       var code = collection.getCode();
       
-      expect( code.hash ).to.be( 'xMyFlag0' );
+      expect( code.hash ).to.be( 'MyFlag0' );
     });
 
 

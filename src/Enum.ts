@@ -54,7 +54,7 @@ class Enum<T extends readonly string[]> extends Chunk {
     if (this._valIndex !== idx) {
       this._valIndex = idx;
       this._val = val;
-      this.invalidate(DirtyFlag.Code);
+      this.invalidateCode();
     }
   }
 

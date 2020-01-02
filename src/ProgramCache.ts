@@ -3,7 +3,7 @@ import { GLContext } from 'nanogl/types'
 import GLConfig from 'nanogl-state/config'
 import ChunkSlots from './ChunksSlots'
 import IMaterial from './interfaces/IMaterial';
-import IProgramSource from './ProgramSource';
+import IProgramSource from './interfaces/IProgramSource';
 
 const PRAGMA_SLOT = '#pragma SLOT';
 const PRAGMA_REGEX = /^\s*#pragma SLOT\s\w+\s*$/gm;
@@ -47,15 +47,15 @@ class ProgramCache {
 
   compile(source : IProgramSource) : Program {
 
-    const hash = source.slots.hash;
+    const hash = source.shaderSource.uid + source.slots.hash;
 
     const cached = this._cache[hash];
     if (cached !== undefined) {
       return cached;
     }
 
-    const vert = processSlots( source.vertexSource  , source.slots );
-    const frag = processSlots( source.fragmentSource, source.slots );
+    const vert = processSlots( source.shaderSource.vert, source.slots );
+    const frag = processSlots( source.shaderSource.frag, source.slots );
 
     const prg = new Program(this.gl, vert, frag);
 

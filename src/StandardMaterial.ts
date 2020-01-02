@@ -20,26 +20,23 @@ import Camera from 'nanogl-camera'
 import { ICameraLens } from 'nanogl-camera/ICameraLens'
 import Program from 'nanogl/program'
 import { GammaModes, GammaModeEnum } from './GammaModeEnum'
-import IProgramSource from './ProgramSource'
+import BaseMaterial from './BaseMaterial'
+import { ShaderSource } from './interfaces/IProgramSource'
 
 
 const M4 = mat4.create();
 const MAT_ID = 'std';
 
 
-export default class StandardMaterial {
+export default class StandardMaterial extends BaseMaterial {
 
+
+  
   ibl: IBL | null
-  prg: Program | null
-
-  _prgcache: ProgramCache
-
-  _mask: number
-
-  inputs   : ChunkCollection
+  
   version  : Version
   precision: Precision
-
+  
   iAlbedo        : Input
   iSpecular      : Input
   iGloss         : Input
@@ -52,30 +49,24 @@ export default class StandardMaterial {
   iFresnel       : Input
   iGamma         : Input
   iExposure      : Input
-
+  
   conserveEnergy : Flag
   perVertexIrrad : Flag
   glossNearest   : Flag
   useDerivatives : Flag
-
+  
   gammaMode: GammaModeEnum
   
-  config: GLConfig
-
-  _vertSrc: string
-  _fragSrc: string
+  _shaderSource: ShaderSource
 
 
-  constructor( gl : GLContext ){
+  constructor( gl : GLContext, name? : string ){
+
+    super( gl, name );
 
     this.ibl = null;
-    this.prg = null;
-
-    this._mask = 1;
 
     const webgl2 = isWebgl2(gl);
-
-    this.inputs          = new ChunkCollection( MAT_ID );
 
     this.version         = this.inputs.add( new Version( webgl2? '300 es' : '100' ) );
     this.precision       = this.inputs.add( new Precision( 'mediump' ) );
@@ -101,15 +92,19 @@ export default class StandardMaterial {
     this.gammaMode       = this.inputs.add( new Enum( 'gammaMode', GammaModes ));
 
 
-    this.config     = new GLConfig();
-    this._prgcache  = ProgramCache.getCache( gl );
-
-    this._vertSrc = getVert();
-    this._fragSrc = getFrag();
+    this._shaderSource = {
+      uid  : MAT_ID,
+      vert : getVert(),
+      frag : getFrag(),
+    }
 
   }
 
-
+    
+  getShaderSource(): ShaderSource {
+    return this._shaderSource;
+  }
+  
 
   setIBL( ibl : IBL ){
     this.ibl = ibl;
@@ -121,17 +116,11 @@ export default class StandardMaterial {
   }
 
 
-  // render time !
-  // ----------
   prepare( node : Node, camera : Camera<ICameraLens> ){
-
-    if( this._isDirty() ){
-      this.compile();
-    }
 
     // this.
 
-    var prg = this.prg!;
+    var prg = this.getProgram();
     prg.use();
 
     prg.setupInputs( this );
@@ -148,40 +137,6 @@ export default class StandardMaterial {
 
   }
 
-
-
-
-  // need recompilation
-  _isDirty(){
-    if( this.prg === null || this.inputs.isInvalid() ){
-      return true;
-    }
-    return false;
-  }
-
-  getProgram() : Program {
-    if( this._isDirty() ){
-      this.compile();
-    }
-    return this.prg!;
-  }
-
-
-  compile(){
-    if( this.prg !== null ){
-      this._prgcache.release( this.prg );
-    }
-
-    // this.inputs.updateChunks();
-
-    const prgSource : IProgramSource = {
-      vertexSource   : this._vertSrc,
-      fragmentSource : this._fragSrc,
-      slots          : this.inputs.getCode(),
-    }
-
-    this.prg = this._prgcache.compile( prgSource );
-  }
 
 
 

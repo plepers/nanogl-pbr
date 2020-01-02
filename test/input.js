@@ -1,3 +1,5 @@
+//@ts-check
+
 var expect  = require( 'expect.js' );
 
 

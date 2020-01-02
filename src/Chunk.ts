@@ -56,7 +56,7 @@ export default abstract class Chunk {
       return child;
     }
     this._children.push(child);
-    this.invalidate(DirtyFlag.Hierarchy);
+    this.invalidateList();
     return child;
   }
 
@@ -66,7 +66,7 @@ export default abstract class Chunk {
     if (i > -1) {
       this._children.splice(i, 1);
     }
-    this.invalidate(DirtyFlag.Hierarchy);
+    this.invalidateList();
   }
 
 
@@ -128,9 +128,15 @@ export default abstract class Chunk {
     this._lists.delete( list );
   }
 
-  invalidate( flags : DirtyFlag) {
+  invalidateList() {
     for( const l of this._lists.values() ){
-      l.invalidate( flags );
+      l.invalidateList();
+    }
+  }
+
+  invalidateCode() {
+    for( const l of this._lists.values() ){
+      l.invalidateCode();
     }
   }
 
@@ -138,7 +144,7 @@ export default abstract class Chunk {
   proxy( ref : this|null = null ){
     if( this._ref === ref ) return;
     this._ref = ref;
-    this.invalidate( DirtyFlag.Hierarchy );
+    this.invalidateList();
   }
 
 

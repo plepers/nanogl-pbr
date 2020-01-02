@@ -36,6 +36,13 @@ class ChunkSlots {
   add(slotId: string, code: string) {
     this.getSlot(slotId).code += code + '\n';
   }
+  
+
+  merge( other : ChunkSlots ){
+    for( var os of other.slots ){
+      this.add( os.key, os.code );
+    }
+  }
 
 };
 

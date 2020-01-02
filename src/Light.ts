@@ -13,7 +13,7 @@ import { ICameraLens } from 'nanogl-camera/ICameraLens';
 
 
 // for shadow proj
-const ScreenMtx : mat4 = <mat4>new Float32Array([
+const ScreenMtx : mat4 = <mat4> new Float32Array([
   0.5, 0, 0, 0,
   0, 0.5, 0, 0,
   0, 0, 0.5, 0,
