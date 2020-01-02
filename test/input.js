@@ -2,7 +2,7 @@ var expect  = require( 'expect.js' );
 
 
 import Input    from '../Input'
-import ChunkList from '../ChunksCollection'
+import ChunkList from '../ChunkCollection'
 
 
 

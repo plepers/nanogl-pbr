@@ -7,7 +7,7 @@ import { GLContext } from 'nanogl/types';
 import Input        from'./Input'
 import Flag         from'./Flag'
 import Enum         from'./Enum'
-import ChunksList   from'./ChunksCollection'
+import ChunksList   from'./ChunkCollection'
 
 import { mat4 } from 'gl-matrix';
 import { GlslPrecision } from './interfaces/GlslPrecision';
@@ -102,7 +102,7 @@ class DepthPass implements IMaterial {
 
   // need recompilation
   _isDirty(){
-    return ( this.prg === null || this.inputs._isDirty );
+    return ( this.prg === null || this.inputs.isInvalid() );
   }
 
 

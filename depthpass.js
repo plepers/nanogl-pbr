@@ -1,11 +1,11 @@
 import Config from 'nanogl-state/config';
-import ProgramCache from './program-cache';
-import Enum from './enum';
-import ChunksList from './chunks-tree';
+import ProgramCache from './ProgramCache';
+import Enum from './Enum';
+import ChunksList from './ChunkCollection';
 import { mat4 } from 'gl-matrix';
 import VertShader from './glsl/depthpass.vert';
 import FragShader from './glsl/depthpass.frag';
-import DepthFormat from './depth-format-enum';
+import DepthFormat from './DepthFormatEnum';
 const M4 = mat4.create();
 class DepthPass {
     constructor(gl) {
@@ -37,7 +37,7 @@ class DepthPass {
         prg.uMVP(M4);
     }
     _isDirty() {
-        return (this.prg === null || this.inputs._isDirty);
+        return (this.prg === null || this.inputs.isInvalid());
     }
     compile() {
         if (this.prg !== null) {

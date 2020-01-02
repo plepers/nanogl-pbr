@@ -5,7 +5,7 @@ import Node       from 'nanogl-node'
 import DirLight   from '../DirectionalLight' 
 import SpotLight   from '../SpotLight' 
 import LightSetup from '../LightSetup' 
-import ChunkList from '../ChunksCollection' 
+import ChunkList from '../ChunkCollection' 
 
 
 

@@ -1,10 +1,10 @@
 import Program    from 'nanogl/program'
-import ChunksTree from './ChunksCollection' 
+import ChunksTree, { DirtyFlag } from './ChunkCollection' 
 import ChunkSlots from './ChunksSlots'
 
 
 
-abstract class Chunk {
+export default abstract class Chunk {
 
   private   _lists: Set<ChunksTree>;
 
@@ -56,7 +56,7 @@ abstract class Chunk {
       return child;
     }
     this._children.push(child);
-    this.invalidate();
+    this.invalidate(DirtyFlag.Hierarchy);
     return child;
   }
 
@@ -66,7 +66,7 @@ abstract class Chunk {
     if (i > -1) {
       this._children.splice(i, 1);
     }
-    this.invalidate();
+    this.invalidate(DirtyFlag.Hierarchy);
   }
 
 
@@ -128,9 +128,9 @@ abstract class Chunk {
     this._lists.delete( list );
   }
 
-  invalidate() {
+  invalidate( flags : DirtyFlag) {
     for( const l of this._lists.values() ){
-      l._isDirty = true;
+      l.invalidate( flags );
     }
   }
 
@@ -138,7 +138,7 @@ abstract class Chunk {
   proxy( ref : this|null = null ){
     if( this._ref === ref ) return;
     this._ref = ref;
-    this.invalidate();
+    this.invalidate( DirtyFlag.Hierarchy );
   }
 
 
@@ -151,8 +151,3 @@ abstract class Chunk {
 
 
 }
-
-
-
-
-export default Chunk;

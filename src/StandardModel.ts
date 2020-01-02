@@ -25,6 +25,7 @@ import pointLightCode from './glsl/templates/standard/point-light.frag'
 import shadPreCode from './glsl/templates/standard/shadow-maps-pre.frag'
 import preLightCode from './glsl/templates/standard/pre-light-setup.frag'
 import postLightCode from './glsl/templates/standard/post-light-setup.frag'
+import { DirtyFlag } from './ChunkCollection'
 
 
 
@@ -267,7 +268,7 @@ class ShadowsChunk extends Chunk {
       this._umatrices = new Float32Array(this._matrices.buffer, 0, this.shadowCount * 16)
       this._utexelBiasVector = new Float32Array(this._texelBiasVector.buffer, 0, this.shadowCount * 4)
       this._ushadowmapSizes = new Float32Array(this._shadowmapSizes.buffer, 0, this.shadowCount * 2)
-      this.invalidate();
+      this.invalidate(DirtyFlag.Code);
     }
     this._invalid = true;
   }
@@ -316,7 +317,7 @@ abstract class LightDatas<TLight extends Light> extends Chunk {
     if (this.lights.indexOf(l) === -1) {
       this.lights.push(l);
       this.shadowIndices.push(-1)
-      this.invalidate();
+      this.invalidate(DirtyFlag.Code);
     }
   }
 
@@ -326,7 +327,7 @@ abstract class LightDatas<TLight extends Light> extends Chunk {
     if (i > -1) {
       this.lights.splice(i, 1);
       this.shadowIndices.splice(i, 1);
-      this.invalidate()
+      this.invalidate(DirtyFlag.Code)
     }
   }
 
@@ -448,7 +449,7 @@ class SpotDatas extends LightDatas<SpotLight> {
       if (l._castShadows) {
         var shIndex = model.shadowChunk.addLight(l);
         if (this.shadowIndices[i] !== shIndex) {
-          this.invalidate();
+          this.invalidate(DirtyFlag.Code);
         }
         this.shadowIndices[i] = shIndex;
       } else {
@@ -528,7 +529,7 @@ class DirDatas extends LightDatas<DirectionalLight> {
       if (l._castShadows) {
         var shIndex = model.shadowChunk.addLight(l);
         if (this.shadowIndices[i] !== shIndex) {
-          this.invalidate();
+          this.invalidate(DirtyFlag.Code);
         }
         this.shadowIndices[i] = shIndex;
       } else {
@@ -615,7 +616,7 @@ class PointDatas extends LightDatas<PointLight> {
       if (l._castShadows) {
         var shIndex = model.shadowChunk.addLight(l);
         if (this.shadowIndices[i] !== shIndex) {
-          this.invalidate();
+          this.invalidate(DirtyFlag.Code);
         }
         this.shadowIndices[i] = shIndex;
       } else {

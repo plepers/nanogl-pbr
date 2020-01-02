@@ -6,7 +6,7 @@ import Flag         from './Flag'
 import Enum         from './Enum'
 import Precision    from './ShaderPrecision'
 import Version      from './ShaderVersion'
-import ChunksList   from './ChunksCollection'
+import ChunksList   from './ChunkCollection'
 import { mat4 } from 'gl-matrix'
 
 
@@ -154,7 +154,7 @@ export default class StandardMaterial {
 
   // need recompilation
   _isDirty(){
-    if( this.prg === null || this.inputs._isDirty ){
+    if( this.prg === null || this.inputs.isInvalid() ){
       return true;
     }
     return false;

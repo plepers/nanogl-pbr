@@ -1,4 +1,4 @@
-import Chunk from './chunk';
+import Chunk from './Chunk';
 class Enum extends Chunk {
     constructor(name, penum) {
         super(true, false);
@@ -12,7 +12,7 @@ class Enum extends Chunk {
                 throw new Error(`invalide Enum value :${val}`);
             }
             this._val = val;
-            this.invalidate();
+            this.invalidate(1);
         }
     }
     _genCode(slots) {

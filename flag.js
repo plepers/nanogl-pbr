@@ -1,4 +1,4 @@
-import Chunk from './chunk';
+import Chunk from './Chunk';
 class Flag extends Chunk {
     constructor(name, val = false) {
         super(true, false);
@@ -14,7 +14,7 @@ class Flag extends Chunk {
     set(val = false) {
         if (this._val !== val) {
             this._val = val;
-            this.invalidate();
+            this.invalidate(1);
         }
     }
     _genCode(slots) {

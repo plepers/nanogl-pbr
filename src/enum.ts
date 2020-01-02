@@ -1,6 +1,7 @@
 
 import Chunk from './Chunk'
 import ChunkSlots from './ChunksSlots'
+import { DirtyFlag } from './ChunkCollection';
 
 class Enum<T extends readonly string[]> extends Chunk {
   
@@ -30,7 +31,7 @@ class Enum<T extends readonly string[]> extends Chunk {
         throw new Error(`invalide Enum value :${val}`);
       }
       this._val = val;
-      this.invalidate();
+      this.invalidate(DirtyFlag.Code);
     }
   }
 

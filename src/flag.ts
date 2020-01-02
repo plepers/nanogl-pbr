@@ -1,6 +1,7 @@
 
 import Chunk from './Chunk'
 import ChunkSlots from './ChunksSlots'
+import { DirtyFlag } from './ChunkCollection';
 
 
 class Flag extends Chunk {
@@ -32,7 +33,7 @@ class Flag extends Chunk {
   set(val : boolean = false) {
     if (this._val !== val) {
       this._val = val;
-      this.invalidate();
+      this.invalidate(DirtyFlag.Code);
     }
   }
 

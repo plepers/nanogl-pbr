@@ -1,7 +1,7 @@
 import Program from 'nanogl/program';
-import ChunksTree from './chunks-tree';
-import ChunkSlots from './chunks-slots';
-declare abstract class Chunk {
+import ChunksTree, { DirtyFlag } from './ChunkCollection';
+import ChunkSlots from './ChunksSlots';
+export default abstract class Chunk {
     private _lists;
     protected _hasCode: boolean;
     protected _hasSetup: boolean;
@@ -22,8 +22,7 @@ declare abstract class Chunk {
     setup(prg: Program): void;
     addList(list: ChunksTree): void;
     removeList(list: ChunksTree): void;
-    invalidate(): void;
+    invalidate(flags: DirtyFlag): void;
     proxy(ref?: this | null): void;
     createProxy(): Chunk;
 }
-export default Chunk;

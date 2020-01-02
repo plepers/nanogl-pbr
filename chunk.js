@@ -1,4 +1,4 @@
-class Chunk {
+export default class Chunk {
     constructor(hasCode = false, hasSetup = false) {
         this._ref = null;
         this._lists = new Set();
@@ -24,7 +24,7 @@ class Chunk {
             return child;
         }
         this._children.push(child);
-        this.invalidate();
+        this.invalidate(2);
         return child;
     }
     removeChild(child) {
@@ -32,7 +32,7 @@ class Chunk {
         if (i > -1) {
             this._children.splice(i, 1);
         }
-        this.invalidate();
+        this.invalidate(2);
     }
     genCode(slots) {
         if (this._ref !== null) {
@@ -82,16 +82,16 @@ class Chunk {
     removeList(list) {
         this._lists.delete(list);
     }
-    invalidate() {
+    invalidate(flags) {
         for (const l of this._lists.values()) {
-            l._isDirty = true;
+            l.invalidate(flags);
         }
     }
     proxy(ref = null) {
         if (this._ref === ref)
             return;
         this._ref = ref;
-        this.invalidate();
+        this.invalidate(2);
     }
     createProxy() {
         const Class = Chunk;
@@ -100,4 +100,3 @@ class Chunk {
         return p;
     }
 }
-export default Chunk;

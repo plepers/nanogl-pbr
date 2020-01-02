@@ -1,4 +1,4 @@
-import ChunksTree from "../ChunksCollection";
+import ChunksTree from "../ChunkCollection";
 import Program from "nanogl/program";
 
 
