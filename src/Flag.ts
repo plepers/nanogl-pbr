@@ -4,13 +4,13 @@ import ChunkSlots from './ChunksSlots'
 import { DirtyFlag } from './ChunkCollection';
 
 
-class Flag extends Chunk {
+class Flag<T extends string = string> extends Chunk {
   
-  name: string;
+  name: T;
 
   private _val: boolean;
   
-  constructor(name : string, val : boolean = false ) {
+  constructor(name : T, val : boolean = false ) {
 
     super(true, false);
 
@@ -47,7 +47,7 @@ class Flag extends Chunk {
 
 
   _getHash() {
-    return `${this.name}-${~~this._val}`;
+    return `${this.name}${~~this._val}`;
   }
 
 }

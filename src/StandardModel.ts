@@ -115,18 +115,19 @@ class StandardModel implements ILightModel {
   }
 
   getChunks() {
-    const res: Chunk[] = [];
+    const res: Chunk[] = [
+      this.iblShadowing,
+      this.shadowFilter,
+      this.shadowChunk,
+      this.preLightsChunk,
+    ];
 
-    res.push(this.iblShadowing.createProxy());
-    res.push(this.shadowFilter.createProxy());
-    res.push(this.shadowChunk.createProxy());
-    res.push(this.preLightsChunk.createProxy());
 
     for (var i = 0; i < this._dataList.length; i++) {
-      res.push(this._dataList[i].createProxy());
+      res.push( this._dataList[i] );
     }
 
-    res.push(this.postLightsChunk.createProxy());
+    res.push(this.postLightsChunk);
 
     return res;
   }

@@ -1,32 +1,48 @@
 import GLConfig       from 'nanogl-state/config'
+import ProgramCache from './ProgramCache';
+import { GLContext } from 'nanogl/types';
+import Program from 'nanogl/program';
+import ChunkCollection from './ChunkCollection';
+import IProgramSource from './ProgramSource';
 
 
-export default class BaseMaterial {
+export default abstract class BaseMaterial {
   
   name: string;
 
-  mask: number = ~0;
-
-  glconfig : GLConfig;
   
-  _vertSrc : string = '';
-  _fragSrc : string = '';
+  mask: number = ~0;
+  
+  glconfig : GLConfig;
+  inputs: ChunkCollection;
+  
+  _program: Program | null
+  _prgcache: ProgramCache;
 
+  abstract _vertSrc : string;
+  abstract _fragSrc : string;
+  
   _passMap : Map<string, BaseMaterial>;
   _passes  : BaseMaterial[];
-
-
-  constructor(name: string = '') {
+  
+  
+  constructor(gl : GLContext, name: string = '') {
     this.name = name;
-
+    
     this.glconfig = new GLConfig();
-
+    
+    this.inputs   = new ChunkCollection( this.getMatId() );
+    
+    this._program =null;
+    this._prgcache  = ProgramCache.getCache( gl );
+    
     this._passMap = new Map()
     this._passes  = []
-
+    
   }
 
 
+  abstract getMatId() : string;
 
 
   addPass( id:string, pass:BaseMaterial ){
@@ -58,17 +74,31 @@ export default class BaseMaterial {
   }
 
 
-  addModifier(mod: any){
 
+  getProgram() : Program {
+    if( this._program === null || this.inputs.isInvalid() ){
+      this.compile();
+    }
+    return this._program!;
   }
 
-  getModifier(modid: string):any {
 
+  compile(){
+    
+    if( this._program !== null ){
+      this._prgcache.release( this._program );
+    }
+
+    // this.inputs.updateChunks();
+
+    const prgSource : IProgramSource = {
+      vertexSource   : this._vertSrc,
+      fragmentSource : this._fragSrc,
+      slots          : this.inputs.getCode(),
+    }
+
+    this._program = this._prgcache.compile( prgSource );
   }
-
-
-
-  
 
 
 }

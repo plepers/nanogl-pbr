@@ -72,7 +72,7 @@ class LightSetup {
     }
 
     var res = this._modelsMap[modelId].getChunks();
-    res.unshift(this.depthFormat.createProxy());
+    res.unshift(this.depthFormat);
     return res;
   }
 

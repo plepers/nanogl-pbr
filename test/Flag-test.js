@@ -1,4 +1,4 @@
-
+//@ts-check
 
 var expect  = require( 'expect.js' );
 var sinon  = require( 'sinon' );
@@ -6,10 +6,10 @@ var sinon  = require( 'sinon' );
 
 import ChunkCollection, { DirtyFlag } from '../ChunkCollection'
 import {CodeChunk} from './utils/TestChunks'
-import Enum from '../Enum';
+import Flag from '../Flag';
 
 
-describe( "Enum", function(){
+describe( "Flag", function(){
 
   let collection= new ChunkCollection('x')
 
@@ -19,79 +19,56 @@ describe( "Enum", function(){
 
   describe( "code gen", function(){
 
-    var penum;
-    const ecode = 
-`#define A 1
-#define B 2
-#define C 3
+    var flag;
 
-#define VAL_MyEnum A
-#define MyEnum(k) VAL_MyEnum == k
-`;
 
     beforeEach( function(){
-      penum = new Enum( 'MyEnum', ['A', 'B', 'C'] )
-
+      flag = new Flag( 'MyFlag' )
     });
 
 
     it( 'collection hash should be ok', function(){
-      collection.add( penum );
+      collection.add( flag );
       var code = collection.getCode();
       
-      expect( code.hash ).to.be( 'xMyEnum0' );
+      expect( code.hash ).to.be( 'xMyFlag0' );
     });
 
 
     it( 'collection num slots should be 1', function(){
-      collection.add( penum );
+      collection.add( flag );
       var code = collection.getCode();
       
       expect( code.slots.length ).to.be( 1 );
     });
 
     it( 'collection code should be ok', function(){
-      collection.add( penum );
+      collection.add( flag );
       var code = collection.getCode();
-      // console.log(  code.slots[0].code )
-      expect( code.slots[0].code ).to.be( ecode );
+      expect( code.slots[0].code ).to.be( '#define MyFlag 0\n' );
     });
 
 
     it( 'collection code should be ok after change', function(){
-      collection.add( penum );
+      collection.add( flag );
       var code = collection.getCode();
-      penum.set( 'B' )
+      flag.enable()
       code = collection.getCode();
-      expect( code.slots[0].code ).to.be( 
-`#define A 1
-#define B 2
-#define C 3
-
-#define VAL_MyEnum B
-#define MyEnum(k) VAL_MyEnum == k
-`);
+      expect( code.slots[0].code ).to.be( '#define MyFlag 1\n' );
     });
 
 
     it( 'proxiing should be ok', function(){
-      var proxy = new Enum( 'MyEnum', ['A', 'B', 'C'] )
-      proxy.set( 'B' );
+      var proxy = new Flag( 'MyFlag', true )
 
-      collection.add( penum );
+      collection.add( flag );
       var code = collection.getCode();
 
-      penum.proxy( proxy );
+      flag.proxy( proxy );
 
       code = collection.getCode();
-      expect( code.slots[0].code ).to.be( 
-`#define A 1
-#define B 2
-#define C 3
-
-#define VAL_MyEnum B
-#define MyEnum(k) VAL_MyEnum == k
-`);
+      
+      expect( code.slots[0].code ).to.be( '#define MyFlag 1\n' );
     });
 
 

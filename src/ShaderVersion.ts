@@ -28,7 +28,7 @@ class ShaderVersion extends Chunk {
 
 
   _genCode( slots : ChunkSlots ) {
-    var s = `#version ${this.version}\n`;
+    var s = `#version ${this.version}`;
     slots.add('version', s);
   }
 

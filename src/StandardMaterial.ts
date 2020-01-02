@@ -36,10 +36,9 @@ export default class StandardMaterial {
 
   _mask: number
 
-  inputs: ChunkCollection
-  version: Version
+  inputs   : ChunkCollection
+  version  : Version
   precision: Precision
-  shaderid: Flag
 
   iAlbedo        : Input
   iSpecular      : Input
@@ -80,7 +79,6 @@ export default class StandardMaterial {
 
     this.version         = this.inputs.add( new Version( webgl2? '300 es' : '100' ) );
     this.precision       = this.inputs.add( new Precision( 'mediump' ) );
-    this.shaderid        = this.inputs.add( new Flag ( 'id_'+MAT_ID,  true  ) );
 
     this.iAlbedo         = this.inputs.add( new Input( 'albedo',          3 ) );
     this.iSpecular       = this.inputs.add( new Input( 'specular',        3 ) );
