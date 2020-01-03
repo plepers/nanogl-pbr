@@ -250,45 +250,51 @@ describe( "Chunk", function(){
       collection.add( chunk );
       collection.getCode();
       collection.add( new CodeChunk( 'X' ) );
-
+      //@ts-ignore
       expect( collection._invalidList ).to.be( true );
     });
-
-
+    
+    
     it( 'hierarchy should be invalid after removing chunk', function(){
       collection.add( chunk );
       collection.add( new CodeChunk( 'X' ) );
       collection.getCode();
       collection.remove( chunk );
-
+      
+      //@ts-ignore
       expect( collection._invalidList ).to.be( true );
     });
-
-
+    
+    
     it( 'hierarchy should be invalid after proxiing chunk', function(){
       collection.add( chunk );
       collection.getCode();
       chunk.proxy( proxy );
-
+      
+      //@ts-ignore
       expect( collection._invalidList ).to.be( true );
     });
-
-
+    
+    
     it( 'code should be invalid after update chunk', function(){
       collection.add( chunk );
       collection.getCode();
       chunk.setCode('B');
-
+      
+      //@ts-ignore
       expect( collection._invalidList ).to.be( false );
+      //@ts-ignore
       expect( collection._invalidCode ).to.be( true );
     });
-
-
+    
+    
     it( 'dirty flags should be 0 after getCode', function(){
       collection.add( chunk );
       collection.getCode();
-
+      
+      //@ts-ignore
       expect( collection._invalidList ).to.be( false );
+      //@ts-ignore
       expect( collection._invalidCode ).to.be( false );
     });
 

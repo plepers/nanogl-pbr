@@ -22,41 +22,30 @@ import ChunkCollection from './ChunkCollection';
 import IProgramSource, { ShaderSource } from './interfaces/IProgramSource';
 import BaseMaterial from './BaseMaterial';
 import ShaderPrecision from './ShaderPrecision';
+import MaterialPass from './MaterialPass';
 
 const M4           = mat4.create();
 
 
 
-export default class DepthPass extends BaseMaterial {
+export default class DepthPass extends MaterialPass {
   
   depthFormat: DepthFormatEnum;
-
-
-
-  _shaderSource: ShaderSource
   precision: ShaderPrecision;
 
-  getShaderSource(): ShaderSource {
-    return this._shaderSource;
-  }
   
   constructor( gl : GLContext ){
     
-    super( gl, 'stddepth' );
-
-    this.depthFormat  = this.inputs.add( new Enum( 'depthFormat', DepthFormat ) );
-    this.precision    = this.inputs.add( new ShaderPrecision( 'highp' ) );
-    
-    this._shaderSource = {
+    super( {
       uid  : 'stddepth',
       vert : VertShader(),
       frag : FragShader(),
-    }
+    } );
+
+    this.depthFormat  = this.inputs.add( new Enum( 'depthFormat', DepthFormat ) );
+    this.precision    = this.inputs.add( new ShaderPrecision( 'highp' ) );  
 
   }
-  
-  
-  
   
   setLightSetup( setup : LightSetup ){
     this.depthFormat.proxy( setup?.depthFormat );
@@ -64,17 +53,10 @@ export default class DepthPass extends BaseMaterial {
   
   // render time !
   // ----------
-  prepare( node :Node, camera : Camera<ICameraLens> ){
+  prepare( prg : Program, node :Node, camera : Camera<ICameraLens> ){
     
-    var prg = this.getProgram();
-    prg.use();
-
-    prg.setupInputs( this );
-
-    // matrices
     camera.modelViewProjectionMatrix( M4, node._wmatrix );
     prg.uMVP( M4 );
-
 
   }
 

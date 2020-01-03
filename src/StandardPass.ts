@@ -1,12 +1,9 @@
-import GLConfig       from  'nanogl-state/config'
 
-import ProgramCache from './ProgramCache'
 import Input        from './Input'
 import Flag         from './Flag'
 import Enum         from './Enum'
 import Precision    from './ShaderPrecision'
 import Version      from './ShaderVersion'
-import ChunkCollection   from './ChunkCollection'
 import { mat4 } from 'gl-matrix'
 
 
@@ -18,18 +15,18 @@ import LightSetup from './LightSetup'
 import Node from 'nanogl-node'
 import Camera from 'nanogl-camera'
 import { ICameraLens } from 'nanogl-camera/ICameraLens'
-import Program from 'nanogl/program'
 import { GammaModes, GammaModeEnum } from './GammaModeEnum'
-import BaseMaterial from './BaseMaterial'
 import { ShaderSource } from './interfaces/IProgramSource'
+import MaterialPass from './MaterialPass'
+import Program from 'nanogl/program'
 
 
 const M4 = mat4.create();
+
 const MAT_ID = 'std';
 
 
-export default class StandardMaterial extends BaseMaterial {
-
+export default class StandardPass extends MaterialPass {
 
   
   ibl: IBL | null
@@ -57,12 +54,14 @@ export default class StandardMaterial extends BaseMaterial {
   
   gammaMode: GammaModeEnum
   
-  _shaderSource: ShaderSource
-
-
+  
   constructor( gl : GLContext, name? : string ){
 
-    super( gl, name );
+    super( {
+      uid  : MAT_ID,
+      vert : getVert(),
+      frag : getFrag(),
+    } );
 
     this.ibl = null;
 
@@ -91,20 +90,9 @@ export default class StandardMaterial extends BaseMaterial {
 
     this.gammaMode       = this.inputs.add( new Enum( 'gammaMode', GammaModes ));
 
-
-    this._shaderSource = {
-      uid  : MAT_ID,
-      vert : getVert(),
-      frag : getFrag(),
-    }
-
   }
 
-    
-  getShaderSource(): ShaderSource {
-    return this._shaderSource;
-  }
-  
+ 
 
   setIBL( ibl : IBL ){
     this.ibl = ibl;
@@ -116,14 +104,10 @@ export default class StandardMaterial extends BaseMaterial {
   }
 
 
-  prepare( node : Node, camera : Camera<ICameraLens> ){
+  prepare( prg:Program, node : Node, camera : Camera<ICameraLens> ){
 
     // this.
 
-    var prg = this.getProgram();
-    prg.use();
-
-    prg.setupInputs( this );
 
     this.ibl!.setupProgram( prg );
 

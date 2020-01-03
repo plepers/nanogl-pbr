@@ -4,68 +4,115 @@ import { GLContext } from 'nanogl/types';
 import Program from 'nanogl/program';
 import ChunkCollection from './ChunkCollection';
 import IProgramSource, {ShaderSource} from './interfaces/IProgramSource';
+import ChunkSlots from './ChunksSlots';
+import MaterialPass from './MaterialPass';
+import Node from 'nanogl-node';
+import Camera from 'nanogl-camera';
 
 
 
-class MaterialPass {
+
+
+class PassInstance {
+
+  readonly id: string;
+  readonly pass : MaterialPass;
+  readonly material: BaseMaterial;
+
+  _program: Program | null = null
+  _revision = 0;
+
+  constructor( material : BaseMaterial, id:string, pass : MaterialPass ){
+    this.id = id;
+    this.pass = pass;
+    this.material = material;
+  }
 
   
-  name: string = '';
-  mask: number = ~0;
-  
-  glconfig? : GLConfig;
+  getSourceRevision(){
+    return this.pass.inputs.getRevision() + this.material.inputs.getRevision();
+  }
 
-  inputs: ChunkCollection = new ChunkCollection();
-  _shaderSource: ShaderSource;
-  
-  
-  constructor( shaderSource : ShaderSource ){
-    this._shaderSource = shaderSource;
+
+  prepare( node : Node, camera : Camera ){
+    const prg = this.getProgram();
+
+    prg.use();
+
+    this.pass    .inputs.setupProgram( prg );
+    this.material.inputs.setupProgram( prg );
+
+    this.pass.prepare( prg, node, camera );
+  }
+
+
+  getProgram( ) : Program {
+    
+    const sourceRev = this.getSourceRevision();
+
+    if( this._program === null || this._revision !== sourceRev ){
+      this.compile();
+      this._revision = sourceRev;
+    }
+    return this._program!;
+  }
+
+
+  private compile(){
+    const pcache = this.material._prgcache;
+
+    if( this._program !== null ){
+      pcache.release( this._program );
+    }
+
+    const slots = new ChunkSlots();
+    this.pass     .inputs.getCode( slots );
+    this.material .inputs.getCode( slots );
+    
+    const prgSource : IProgramSource = {
+      shaderSource   : this.pass._shaderSource,
+      slots          : slots,
+    }
+    
+    this._program = pcache.compile( prgSource );
   }
 
 }
 
 
 
-class MaterialVariant {
-
-  inputs: ChunkCollection = new ChunkCollection();
-  _program: Program | null = null
-  _revision = 0;
-
-}
 
 export default abstract class BaseMaterial {
   
   name: string;
-
   
   mask: number = ~0;
   
   glconfig : GLConfig;
+  
   inputs: ChunkCollection;
   
-  _program: Program | null
   _prgcache: ProgramCache;
 
-  _passMap : Map<string, MaterialPass>;
-  _passes  : MaterialPass[];
+  _passMap : Map<string, PassInstance>;
+  _passes  : PassInstance[];
+  _defaultPass: PassInstance;
 
-  // _defaultVariant = new MaterialVariant();
   
-  
-  constructor(gl : GLContext, name: string = '') {
+  constructor(gl : GLContext, defaultPass : MaterialPass, name: string = '') {
+    
     this.name = name;
     
     this.glconfig = new GLConfig();
     
     this.inputs   = new ChunkCollection();
     
-    this._program =null;
     this._prgcache  = ProgramCache.getCache( gl );
     
     this._passMap = new Map()
     this._passes  = []
+
+    this._defaultPass = this.addPass( '', defaultPass );
     
   }
 
@@ -73,15 +120,19 @@ export default abstract class BaseMaterial {
   abstract getShaderSource() : ShaderSource;
 
 
-  addPass( id:string, pass:MaterialPass ){
+  addPass( id:string, pass:MaterialPass ) : PassInstance {
     if( this._passMap.has( id ) ){
       this.removePass( id );
     }
-    this._passMap.set( id, pass );
-    this._passes.push( pass );
+    const pInst = new PassInstance( this, id, pass );
+    this._passMap.set( id, pInst );
+    this._passes.push( pInst );
+    return pInst;
   }
 
+
   removePass( id : string ){
+    //TODO: release program?
     if( this._passMap.has( id ) ){
       const p = this.getPass( id )!;
       this._passes.splice( this._passes.indexOf( p ), 1 );
@@ -89,7 +140,7 @@ export default abstract class BaseMaterial {
     }
   }
 
-  getPass( id:string ):MaterialPass|undefined{
+  getPass( id:string ):PassInstance|undefined{
     return this._passMap.get( id );
   }
   
@@ -97,61 +148,14 @@ export default abstract class BaseMaterial {
     return this._passMap.has( id );
   }
 
-  getAllPasses():MaterialPass[]{
+  getAllPasses():PassInstance[]{
     return this._passes;
   }
 
 
 
   getProgram() : Program {
-    if( this._program === null || this.inputs.isInvalid() ){
-      this.compile();
-    }
-    return this._program!;
+    return this._defaultPass.getProgram();
   }
-
-  
-  
-  compile(){
-    
-    if( this._program !== null ){
-      this._prgcache.release( this._program );
-    }
-    
-    const prgSource : IProgramSource = {
-      shaderSource   : this.getShaderSource(),
-      slots          : this.inputs.getCode(),
-    }
-    
-    this._program = this._prgcache.compile( prgSource );
-  }
-  
-  // variants
-  // ========
-
-  __getProgram( pass : string, variant : MaterialVariant ) : Program {
-    
-    const invalidVariant = variant._revision !== (this.inputs.getRevision() + variant.inputs.getRevision());
-
-    if( variant._program === null || invalidVariant ){
-      this.__compile( pass, variant );
-    }
-    return variant._program!;
-  }
-
-  __compile( pass:string, variant : MaterialVariant ){
-    
-    if( variant._program !== null ){
-      this._prgcache.release( variant._program );
-    }
-    
-    const prgSource : IProgramSource = {
-      shaderSource   : this.getShaderSource(),
-      slots          : this.inputs.getCode(),
-    }
-    
-    this._program = this._prgcache.compile( prgSource );
-  }
-  
 
 }
