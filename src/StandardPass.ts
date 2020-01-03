@@ -34,18 +34,18 @@ export default class StandardPass extends MaterialPass {
   version  : Version
   precision: Precision
   
-  iAlbedo        : Input
-  iSpecular      : Input
-  iGloss         : Input
-  iNormal        : Input
-  iOcclusion     : Input
-  iCavity        : Input
-  iCavityStrength: Input
-  iEmissive      : Input
-  iEmissiveScale : Input
-  iFresnel       : Input
-  iGamma         : Input
-  iExposure      : Input
+  albedo        : Input
+  specular      : Input
+  gloss         : Input
+  normal        : Input
+  occlusion     : Input
+  cavity        : Input
+  cavityStrength: Input
+  emissive      : Input
+  emissiveScale : Input
+  fresnel       : Input
+  gamma         : Input
+  exposure      : Input
   
   conserveEnergy : Flag
   perVertexIrrad : Flag
@@ -55,7 +55,7 @@ export default class StandardPass extends MaterialPass {
   gammaMode: GammaModeEnum
   
   
-  constructor( gl : GLContext, name? : string ){
+  constructor( name? : string ){
 
     super( {
       uid  : MAT_ID,
@@ -65,30 +65,29 @@ export default class StandardPass extends MaterialPass {
 
     this.ibl = null;
 
-    const webgl2 = isWebgl2(gl);
+    const i = this.inputs;
+    this.version         = i.add( new Version( '100' ) );
+    this.precision       = i.add( new Precision( 'mediump' ) );
 
-    this.version         = this.inputs.add( new Version( webgl2? '300 es' : '100' ) );
-    this.precision       = this.inputs.add( new Precision( 'mediump' ) );
+    this.albedo          = i.add( new Input( 'albedo',          3 ) );
+    this.specular        = i.add( new Input( 'specular',        3 ) );
+    this.gloss           = i.add( new Input( 'gloss',           1 ) );
+    this.normal          = i.add( new Input( 'normal',          3 ) );
+    this.occlusion       = i.add( new Input( 'occlusion',       1 ) );
+    this.cavity          = i.add( new Input( 'cavity',          1 ) );
+    this.cavityStrength  = i.add( new Input( 'cavityStrength',  2 ) );
+    this.emissive        = i.add( new Input( 'emissive',        1 ) );
+    this.emissiveScale   = i.add( new Input( 'emissiveScale',   1 ) );
+    this.fresnel         = i.add( new Input( 'fresnel',         3 ) );
+    this.gamma           = i.add( new Input( 'gamma',           1 ) );
+    this.exposure        = i.add( new Input( 'exposure',        1 ) );
 
-    this.iAlbedo         = this.inputs.add( new Input( 'albedo',          3 ) );
-    this.iSpecular       = this.inputs.add( new Input( 'specular',        3 ) );
-    this.iGloss          = this.inputs.add( new Input( 'gloss',           1 ) );
-    this.iNormal         = this.inputs.add( new Input( 'normal',          3 ) );
-    this.iOcclusion      = this.inputs.add( new Input( 'occlusion',       1 ) );
-    this.iCavity         = this.inputs.add( new Input( 'cavity',          1 ) );
-    this.iCavityStrength = this.inputs.add( new Input( 'cavityStrength',  2 ) );
-    this.iEmissive       = this.inputs.add( new Input( 'emissive',        1 ) );
-    this.iEmissiveScale  = this.inputs.add( new Input( 'emissiveScale',   1 ) );
-    this.iFresnel        = this.inputs.add( new Input( 'fresnel',         3 ) );
-    this.iGamma          = this.inputs.add( new Input( 'gamma',           1 ) );
-    this.iExposure       = this.inputs.add( new Input( 'exposure',        1 ) );
+    this.conserveEnergy  = i.add( new Flag ( 'conserveEnergy',  true  ) );
+    this.perVertexIrrad  = i.add( new Flag ( 'perVertexIrrad',  false ) );
+    this.glossNearest    = i.add( new Flag ( 'glossNearest',    false ) );
+    this.useDerivatives  = i.add( new Flag ( 'useDerivatives',  false ) );
 
-    this.conserveEnergy  = this.inputs.add( new Flag ( 'conserveEnergy',  true  ) );
-    this.perVertexIrrad  = this.inputs.add( new Flag ( 'perVertexIrrad',  false ) );
-    this.glossNearest    = this.inputs.add( new Flag ( 'glossNearest',    false ) );
-    this.useDerivatives  = this.inputs.add( new Flag ( 'useDerivatives',  false ) );
-
-    this.gammaMode       = this.inputs.add( new Enum( 'gammaMode', GammaModes ));
+    this.gammaMode       = i.add( new Enum( 'gammaMode', GammaModes ));
 
   }
 

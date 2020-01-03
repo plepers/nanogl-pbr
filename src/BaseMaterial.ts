@@ -82,7 +82,7 @@ class PassInstance {
 
 
 
-export default abstract class BaseMaterial {
+export default class BaseMaterial {
   
   name: string;
   
@@ -96,10 +96,9 @@ export default abstract class BaseMaterial {
 
   _passMap : Map<string, PassInstance>;
   _passes  : PassInstance[];
-  _defaultPass: PassInstance;
 
   
-  constructor(gl : GLContext, defaultPass : MaterialPass, name: string = '') {
+  constructor(gl : GLContext, name: string = '') {
     
     this.name = name;
     
@@ -112,12 +111,7 @@ export default abstract class BaseMaterial {
     this._passMap = new Map()
     this._passes  = []
 
-    this._defaultPass = this.addPass( '', defaultPass );
-    
   }
-
-
-  abstract getShaderSource() : ShaderSource;
 
 
   addPass( id:string, pass:MaterialPass ) : PassInstance {
@@ -140,7 +134,7 @@ export default abstract class BaseMaterial {
     }
   }
 
-  getPass( id:string ):PassInstance|undefined{
+  getPass( id:string ) : PassInstance | undefined{
     return this._passMap.get( id );
   }
   
@@ -152,10 +146,9 @@ export default abstract class BaseMaterial {
     return this._passes;
   }
 
-
-
-  getProgram() : Program {
-    return this._defaultPass.getProgram();
+  getProgram( passId : string ) : Program | undefined {
+    const pass = this.getPass( passId );
+    return pass?.getProgram();
   }
 
 }

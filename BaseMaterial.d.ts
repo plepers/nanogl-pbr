@@ -3,7 +3,6 @@ import ProgramCache from './ProgramCache';
 import { GLContext } from 'nanogl/types';
 import Program from 'nanogl/program';
 import ChunkCollection from './ChunkCollection';
-import { ShaderSource } from './interfaces/IProgramSource';
 import MaterialPass from './MaterialPass';
 import Node from 'nanogl-node';
 import Camera from 'nanogl-camera';
@@ -19,7 +18,7 @@ declare class PassInstance {
     getProgram(): Program;
     private compile;
 }
-export default abstract class BaseMaterial {
+export default class BaseMaterial {
     name: string;
     mask: number;
     glconfig: GLConfig;
@@ -27,14 +26,12 @@ export default abstract class BaseMaterial {
     _prgcache: ProgramCache;
     _passMap: Map<string, PassInstance>;
     _passes: PassInstance[];
-    _defaultPass: PassInstance;
-    constructor(gl: GLContext, defaultPass: MaterialPass, name?: string);
-    abstract getShaderSource(): ShaderSource;
+    constructor(gl: GLContext, name?: string);
     addPass(id: string, pass: MaterialPass): PassInstance;
     removePass(id: string): void;
     getPass(id: string): PassInstance | undefined;
     hasPass(id: string): boolean;
     getAllPasses(): PassInstance[];
-    getProgram(): Program;
+    getProgram(passId: string): Program | undefined;
 }
 export {};

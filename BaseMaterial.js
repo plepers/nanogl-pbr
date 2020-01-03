@@ -44,7 +44,7 @@ class PassInstance {
     }
 }
 export default class BaseMaterial {
-    constructor(gl, defaultPass, name = '') {
+    constructor(gl, name = '') {
         this.mask = ~0;
         this.name = name;
         this.glconfig = new GLConfig();
@@ -52,7 +52,6 @@ export default class BaseMaterial {
         this._prgcache = ProgramCache.getCache(gl);
         this._passMap = new Map();
         this._passes = [];
-        this._defaultPass = this.addPass('', defaultPass);
     }
     addPass(id, pass) {
         if (this._passMap.has(id)) {
@@ -79,7 +78,9 @@ export default class BaseMaterial {
     getAllPasses() {
         return this._passes;
     }
-    getProgram() {
-        return this._defaultPass.getProgram();
+    getProgram(passId) {
+        var _a;
+        const pass = this.getPass(passId);
+        return (_a = pass) === null || _a === void 0 ? void 0 : _a.getProgram();
     }
 }
