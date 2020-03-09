@@ -417,6 +417,7 @@ static readonly ALL = ShaderType.ALL;
 
   attach(param: InputParam, comps: Swizzle = 'rgba') {
     if (this.param) {
+      this.param._input = null;
       this.removeChild(this.param);
     }
     param._input = this;

@@ -55,13 +55,15 @@ export default class StandardPass extends MaterialPass {
   gammaMode: GammaModeEnum
   
   
-  constructor( name? : string ){
+  constructor( name : string = 'standard-pass' ){
 
     super( {
       uid  : MAT_ID,
       vert : getVert(),
       frag : getFrag(),
     } );
+    
+    this.name = name;
 
     this.ibl = null;
 

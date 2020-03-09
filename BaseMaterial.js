@@ -2,7 +2,7 @@ import GLConfig from 'nanogl-state/config';
 import ProgramCache from './ProgramCache';
 import ChunkCollection from './ChunkCollection';
 import ChunkSlots from './ChunksSlots';
-class PassInstance {
+export class PassInstance {
     constructor(material, id, pass) {
         this._program = null;
         this._revision = 0;
@@ -19,6 +19,7 @@ class PassInstance {
         this.pass.inputs.setupProgram(prg);
         this.material.inputs.setupProgram(prg);
         this.pass.prepare(prg, node, camera);
+        return prg;
     }
     getProgram() {
         const sourceRev = this.getSourceRevision();
@@ -53,7 +54,7 @@ export default class BaseMaterial {
         this._passMap = new Map();
         this._passes = [];
     }
-    addPass(id, pass) {
+    addPass(pass, id = 'color') {
         if (this._passMap.has(id)) {
             this.removePass(id);
         }

@@ -3,10 +3,10 @@ import ProgramCache from './ProgramCache';
 import { GLContext } from 'nanogl/types';
 import Program from 'nanogl/program';
 import ChunkCollection from './ChunkCollection';
-import MaterialPass from './MaterialPass';
+import MaterialPass, { MaterialPassId } from './MaterialPass';
 import Node from 'nanogl-node';
 import Camera from 'nanogl-camera';
-declare class PassInstance {
+export declare class PassInstance {
     readonly id: string;
     readonly pass: MaterialPass;
     readonly material: BaseMaterial;
@@ -14,7 +14,7 @@ declare class PassInstance {
     _revision: number;
     constructor(material: BaseMaterial, id: string, pass: MaterialPass);
     getSourceRevision(): number;
-    prepare(node: Node, camera: Camera): void;
+    prepare(node: Node, camera: Camera): Program;
     getProgram(): Program;
     private compile;
 }
@@ -24,14 +24,13 @@ export default class BaseMaterial {
     glconfig: GLConfig;
     inputs: ChunkCollection;
     _prgcache: ProgramCache;
-    _passMap: Map<string, PassInstance>;
+    _passMap: Map<MaterialPassId, PassInstance>;
     _passes: PassInstance[];
     constructor(gl: GLContext, name?: string);
-    addPass(id: string, pass: MaterialPass): PassInstance;
-    removePass(id: string): void;
-    getPass(id: string): PassInstance | undefined;
-    hasPass(id: string): boolean;
+    addPass(pass: MaterialPass, id?: MaterialPassId): PassInstance;
+    removePass(id: MaterialPassId): void;
+    getPass(id: MaterialPassId): PassInstance | undefined;
+    hasPass(id: MaterialPassId): boolean;
     getAllPasses(): PassInstance[];
-    getProgram(passId: string): Program | undefined;
+    getProgram(passId: MaterialPassId): Program | undefined;
 }
-export {};

@@ -39,6 +39,7 @@ class ChunkSlots {
   
 
   merge( other : ChunkSlots ){
+    this.hash += other.hash;
     for( var os of other.slots ){
       this.add( os.key, os.code );
     }

@@ -20,6 +20,7 @@ class ChunkSlots {
         this.getSlot(slotId).code += code + '\n';
     }
     merge(other) {
+        this.hash += other.hash;
         for (var os of other.slots) {
             this.add(os.key, os.code);
         }

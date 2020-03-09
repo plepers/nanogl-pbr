@@ -29,11 +29,11 @@
   "homepage": "https://github.com/plepers/nanogl-pbr#readme",
   "dependencies": {
     "gl-matrix": "2.3.1",
-    "nanogl": "git@github.com:plepers/nanogl.git#develop",
-    "nanogl-camera": "git@github.com:plepers/nanogl-camera.git#develop",
-    "nanogl-node": "git@github.com:plepers/nanogl-node.git#develop",
-    "nanogl-state": "git@github.com:plepers/nanogl-state.git#develop",
-    "nanogl-pf": "git@github.com:plepers/nanogl-pf.git#develop"
+    "nanogl": "^2.2.1",
+    "nanogl-camera": "^1.1.1",
+    "nanogl-node": "^1.2.0",
+    "nanogl-state": "^1.1.1",
+    "nanogl-pf": "^1.1.1"
   },
   "devDependencies": {
     "@babel/core": "^7.7.4",

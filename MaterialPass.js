@@ -8,6 +8,4 @@ export default class MaterialPass {
         this.inputs = new ChunkCollection();
         this._shaderSource = shaderSource;
     }
-    prepare(prg, node, camera) {
-    }
 }

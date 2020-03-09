@@ -10,6 +10,7 @@ export default abstract class Chunk {
     protected _children: Chunk[];
     constructor(hasCode?: boolean, hasSetup?: boolean);
     collectChunks(all: Chunk[], actives: Chunk[]): void;
+    detectCyclicDependency(chunk: Chunk): boolean;
     addChild<T extends Chunk>(child: T): T;
     removeChild(child: Chunk): void;
     genCode(slots: ChunkSlots): void;

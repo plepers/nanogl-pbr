@@ -11,12 +11,13 @@ import MaterialPass from './MaterialPass';
 const M4 = mat4.create();
 const MAT_ID = 'std';
 export default class StandardPass extends MaterialPass {
-    constructor(name) {
+    constructor(name = 'standard-pass') {
         super({
             uid: MAT_ID,
             vert: getVert(),
             frag: getFrag(),
         });
+        this.name = name;
         this.ibl = null;
         const i = this.inputs;
         this.version = i.add(new Version('100'));

@@ -5,7 +5,7 @@ import Program from 'nanogl/program';
 import ChunkCollection from './ChunkCollection';
 import IProgramSource, {ShaderSource} from './interfaces/IProgramSource';
 import ChunkSlots from './ChunksSlots';
-import MaterialPass from './MaterialPass';
+import MaterialPass, { MaterialPassId } from './MaterialPass';
 import Node from 'nanogl-node';
 import Camera from 'nanogl-camera';
 
@@ -13,7 +13,7 @@ import Camera from 'nanogl-camera';
 
 
 
-class PassInstance {
+export class PassInstance {
 
   readonly id: string;
   readonly pass : MaterialPass;
@@ -34,7 +34,7 @@ class PassInstance {
   }
 
 
-  prepare( node : Node, camera : Camera ){
+  prepare( node : Node, camera : Camera ) : Program {
     const prg = this.getProgram();
 
     prg.use();
@@ -43,6 +43,8 @@ class PassInstance {
     this.material.inputs.setupProgram( prg );
 
     this.pass.prepare( prg, node, camera );
+
+    return prg;
   }
 
 
@@ -94,7 +96,7 @@ export default class BaseMaterial {
   
   _prgcache: ProgramCache;
 
-  _passMap : Map<string, PassInstance>;
+  _passMap : Map<MaterialPassId, PassInstance>;
   _passes  : PassInstance[];
 
   
@@ -114,7 +116,7 @@ export default class BaseMaterial {
   }
 
 
-  addPass( id:string, pass:MaterialPass ) : PassInstance {
+  addPass( pass:MaterialPass, id:MaterialPassId = 'color' ) : PassInstance {
     if( this._passMap.has( id ) ){
       this.removePass( id );
     }
@@ -125,7 +127,7 @@ export default class BaseMaterial {
   }
 
 
-  removePass( id : string ){
+  removePass( id : MaterialPassId ){
     //TODO: release program?
     if( this._passMap.has( id ) ){
       const p = this.getPass( id )!;
@@ -134,11 +136,11 @@ export default class BaseMaterial {
     }
   }
 
-  getPass( id:string ) : PassInstance | undefined{
+  getPass( id:MaterialPassId ) : PassInstance | undefined{
     return this._passMap.get( id );
   }
   
-  hasPass( id:string ):boolean{
+  hasPass( id:MaterialPassId ):boolean{
     return this._passMap.has( id );
   }
 
@@ -146,7 +148,7 @@ export default class BaseMaterial {
     return this._passes;
   }
 
-  getProgram( passId : string ) : Program | undefined {
+  getProgram( passId : MaterialPassId ) : Program | undefined {
     const pass = this.getPass( passId );
     return pass?.getProgram();
   }

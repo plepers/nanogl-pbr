@@ -5,7 +5,10 @@ import Program from "nanogl/program";
 import Node from "nanogl-node";
 import Camera from "nanogl-camera";
 
-export default class MaterialPass {
+
+export type MaterialPassId = 'color' | string
+
+export default abstract class MaterialPass {
 
     name: string = '';
     mask: number = ~0;
@@ -20,9 +23,7 @@ export default class MaterialPass {
       this._shaderSource = shaderSource;
     }
 
-    prepare( prg: Program, node: Node, camera: Camera ){
-        // abstract
-    }
+    abstract prepare( prg: Program, node: Node, camera: Camera ) : void;
   
   }
   

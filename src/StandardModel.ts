@@ -25,7 +25,6 @@ import pointLightCode from './glsl/templates/standard/point-light.frag'
 import shadPreCode from './glsl/templates/standard/shadow-maps-pre.frag'
 import preLightCode from './glsl/templates/standard/pre-light-setup.frag'
 import postLightCode from './glsl/templates/standard/post-light-setup.frag'
-import { DirtyFlag } from './ChunkCollection'
 
 
 

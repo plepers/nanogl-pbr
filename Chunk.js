@@ -19,9 +19,19 @@ export default class Chunk {
             actives.push(this);
         }
     }
+    detectCyclicDependency(chunk) {
+        const all = [];
+        const actives = [];
+        chunk.collectChunks(all, actives);
+        const index = all.indexOf(this);
+        return index > -1;
+    }
     addChild(child) {
         if (this._children.indexOf(child) > -1) {
             return child;
+        }
+        if (this.detectCyclicDependency(child)) {
+            throw new Error(`Chunk.addChild() cyclic dependency detected`);
         }
         this._children.push(child);
         this.invalidateList();
@@ -95,6 +105,9 @@ export default class Chunk {
     proxy(ref = null) {
         if (this._ref === ref)
             return;
+        if (ref !== null && this.detectCyclicDependency(ref)) {
+            throw new Error(`Chunk.proxy() cyclic dependency detected`);
+        }
         this._ref = ref;
         this.invalidateList();
     }
