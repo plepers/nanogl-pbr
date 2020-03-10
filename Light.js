@@ -1,5 +1,5 @@
 import Node from 'nanogl-node';
-import Texture from 'nanogl/texture';
+import Texture2D from 'nanogl/texture-2d';
 import Fbo from 'nanogl/fbo';
 import PF from 'nanogl-pf';
 import { mat4, vec3 } from 'gl-matrix';
@@ -56,7 +56,7 @@ class Light extends Node {
         this._fbo = new Fbo(gl);
         this._fbo.bind();
         this._fbo.resize(s, s);
-        this._fbo.attach(gl.COLOR_ATTACHMENT0, new Texture(gl, gl.RGB));
+        this._fbo.attach(gl.COLOR_ATTACHMENT0, new Texture2D(gl, gl.RGB));
         var hasDTex = PF.getInstance(gl).hasDepthTexture();
         this._fbo.attachDepth(true, false, hasDTex);
         var smap = this.getShadowmap();

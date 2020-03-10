@@ -3,7 +3,7 @@ import ProgramCache from './ProgramCache';
 import { GLContext } from 'nanogl/types';
 import Program from 'nanogl/program';
 import ChunkCollection from './ChunkCollection';
-import IProgramSource, {ShaderSource} from './interfaces/IProgramSource';
+import IProgramSource from './interfaces/IProgramSource';
 import ChunkSlots from './ChunksSlots';
 import MaterialPass, { MaterialPassId } from './MaterialPass';
 import Node from 'nanogl-node';

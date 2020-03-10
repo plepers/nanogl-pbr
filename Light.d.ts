@@ -1,5 +1,5 @@
 import Node from 'nanogl-node';
-import Texture from 'nanogl/texture';
+import Texture2D from 'nanogl/texture-2d';
 import Fbo from 'nanogl/fbo';
 import RB from 'nanogl/renderbuffer';
 import { mat4 } from 'gl-matrix';
@@ -24,7 +24,7 @@ declare abstract class Light extends Node {
     abstract getTexelBiasVector(): Float32Array;
     castShadows(flag: boolean): void;
     hasDepthShadowmap(): boolean;
-    getShadowmap(): Texture | RB | null;
+    getShadowmap(): Texture2D | RB | null;
     _initShadowMapping(): void;
     _releaseShadowMapping(): void;
     prepareShadowmap(): void;

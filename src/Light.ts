@@ -1,5 +1,5 @@
 import Node from 'nanogl-node'
-import Texture from 'nanogl/texture'
+import Texture2D from 'nanogl/texture-2d'
 import Fbo from 'nanogl/fbo'
 import RB from 'nanogl/renderbuffer'
 import PF from 'nanogl-pf'
@@ -116,7 +116,7 @@ abstract class Light extends Node {
     this._fbo = new Fbo(gl);
     this._fbo.bind();
     this._fbo.resize(s, s);
-    this._fbo.attach(gl.COLOR_ATTACHMENT0, new Texture(gl, gl.RGB));
+    this._fbo.attach(gl.COLOR_ATTACHMENT0, new Texture2D(gl, gl.RGB));
 
 
     // depth attachment
@@ -127,7 +127,7 @@ abstract class Light extends Node {
 
 
 
-    var smap = this.getShadowmap() as Texture;
+    var smap = this.getShadowmap() as Texture2D;
     smap.bind()
 
     var gl = this.gl;

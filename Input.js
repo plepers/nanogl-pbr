@@ -30,18 +30,18 @@ function _floatStr(n) {
     return n.toPrecision(8);
 }
 function _addCode(slots, type, code) {
-    if ((type & 1) !== 0) {
+    if ((type & ShaderType.FRAGMENT) !== 0) {
         slots.add('f', code);
     }
-    if ((type & 2) !== 0) {
+    if ((type & ShaderType.VERTEX) !== 0) {
         slots.add('v', code);
     }
 }
 function _addPreCode(slots, type, code) {
-    if ((type & 1) !== 0) {
+    if ((type & ShaderType.FRAGMENT) !== 0) {
         slots.add('pf', code);
     }
-    if ((type & 2) !== 0) {
+    if ((type & ShaderType.VERTEX) !== 0) {
         slots.add('pv', code);
     }
 }
@@ -174,7 +174,7 @@ export class Constant extends Chunk {
     }
 }
 export default class Input extends Chunk {
-    constructor(name, size, shader = 1) {
+    constructor(name, size, shader = ShaderType.FRAGMENT) {
         super(true, false);
         this.name = name;
         this.size = size;
@@ -243,6 +243,6 @@ Input.Sampler = Sampler;
 Input.Uniform = Uniform;
 Input.Attribute = Attribute;
 Input.Constant = Constant;
-Input.FRAGMENT = 1;
-Input.VERTEX = 2;
-Input.ALL = 3;
+Input.FRAGMENT = ShaderType.FRAGMENT;
+Input.VERTEX = ShaderType.VERTEX;
+Input.ALL = ShaderType.ALL;

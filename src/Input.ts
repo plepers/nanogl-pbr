@@ -1,4 +1,4 @@
-import Texture from 'nanogl/texture'
+import Texture2D from 'nanogl/texture-2d'
 
 import Chunk from './Chunk'
 
@@ -17,7 +17,7 @@ const TYPES = [
 ] as const;
 
 
-export const enum ShaderType {
+export enum ShaderType {
   FRAGMENT = 1,
   VERTEX = 2,
   ALL = FRAGMENT | VERTEX,
@@ -125,14 +125,14 @@ export class Sampler extends Chunk implements IInputParam {
   size: InputSize;
   token: string;
   _input: Input | null;
-  _tex: Texture | null;
+  _tex: Texture2D | null;
   _linkAttrib: boolean;
 
   texCoords: string | Attribute;
   uvsToken: string;
 
 
-  constructor(name: string, texCoords: Attribute | string ) {
+  constructor(name: string, texCoords: Attribute | string) {
 
     super(true, true);
 
@@ -157,13 +157,13 @@ export class Sampler extends Chunk implements IInputParam {
 
 
 
-  set(t : Texture) {
+  set(t: Texture2D) {
     this._tex = t;
   }
 
 
-  _genCode(slots : ChunkSlots) {
-    if( this._input == null ) return;
+  _genCode(slots: ChunkSlots) {
+    if (this._input == null) return;
 
     var name = this.name,
       c;
@@ -181,7 +181,7 @@ export class Sampler extends Chunk implements IInputParam {
   }
 
 
-  setup( prg : Program ) {
+  setup(prg: Program) {
     // sampler always invalid (unit can be changed by others)
     prg[this.name](this._tex);
   }
@@ -203,7 +203,7 @@ export class Sampler extends Chunk implements IInputParam {
 //
 
 export class Uniform extends Chunk implements IInputParam {
-  
+
   name: string;
   size: InputSize;
   token: string;
@@ -211,7 +211,7 @@ export class Uniform extends Chunk implements IInputParam {
 
   _value: Float32Array;
 
-  constructor(name : string, size : InputSize) {
+  constructor(name: string, size: InputSize) {
 
     super(true, true);
 
@@ -226,7 +226,7 @@ export class Uniform extends Chunk implements IInputParam {
 
 
 
-  set( ...args : number[] ) {
+  set(...args: number[]) {
     for (var i = 0; i < args.length; i++) {
       this._value[i] = args[i];
     }
@@ -234,8 +234,8 @@ export class Uniform extends Chunk implements IInputParam {
   }
 
 
-  _genCode(slots : ChunkSlots) {
-    if( this._input === null ) return;
+  _genCode(slots: ChunkSlots) {
+    if (this._input === null) return;
     var c;
 
     // PF
@@ -246,7 +246,7 @@ export class Uniform extends Chunk implements IInputParam {
   }
 
 
-  setup( prg : Program ) {
+  setup(prg: Program) {
     prg[this.name](this._value);
     this._invalid = false;
   }
@@ -276,7 +276,7 @@ export class Attribute extends Chunk implements IInputParam {
   token: string;
   _input: Input | null;
 
-  constructor(name : string, size : InputSize) {
+  constructor(name: string, size: InputSize) {
     super(true, false);
 
     this._input = null;
@@ -288,7 +288,7 @@ export class Attribute extends Chunk implements IInputParam {
 
 
 
-  _genCode(slots : ChunkSlots) {
+  _genCode(slots: ChunkSlots) {
 
     var c;
     const typeId = TYPES[this.size];
@@ -325,15 +325,15 @@ export class Attribute extends Chunk implements IInputParam {
 
 
 export class Constant extends Chunk implements IInputParam {
-  
+
   name: string;
   size: InputSize;
   token: string;
   _input: Input | null;
   value: ArrayLike<number> | number;
-  
-  constructor(value : ArrayLike<number> | number) {
-    super( true, false );
+
+  constructor(value: ArrayLike<number> | number) {
+    super(true, false);
 
     this._input = null;
 
@@ -349,8 +349,8 @@ export class Constant extends Chunk implements IInputParam {
 
 
 
-  _genCode(slots : ChunkSlots) {
-    if( this._input === null ) return;
+  _genCode(slots: ChunkSlots) {
+    if (this._input === null) return;
     var c;
 
     // PF
@@ -382,19 +382,20 @@ export class Constant extends Chunk implements IInputParam {
 export default class Input extends Chunk {
 
 
-static readonly Sampler = Sampler;
-static readonly Uniform = Uniform;
-static readonly Attribute = Attribute;
-static readonly Constant = Constant;
+  static readonly Sampler = Sampler;
+  static readonly Uniform = Uniform;
+  static readonly Attribute = Attribute;
+  static readonly Constant = Constant;
 
-static readonly FRAGMENT = ShaderType.FRAGMENT;
-static readonly VERTEX = ShaderType.VERTEX;
-static readonly ALL = ShaderType.ALL;
+  static readonly FRAGMENT = ShaderType.FRAGMENT;
+  static readonly VERTEX = ShaderType.VERTEX;
+  static readonly ALL = ShaderType.ALL;
 
 
-  name: string;
-  size: InputSize;
-  shader: ShaderType;
+  readonly name : string;
+  readonly size : InputSize;
+  readonly shader: ShaderType;
+
   comps: Swizzle;
   param: InputParam | null;
 
@@ -436,28 +437,28 @@ static readonly ALL = ShaderType.ALL;
   }
 
 
-  attachSampler(name: string, texCoords: string, comps: Swizzle = 'rgba' ) {
+  attachSampler(name: string, texCoords: string, comps: Swizzle = 'rgba') {
     var p = new Sampler(name, texCoords);
     this.attach(p, comps);
     return p;
   }
 
 
-  attachUniform(name: string, size: InputSize = this.size, comps: Swizzle = 'rgba' ) {
+  attachUniform(name: string, size: InputSize = this.size, comps: Swizzle = 'rgba') {
     var p = new Uniform(name, size);
     this.attach(p, comps);
     return p;
   }
 
 
-  attachAttribute(name: string, size: InputSize = this.size, comps: Swizzle = 'rgba' ) {
+  attachAttribute(name: string, size: InputSize = this.size, comps: Swizzle = 'rgba') {
     var p = new Attribute(name, size);
     this.attach(p, comps);
     return p;
   }
 
 
-  attachConstant(value: ArrayLike<number> | number, comps: Swizzle = 'rgba' ) {
+  attachConstant(value: ArrayLike<number> | number, comps: Swizzle = 'rgba') {
     var p = new Constant(value);
     this.attach(p, comps);
     return p;

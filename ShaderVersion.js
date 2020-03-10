@@ -8,6 +8,9 @@ class ShaderVersion extends Chunk {
         this.version = v;
         this.invalidateCode();
     }
+    get() {
+        return this.version;
+    }
     _getHash() {
         return 'v' + this.version;
     }

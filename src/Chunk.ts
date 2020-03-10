@@ -1,5 +1,5 @@
 import Program    from 'nanogl/program'
-import ChunksTree, { DirtyFlag } from './ChunkCollection' 
+import ChunksTree from './ChunkCollection' 
 import ChunkSlots from './ChunksSlots'
 
 
@@ -64,7 +64,7 @@ export default abstract class Chunk {
       return child;
     }
     if( this.detectCyclicDependency( child ) ){
-      throw new Error( `Chunk.addChild() cyclic dependency detected` );
+      throw new Error( `Chunk.addChild() will lead to cyclic dependency` );
     }
     this._children.push(child);
     this.invalidateList();
@@ -155,7 +155,7 @@ export default abstract class Chunk {
   proxy( ref : this|null = null ){
     if( this._ref === ref ) return;
     if( ref !== null && this.detectCyclicDependency( ref ) ){
-      throw new Error( `Chunk.proxy() cyclic dependency detected` );
+      throw new Error( `Chunk.proxy() will lead to cyclic dependency` );
     }
     this._ref = ref;
     this.invalidateList();

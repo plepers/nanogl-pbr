@@ -29,8 +29,8 @@
   "homepage": "https://github.com/plepers/nanogl-pbr#readme",
   "dependencies": {
     "gl-matrix": "2.3.1",
-    "nanogl": "^2.2.1",
-    "nanogl-camera": "^1.1.1",
+    "nanogl": "^2.3.0",
+    "nanogl-camera": "^1.1.2",
     "nanogl-node": "^1.2.0",
     "nanogl-state": "^1.1.1",
     "nanogl-pf": "^1.1.1"

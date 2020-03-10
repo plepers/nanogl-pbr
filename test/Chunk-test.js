@@ -4,7 +4,7 @@ var expect = require('expect.js');
 var sinon = require('sinon');
 
 
-import ChunkCollection, { DirtyFlag } from '../ChunkCollection'
+import ChunkCollection from '../ChunkCollection'
 import { CodeChunk } from './utils/TestChunks'
 
 
@@ -138,7 +138,7 @@ describe("Chunk", function () {
         collection.getCode();
       } catch (e) {
         if (e.name === 'RangeError') throw e;
-        isOk = e.message.indexOf('cyclic dependency detected') > -1
+        isOk = e.message.indexOf('cyclic dependency') > -1
       }
 
       expect(isOk).to.be(true);
@@ -253,7 +253,7 @@ describe("Chunk", function () {
 
       } catch (e) {
         if (e.name === 'RangeError') throw e;
-        isOk = e.message.indexOf('cyclic dependency detected') > -1
+        isOk = e.message.indexOf('cyclic dependency') > -1
       }
 
       expect(isOk).to.be(true);

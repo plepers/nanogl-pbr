@@ -3,13 +3,6 @@ import ChunkSlots from './ChunksSlots'
 import Program from 'nanogl/program';
 
 
-export const enum DirtyFlag {
-  None      = 0,
-  Code      = 1,
-  Hierarchy = 2,
-  All       = Hierarchy|Code,
-}
-
 
 export default class ChunkCollection {
   

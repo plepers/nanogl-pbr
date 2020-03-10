@@ -1,7 +1,6 @@
 
 import Chunk from './Chunk'
 import ChunkSlots from './ChunksSlots'
-import { DirtyFlag } from './ChunkCollection';
 
 
 function defReducer( res:string, v:string, i:number ){

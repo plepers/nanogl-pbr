@@ -1,9 +1,9 @@
-import Texture from 'nanogl/texture';
+import Texture2D from 'nanogl/texture-2d';
 import Chunk from './Chunk';
 import Swizzle from './Swizzle';
 import ChunkSlots from './ChunksSlots';
 import Program from 'nanogl/program';
-export declare const enum ShaderType {
+export declare enum ShaderType {
     FRAGMENT = 1,
     VERTEX = 2,
     ALL = 3
@@ -21,12 +21,12 @@ export declare class Sampler extends Chunk implements IInputParam {
     size: InputSize;
     token: string;
     _input: Input | null;
-    _tex: Texture | null;
+    _tex: Texture2D | null;
     _linkAttrib: boolean;
     texCoords: string | Attribute;
     uvsToken: string;
     constructor(name: string, texCoords: Attribute | string);
-    set(t: Texture): void;
+    set(t: Texture2D): void;
     _genCode(slots: ChunkSlots): void;
     setup(prg: Program): void;
     _getHash(): string;
@@ -71,9 +71,9 @@ export default class Input extends Chunk {
     static readonly FRAGMENT: ShaderType;
     static readonly VERTEX: ShaderType;
     static readonly ALL: ShaderType;
-    name: string;
-    size: InputSize;
-    shader: ShaderType;
+    readonly name: string;
+    readonly size: InputSize;
+    readonly shader: ShaderType;
     comps: Swizzle;
     param: InputParam | null;
     constructor(name: string, size: InputSize, shader?: ShaderType);

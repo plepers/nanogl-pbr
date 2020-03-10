@@ -1,15 +1,15 @@
 
 import Program from 'nanogl/program';
-import Texture from 'nanogl/texture';
+import Texture2D from 'nanogl/texture-2d';
 
 
 export default class IBL {
 
-  env: Texture;
+  env: Texture2D;
   sh: ArrayLike<number>;
 
 
-  constructor( env : Texture, sh : ArrayLike<number> ){
+  constructor( env : Texture2D, sh : ArrayLike<number> ){
     this.env   = env;
     this.sh    = sh;
   }

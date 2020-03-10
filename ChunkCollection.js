@@ -1,11 +1,4 @@
 import ChunkSlots from './ChunksSlots';
-export var DirtyFlag;
-(function (DirtyFlag) {
-    DirtyFlag[DirtyFlag["None"] = 0] = "None";
-    DirtyFlag[DirtyFlag["Code"] = 1] = "Code";
-    DirtyFlag[DirtyFlag["Hierarchy"] = 2] = "Hierarchy";
-    DirtyFlag[DirtyFlag["All"] = 3] = "All";
-})(DirtyFlag || (DirtyFlag = {}));
 export default class ChunkCollection {
     constructor() {
         this._invalidList = true;

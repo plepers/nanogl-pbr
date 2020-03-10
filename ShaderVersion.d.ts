@@ -2,9 +2,10 @@ import Chunk from './Chunk';
 import ChunkSlots from './ChunksSlots';
 declare type GlslVersion = '100' | '300 es';
 declare class ShaderVersion extends Chunk {
-    version: GlslVersion;
+    private version;
     constructor(v?: GlslVersion);
     set(v: GlslVersion): void;
+    get(): GlslVersion;
     _getHash(): string;
     _genCode(slots: ChunkSlots): void;
 }

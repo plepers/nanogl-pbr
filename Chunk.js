@@ -31,7 +31,7 @@ export default class Chunk {
             return child;
         }
         if (this.detectCyclicDependency(child)) {
-            throw new Error(`Chunk.addChild() cyclic dependency detected`);
+            throw new Error(`Chunk.addChild() will lead to cyclic dependency`);
         }
         this._children.push(child);
         this.invalidateList();
@@ -106,7 +106,7 @@ export default class Chunk {
         if (this._ref === ref)
             return;
         if (ref !== null && this.detectCyclicDependency(ref)) {
-            throw new Error(`Chunk.proxy() cyclic dependency detected`);
+            throw new Error(`Chunk.proxy() will lead to cyclic dependency`);
         }
         this._ref = ref;
         this.invalidateList();

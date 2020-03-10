@@ -1,7 +1,6 @@
 
 import Chunk from './Chunk'
 import ChunkSlots from './ChunksSlots'
-import { DirtyFlag } from './ChunkCollection';
 
 
 class Flag<T extends string = string> extends Chunk {
