@@ -1,8 +1,10 @@
+//@ts-check
+
 var expect  = require( 'expect.js' );
 
 
-var Input     = require( '../lib/input' );
-var ChunkList = require( '../lib/chunks-tree' );
+import Input    from '../Input'
+import ChunkCollection from '../ChunkCollection'
 
 
 
@@ -11,7 +13,7 @@ describe( "Input", function(){
   var inputs;
 
   beforeEach( function(){
-    inputs = new ChunkList()
+    inputs = new ChunkCollection()
   });
 
   describe( "float", function(){
@@ -27,7 +29,7 @@ describe( "Input", function(){
     it( 'should attach uniform float', function(){
       var u = input.attachUniform( 'uInput', 1 );
 
-      inputs.compile()
+    //   inputs.compile()
       var codes = inputs.getCode();
       expect( codes.slotsMap.definitions.code ).to.be( '#define HAS__input 1\n\n' );
       expect( codes.slotsMap.pf.code ).to.be( 'uniform float uInput;\n\n#define _input(k) uInput\n' );
@@ -39,7 +41,7 @@ describe( "Input", function(){
     it( 'should attach attribute float', function(){
       var u = input.attachAttribute( 'aInput', 1 );
 
-      inputs.compile()
+    //   inputs.compile()
       var codes = inputs.getCode();
       expect( codes.slotsMap.pv.code ).to.be( 'attribute float aInput;\nvarying   float v_aInput;\n\n' );
       expect( codes.slotsMap.v.code  ).to.be( 'v_aInput = aInput;\n\n' );
@@ -52,7 +54,7 @@ describe( "Input", function(){
     it( 'should attach sampler float', function(){
       var u = input.attachSampler( 'tInput', 'vTexCoord' );
 
-      inputs.compile()
+    //   inputs.compile()
       var codes = inputs.getCode();
       expect( codes.slotsMap.definitions.code ).to.be( '#define HAS__input 1\n\n' );
       expect( codes.slotsMap.pf.code ).to.be( 'uniform sampler2D tInput;\n\n#define _input(k) VAL_tInputvTexCoord.r\n' );
@@ -67,7 +69,7 @@ describe( "Input", function(){
       var attr = new Input.Attribute( 'aTexcoord10', 2 );
       var u = input.attachSampler( 'tInput', attr );
 
-      inputs.compile()
+    //   inputs.compile()
       var codes = inputs.getCode();
       expect( codes.slotsMap.pv.code ).to.be( 'attribute vec2 aTexcoord10;\nvarying   vec2 v_aTexcoord10;\n\n' );
       expect( codes.slotsMap.v.code  ).to.be( 'v_aTexcoord10 = aTexcoord10;\n\n' );

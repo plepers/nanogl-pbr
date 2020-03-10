@@ -1,0 +1,38 @@
+import Input from './Input';
+import Flag from './Flag';
+import Precision from './ShaderPrecision';
+import Version from './ShaderVersion';
+import IBL from './Ibl';
+import LightSetup from './LightSetup';
+import Node from 'nanogl-node';
+import Camera from 'nanogl-camera';
+import { ICameraLens } from 'nanogl-camera/ICameraLens';
+import { GammaModeEnum } from './GammaModeEnum';
+import MaterialPass from './MaterialPass';
+import Program from 'nanogl/program';
+export default class StandardPass extends MaterialPass {
+    ibl: IBL | null;
+    version: Version;
+    precision: Precision;
+    albedo: Input;
+    specular: Input;
+    gloss: Input;
+    normal: Input;
+    occlusion: Input;
+    cavity: Input;
+    cavityStrength: Input;
+    emissive: Input;
+    emissiveScale: Input;
+    fresnel: Input;
+    gamma: Input;
+    exposure: Input;
+    conserveEnergy: Flag;
+    perVertexIrrad: Flag;
+    glossNearest: Flag;
+    useDerivatives: Flag;
+    gammaMode: GammaModeEnum;
+    constructor(name?: string);
+    setIBL(ibl: IBL): void;
+    setLightSetup(setup: LightSetup): void;
+    prepare(prg: Program, node: Node, camera: Camera<ICameraLens>): void;
+}

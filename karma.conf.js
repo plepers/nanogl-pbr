@@ -47,7 +47,8 @@ module.exports = function(config) {
             ".glsl"
           ]
         }
-      ]
+      ],
+      ["babelify", { "presets": ["@babel/preset-env"]}]
     ]
     },
 
