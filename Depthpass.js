@@ -17,8 +17,7 @@ export default class DepthPass extends MaterialPass {
         this.precision = this.inputs.add(new ShaderPrecision('highp'));
     }
     setLightSetup(setup) {
-        var _a;
-        this.depthFormat.proxy((_a = setup) === null || _a === void 0 ? void 0 : _a.depthFormat);
+        this.depthFormat.proxy(setup === null || setup === void 0 ? void 0 : setup.depthFormat);
     }
     prepare(prg, node, camera) {
         camera.modelViewProjectionMatrix(M4, node._wmatrix);

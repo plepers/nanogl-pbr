@@ -80,8 +80,7 @@ export default class BaseMaterial {
         return this._passes;
     }
     getProgram(passId) {
-        var _a;
         const pass = this.getPass(passId);
-        return (_a = pass) === null || _a === void 0 ? void 0 : _a.getProgram();
+        return pass === null || pass === void 0 ? void 0 : pass.getProgram();
     }
 }
