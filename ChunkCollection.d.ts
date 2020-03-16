@@ -5,9 +5,9 @@ export default class ChunkCollection {
     private _invalidList;
     private _invalidCode;
     private _revision;
+    _all: Set<Chunk>;
+    _actives: Set<Chunk>;
     _chunks: Chunk[];
-    _all: Chunk[];
-    _actives: Chunk[];
     _setups: Chunk[];
     _codes: Chunk[];
     _cachedSlots: ChunkSlots | null;

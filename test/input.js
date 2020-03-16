@@ -3,7 +3,7 @@
 var expect  = require( 'expect.js' );
 
 
-import Input    from '../Input'
+import Input, { Sampler }    from '../Input'
 import ChunkCollection from '../ChunkCollection'
 
 
@@ -82,5 +82,35 @@ describe( "Input", function(){
 
 
   });
+
+
+  describe( "inputs with same Param ", function(){
+
+    var inputA, inputB;
+
+    beforeEach( function(){
+      inputA = new Input( '_inputA', 1 )
+      inputB = new Input( '_inputB', 1 )
+      inputs.add( inputA );
+      inputs.add( inputB );
+    });
+
+
+    it( 'dont duplicate param code', function(){
+      const sampler = new Sampler('ttex', 'tc')
+      inputA.attach( sampler, 'r' );
+      inputB.attach( sampler, 'g' );
+
+      var codes = inputs.getCode();
+      var pf = codes.slotsMap.pf.code
+      var decl = 'uniform sampler2D'
+      
+      var first = pf.indexOf(decl);
+      var last  = pf.lastIndexOf(decl);
+      var result = first === last && first != -1;
+      expect( result ).to.be.equal( true )
+    });
+
+  })
 
 });

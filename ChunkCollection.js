@@ -4,9 +4,9 @@ export default class ChunkCollection {
         this._invalidList = true;
         this._invalidCode = true;
         this._revision = 0;
+        this._all = new Set();
+        this._actives = new Set();
         this._chunks = [];
-        this._all = [];
-        this._actives = [];
         this._setups = [];
         this._codes = [];
         this._cachedSlots = null;
@@ -51,10 +51,10 @@ export default class ChunkCollection {
         for (const chunk of all) {
             chunk.removeList(this);
         }
-        all.length = 0;
+        all.clear();
+        actives.clear();
         setups.length = 0;
         codes.length = 0;
-        actives.length = 0;
         for (const chunk of this._chunks) {
             chunk.collectChunks(all, actives);
         }

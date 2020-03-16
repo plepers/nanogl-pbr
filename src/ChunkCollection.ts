@@ -11,9 +11,9 @@ export default class ChunkCollection {
   private _invalidCode : boolean = true;
   private _revision : number = 0;
   
+  _all     : Set<Chunk> = new Set();
+  _actives : Set<Chunk> = new Set();
   _chunks  : Chunk[] = [];
-  _all     : Chunk[] = [];
-  _actives : Chunk[] = [];
   _setups  : Chunk[] = [];
   _codes   : Chunk[] = [];
   
@@ -85,10 +85,11 @@ export default class ChunkCollection {
       chunk.removeList( this );
     }
 
-    all     .length = 0;
+    all     .clear();
+    actives .clear();
+
     setups  .length = 0;
     codes   .length = 0;
-    actives .length = 0;
 
 
     for (const chunk of this._chunks ) {

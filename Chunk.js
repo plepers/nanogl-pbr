@@ -8,7 +8,7 @@ export default class Chunk {
         this._children = [];
     }
     collectChunks(all, actives) {
-        all.push(this);
+        all.add(this);
         if (this._ref !== null) {
             this._ref.collectChunks(all, actives);
         }
@@ -16,15 +16,14 @@ export default class Chunk {
             for (const child of this._children) {
                 child.collectChunks(all, actives);
             }
-            actives.push(this);
+            actives.add(this);
         }
     }
     detectCyclicDependency(chunk) {
-        const all = [];
-        const actives = [];
+        const all = new Set();
+        const actives = new Set();
         chunk.collectChunks(all, actives);
-        const index = all.indexOf(this);
-        return index > -1;
+        return all.has(this);
     }
     addChild(child) {
         if (this._children.indexOf(child) > -1) {

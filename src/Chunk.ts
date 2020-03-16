@@ -38,25 +38,24 @@ export default abstract class Chunk {
    * populate given array with this chunk and all it's descendant
    * all array 
    */
-  collectChunks( all : Chunk[], actives : Chunk[] ){
-    all.push( this );
+  collectChunks( all : Set<Chunk>, actives : Set<Chunk> ){
+    all.add( this );
     if( this._ref !== null ) {
       this._ref.collectChunks( all, actives );
     } else {
       for (const child of this._children ) {
         child.collectChunks( all, actives );
       }
-      actives.push( this );
+      actives.add( this );
     }
   }
 
 
   detectCyclicDependency( chunk : Chunk ) : boolean {
-    const all     :Chunk[] = [];
-    const actives :Chunk[] = [];
+    const all     :Set<Chunk> = new Set();
+    const actives :Set<Chunk> = new Set();
     chunk.collectChunks( all, actives );
-    const index = all.indexOf(this);
-    return index > -1;
+    return all.has(this);
   }
 
   addChild<T extends Chunk>( child : T ) : T {
