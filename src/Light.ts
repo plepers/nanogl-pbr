@@ -164,6 +164,7 @@ abstract class Light extends Node {
   }
 
 
+  // TODO : use Bounds.transform
   boundsInLocalSpace( bounds : Bounds ) {
     V6[0] = V6[1] = V6[2] = Number.MAX_VALUE;
     V6[3] = V6[4] = V6[5] = -Number.MAX_VALUE;

@@ -19,6 +19,8 @@ import { GammaModes, GammaModeEnum } from './GammaModeEnum'
 import { ShaderSource } from './interfaces/IProgramSource'
 import MaterialPass from './MaterialPass'
 import Program from 'nanogl/program'
+import TexCoord from './TexCoord'
+import TexCoordCollection from './TexCoordCollection'
 
 
 const M4 = mat4.create();
@@ -31,8 +33,11 @@ export default class StandardPass extends MaterialPass {
   
   ibl: IBL | null
   
+  texCoords: TexCoordCollection;
+
   version  : Version
   precision: Precision
+
   
   albedo        : Input
   specular      : Input
@@ -68,6 +73,9 @@ export default class StandardPass extends MaterialPass {
     this.ibl = null;
 
     const i = this.inputs;
+
+    this.texCoords       = new TexCoordCollection( i );
+
     this.version         = i.add( new Version( '100' ) );
     this.precision       = i.add( new Precision( 'mediump' ) );
 

@@ -324,6 +324,7 @@ export class Attribute extends Chunk implements IInputParam {
 //
 
 
+
 export class Constant extends Chunk implements IInputParam {
 
   name: string;
@@ -338,12 +339,13 @@ export class Constant extends Chunk implements IInputParam {
     this._input = null;
 
     this.name = `CONST_${(0 | (Math.random() * 0x7FFFFFFF)).toString(16)}`;
-    if (Array.isArray(value)) {
-      this.size = <InputSize>value.length;
-    } else {
+    if ( typeof value === 'number' ) {
       this.size = 1;
+      this.value = value;
+    } else {
+      this.size = <InputSize>value.length;
+      this.value = Array.from(value);
     }
-    this.value = value;
     this.token = `VAR_${this.name}`;
   }
 

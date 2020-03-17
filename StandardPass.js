@@ -8,6 +8,7 @@ import getVert from './glsl/pbr.vert';
 import getFrag from './glsl/pbr.frag';
 import { GammaModes } from './GammaModeEnum';
 import MaterialPass from './MaterialPass';
+import TexCoordCollection from './TexCoordCollection';
 const M4 = mat4.create();
 const MAT_ID = 'std';
 export default class StandardPass extends MaterialPass {
@@ -20,6 +21,7 @@ export default class StandardPass extends MaterialPass {
         this.name = name;
         this.ibl = null;
         const i = this.inputs;
+        this.texCoords = new TexCoordCollection(i);
         this.version = i.add(new Version('100'));
         this.precision = i.add(new Precision('mediump'));
         this.albedo = i.add(new Input('albedo', 3));

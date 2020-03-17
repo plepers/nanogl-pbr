@@ -14,9 +14,7 @@ export default abstract class MaterialPass {
     mask: number = ~0;
     
     readonly glconfig : GLConfig = new GLConfig();
-  
     inputs: ChunkCollection = new ChunkCollection();
-  
     _shaderSource: ShaderSource;
     
     constructor( shaderSource : ShaderSource ){

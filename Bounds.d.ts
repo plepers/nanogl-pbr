@@ -1,11 +1,17 @@
+import { vec3, mat4 } from "gl-matrix";
+export declare class BoundingSphere {
+    readonly center: vec3;
+    readonly radius: vec3;
+    static fromBounds(out: BoundingSphere, b: Bounds): void;
+}
 export default class Bounds {
-    min: Float32Array;
-    max: Float32Array;
-    center: Float32Array;
-    radius: Float32Array;
+    protected _mmData: Float32Array;
+    readonly min: vec3;
+    readonly max: vec3;
     constructor();
+    zero(): void;
+    copyFrom(b: Bounds): void;
     fromMinMax(min: number[] | Float32Array, max: number[] | Float32Array): void;
-    addMinMax(min: number[] | Float32Array, max: number[] | Float32Array): void;
-    addBounds(b: Bounds): void;
-    _updateSphere(): void;
+    static union(out: Bounds, a: Bounds, b: Bounds): void;
+    static transform(out: Bounds, bounds: Bounds, matrix: mat4): void;
 }
