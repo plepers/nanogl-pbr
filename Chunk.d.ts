@@ -1,6 +1,7 @@
 import Program from 'nanogl/program';
 import ChunksTree from './ChunkCollection';
 import ChunkSlots from './ChunksSlots';
+import { Hash } from './Hash';
 export default abstract class Chunk {
     private _lists;
     protected _hasCode: boolean;
@@ -14,12 +15,12 @@ export default abstract class Chunk {
     addChild<T extends Chunk>(child: T): T;
     removeChild(child: Chunk): void;
     genCode(slots: ChunkSlots): void;
-    getHash(): string;
+    getHash(): Hash;
     get hasCode(): boolean;
     get hasSetup(): boolean;
     get isInvalid(): boolean;
     protected abstract _genCode(slots: ChunkSlots): void;
-    protected abstract _getHash(): string;
+    protected abstract _getHash(): Hash;
     setup(prg: Program): void;
     addList(list: ChunksTree): void;
     removeList(list: ChunksTree): void;

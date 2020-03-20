@@ -1,7 +1,8 @@
-import { mat3, vec2 } from "gl-matrix";
+import { mat3 } from "gl-matrix";
 import Chunk from "./Chunk";
 import Input, { Uniform } from "./Input";
 import code from './glsl/templates/texCoord.glsl';
+import hashBuilder, { hashString } from "./Hash";
 const EPSILON = 0.000001;
 const M3_IDENTITY = mat3.create();
 function almostZero(f) {
@@ -34,9 +35,10 @@ function mat3Equals(m1, m2) {
 export class TexCoordTransform extends Chunk {
     constructor(attrib, hasSetup) {
         super(true, hasSetup);
-        this._translation = vec2.create();
-        this._scale = vec2.create();
-        this._rotation = 0;
+        this._buffer = new Float32Array(5);
+        this._translation = new Float32Array(this._buffer.buffer, 0, 2);
+        this._scale = new Float32Array(this._buffer.buffer, 8, 2);
+        this._rotation = new Float32Array(this._buffer.buffer, 16, 1);
         this._uid = `${TexCoordTransform._UID++}`;
         this.attrib = attrib;
         this._translateInput = this.addChild(new Input(`tct_t_${this._uid}`, 2, Input.VERTEX));
@@ -52,14 +54,17 @@ export class TexCoordTransform extends Chunk {
         return `vTexCoord_tct${this._uid}`;
     }
     _getHash() {
-        return this.varying();
+        return hashBuilder.start()
+            .hashView(this._buffer)
+            .hashString(this.varying())
+            .get();
     }
     decomposeMatrix(m) {
         this._translation[0] = m[6];
         this._translation[1] = m[7];
         this._scale[0] = Math.sqrt(m[0] * m[0] + m[1] * m[1]);
         this._scale[1] = Math.sqrt(m[3] * m[3] + m[4] * m[4]);
-        this._rotation = Math.atan2(m[1], m[0]);
+        this._rotation[0] = Math.atan2(m[1], m[0]);
         this.updateTransform();
     }
 }
@@ -77,7 +82,7 @@ export class DynamicTexCoordTransform extends TexCoordTransform {
         return this;
     }
     rotate(rad) {
-        this._rotation = rad;
+        this._rotation[0] = rad;
         this.updateTransform();
         return this;
     }
@@ -98,12 +103,12 @@ export class DynamicTexCoordTransform extends TexCoordTransform {
             this._translateInput.attach(this._translateUniform);
             this._translateUniform.set(...this._translation);
         }
-        if (noScale(this._scale) && almostZero(this._rotation)) {
+        if (noScale(this._scale) && almostZero(this._rotation[0])) {
             this._rotateScalesInput.detach();
         }
         else {
             this._rotateScalesInput.attach(this._rotationScaleUniform);
-            this._rotationScaleUniform.set(...composeMat2(this._scale, this._rotation));
+            this._rotationScaleUniform.set(...composeMat2(this._scale, this._rotation[0]));
         }
     }
 }
@@ -120,11 +125,11 @@ export class StaticTexCoordTransform extends TexCoordTransform {
         else {
             this._translateInput.attachConstant(this._translation);
         }
-        if (noScale(this._scale) && almostZero(this._rotation)) {
+        if (noScale(this._scale) && almostZero(this._rotation[0])) {
             this._rotateScalesInput.detach();
         }
         else {
-            this._rotateScalesInput.attachConstant(composeMat2(this._scale, this._rotation));
+            this._rotateScalesInput.attachConstant(composeMat2(this._scale, this._rotation[0]));
         }
     }
     equalMatrix(m) {
@@ -170,6 +175,6 @@ export default class TexCoord extends Chunk {
         slots.add('pv', code({ declare_attribute: true, attrib: this.attrib }));
     }
     _getHash() {
-        return `_tc_${this.attrib}`;
+        return hashString(`_tc_${this.attrib}`);
     }
 }

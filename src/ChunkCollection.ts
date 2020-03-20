@@ -1,6 +1,7 @@
 import Chunk from './Chunk'
 import ChunkSlots from './ChunksSlots'
 import Program from 'nanogl/program';
+import hashBuilder, { Hash, mergeHash } from './Hash';
 
 
 
@@ -126,11 +127,14 @@ export default class ChunkCollection {
     if( this._cachedSlots === null || this._invalidCode )  {
 
       const slots = new ChunkSlots();
+      const hash : Hash = 0;
 
       for ( const chunk of this._codes ){
         chunk.genCode( slots );
-        slots.hash += chunk.getHash();
+        mergeHash( hash, chunk.getHash() );
       }
+
+      slots.hash = hash;
 
       this._cachedSlots = slots;
 

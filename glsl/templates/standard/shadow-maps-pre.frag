@@ -215,6 +215,10 @@ float calcLightOcclusions(DepthSampler depth, highp vec3 fragCoord, vec2 mapSize
   #endif
 
 
+  if( any( greaterThan( abs( fragCoord - vec3(.5) ), vec3(.5) ) ) ){
+    s = 1.0;
+  }
+
   return s;
 
 }

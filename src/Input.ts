@@ -5,6 +5,7 @@ import Chunk from './Chunk'
 import Swizzle from './Swizzle'
 import ChunkSlots from './ChunksSlots'
 import Program from 'nanogl/program'
+import { hashString, Hash } from './Hash'
 
 
 
@@ -188,7 +189,7 @@ export class Sampler extends Chunk implements IInputParam {
 
 
   _getHash() {
-    return `${this._linkAttrib ? '' : this.texCoords}-${this.name}`;
+    return hashString(`${this._linkAttrib ? '' : this.texCoords}-${this.name}`);
   }
 }
 
@@ -253,7 +254,7 @@ export class Uniform extends Chunk implements IInputParam {
 
 
   _getHash() {
-    return `${this.size}-${this.name}`;
+    return hashString(`${this.size}-${this.name}`);
   }
 
 }
@@ -310,7 +311,7 @@ export class Attribute extends Chunk implements IInputParam {
 
 
   _getHash() {
-    return `${this.size}-${this.name}`;
+    return hashString(`${this.size}-${this.name}`);
   }
 
 }
@@ -374,7 +375,8 @@ export class Constant extends Chunk implements IInputParam {
 
 
   _getHash() {
-    return `${this._stringifyValue()}-${this.size}-`;
+    // TODO: hash view
+    return hashString(`${this._stringifyValue()}-${this.size}-`);
   }
 
 }
@@ -475,10 +477,8 @@ export default class Input extends Chunk {
   // ===================================================
 
 
-  _getHash(): string {
-    var hash = `${this.size}-${this.comps}-${this.name}`;
-
-    return hash;
+  _getHash(): Hash {
+    return hashString(`${this.size}-${this.comps}-${this.name}`);
   }
 
 

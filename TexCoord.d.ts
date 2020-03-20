@@ -2,19 +2,21 @@ import { mat3, vec2 } from "gl-matrix";
 import Chunk from "./Chunk";
 import ChunkSlots from "./ChunksSlots";
 import Input from "./Input";
+import { Hash } from "./Hash";
 export declare abstract class TexCoordTransform extends Chunk {
     private static _UID;
     readonly attrib: string;
     readonly _translateInput: Input;
     readonly _rotateScalesInput: Input;
+    _buffer: Float32Array;
     _translation: vec2;
     _scale: vec2;
-    _rotation: number;
+    _rotation: Float32Array;
     protected _uid: string;
     constructor(attrib: string, hasSetup: boolean);
     protected _genCode(slots: ChunkSlots): void;
     varying(): string;
-    protected _getHash(): string;
+    protected _getHash(): Hash;
     protected decomposeMatrix(m: mat3): void;
     abstract updateTransform(): void;
 }
@@ -44,5 +46,5 @@ export default class TexCoord extends Chunk {
     varying(): string;
     private getStaticTransform;
     protected _genCode(slots: ChunkSlots): void;
-    protected _getHash(): string;
+    protected _getHash(): Hash;
 }

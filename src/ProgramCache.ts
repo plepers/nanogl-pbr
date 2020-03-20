@@ -4,6 +4,7 @@ import GLConfig from 'nanogl-state/config'
 import ChunkSlots from './ChunksSlots'
 import IMaterial from './interfaces/IMaterial';
 import IProgramSource from './interfaces/IProgramSource';
+import { hashString } from './Hash';
 
 const PRAGMA_SLOT = '#pragma SLOT';
 const PRAGMA_REGEX = /^\s*#pragma SLOT\s\w+\s*$/gm;
@@ -47,7 +48,7 @@ class ProgramCache {
 
   compile(source : IProgramSource) : Program {
 
-    const hash = source.shaderSource.uid + source.slots.hash;
+    const hash = hashString( source.shaderSource.uid, source.slots.hash );
 
     const cached = this._cache[hash];
     if (cached !== undefined) {

@@ -1,6 +1,7 @@
 import Program    from 'nanogl/program'
 import ChunksTree from './ChunkCollection' 
 import ChunkSlots from './ChunksSlots'
+import hashBuilder, { Hash } from './Hash';
 
 
 
@@ -89,7 +90,7 @@ export default abstract class Chunk {
     }
   }
 
-  getHash():string{
+  getHash():Hash{
     if( this._ref !== null ) {
       return this._ref.getHash();
     } else {
@@ -122,8 +123,8 @@ export default abstract class Chunk {
   }
 
   protected abstract _genCode( slots : ChunkSlots ):void;
-  protected abstract _getHash() : string;
-
+  protected abstract _getHash() : Hash;
+  
 
   setup(prg : Program ) {
     // noop

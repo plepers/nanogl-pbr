@@ -3,6 +3,7 @@ import Chunk from './Chunk'
 import ChunkSlots from './ChunksSlots'
 
 import {GlslPrecision} from './interfaces/GlslPrecision'
+import { hashString } from './Hash';
 
 
 /**
@@ -28,7 +29,7 @@ class ShaderPrecision extends Chunk {
 
 
   _getHash() {
-    return 'p' + this.fprecision;
+    return hashString(this.fprecision);
   }
 
 

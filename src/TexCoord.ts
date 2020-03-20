@@ -5,6 +5,7 @@ import ChunkSlots from "./ChunksSlots";
 import Input, { Uniform } from "./Input";
 
 import code from './glsl/templates/texCoord.glsl'
+import hashBuilder, { Hash, hashString } from "./Hash";
 
 
 const EPSILON = 0.000001;
@@ -47,6 +48,8 @@ function mat3Equals( m1 : mat3, m2 : mat3 ) : boolean {
 }
 
 
+
+
 export abstract class TexCoordTransform extends Chunk {
 
   private static _UID = 0
@@ -56,9 +59,11 @@ export abstract class TexCoordTransform extends Chunk {
   readonly _translateInput   : Input;
   readonly _rotateScalesInput: Input;
   
-  _translation : vec2 = vec2.create();
-  _scale       : vec2 = vec2.create();
-  _rotation    : number = 0;
+  _buffer      : Float32Array = new Float32Array( 5 );
+
+  _translation : vec2 = <vec2> new Float32Array(this._buffer.buffer, 0, 2);
+  _scale       : vec2 = <vec2> new Float32Array(this._buffer.buffer, 8, 2);
+  _rotation    : Float32Array = new Float32Array(this._buffer.buffer, 16, 1);
 
 
   protected _uid : string = `${TexCoordTransform._UID++}`
@@ -81,17 +86,20 @@ export abstract class TexCoordTransform extends Chunk {
     return `vTexCoord_tct${this._uid}`
   }
 
-  protected _getHash(): string {
-    return this.varying()
+  protected _getHash(): Hash {
+    return hashBuilder.start()
+      .hashView(this._buffer)
+      .hashString( this.varying() )
+      .get()
   }
 
 
   protected decomposeMatrix( m : mat3 ){
     this._translation[0] = m[6];
     this._translation[1] = m[7];
-    this._scale[0] = Math.sqrt(m[0] * m[0] + m[1] * m[1]);
-    this._scale[1] = Math.sqrt(m[3] * m[3] + m[4] * m[4]);
-    this._rotation = Math.atan2( m[1], m[0] )
+    this._scale[0]       = Math.sqrt(m[0] * m[0] + m[1] * m[1]);
+    this._scale[1]       = Math.sqrt(m[3] * m[3] + m[4] * m[4]);
+    this._rotation[0]    = Math.atan2( m[1], m[0] )
     this.updateTransform()
   }
 
@@ -123,7 +131,7 @@ export class DynamicTexCoordTransform extends TexCoordTransform {
   }
 
   rotate(rad:number) : this {
-    this._rotation = rad;
+    this._rotation[0] = rad;
     this.updateTransform()
     return this;
   }
@@ -151,12 +159,12 @@ export class DynamicTexCoordTransform extends TexCoordTransform {
       this._translateUniform.set( ...this._translation );
     }
 
-    if( noScale(this._scale) && almostZero( this._rotation) ){
+    if( noScale(this._scale) && almostZero( this._rotation[0]) ){
       this._rotateScalesInput.detach();
     } else {
       this._rotateScalesInput.attach( this._rotationScaleUniform );
       
-      this._rotationScaleUniform.set( ...composeMat2( this._scale, this._rotation ) )
+      this._rotationScaleUniform.set( ...composeMat2( this._scale, this._rotation[0] ) )
     }
   }
 
@@ -181,10 +189,10 @@ export class StaticTexCoordTransform extends TexCoordTransform {
       this._translateInput.attachConstant( this._translation );
     }
 
-    if( noScale(this._scale) && almostZero( this._rotation) ){
+    if( noScale(this._scale) && almostZero( this._rotation[0]) ){
       this._rotateScalesInput.detach();
     } else {
-      this._rotateScalesInput.attachConstant( composeMat2( this._scale, this._rotation ) )
+      this._rotateScalesInput.attachConstant( composeMat2( this._scale, this._rotation[0] ) )
     }
   }
 
@@ -245,8 +253,8 @@ export default class TexCoord extends Chunk {
     slots.add('pv', code({ declare_attribute: true, attrib: this.attrib }));
   }
   
-  protected _getHash(): string {
-    return `_tc_${this.attrib}`
+  protected _getHash(): Hash {
+    return hashString(`_tc_${this.attrib}`)
   }
   
 }

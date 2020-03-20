@@ -1,4 +1,5 @@
 import Chunk from './Chunk';
+import { hashString } from './Hash';
 const TYPES = [
     null,
     'float',
@@ -83,7 +84,7 @@ export class Sampler extends Chunk {
         prg[this.name](this._tex);
     }
     _getHash() {
-        return `${this._linkAttrib ? '' : this.texCoords}-${this.name}`;
+        return hashString(`${this._linkAttrib ? '' : this.texCoords}-${this.name}`);
     }
 }
 export class Uniform extends Chunk {
@@ -113,7 +114,7 @@ export class Uniform extends Chunk {
         this._invalid = false;
     }
     _getHash() {
-        return `${this.size}-${this.name}`;
+        return hashString(`${this.size}-${this.name}`);
     }
 }
 export class Attribute extends Chunk {
@@ -136,7 +137,7 @@ export class Attribute extends Chunk {
         slots.add('v', c);
     }
     _getHash() {
-        return `${this.size}-${this.name}`;
+        return hashString(`${this.size}-${this.name}`);
     }
 }
 export class Constant extends Chunk {
@@ -171,7 +172,7 @@ export class Constant extends Chunk {
         }
     }
     _getHash() {
-        return `${this._stringifyValue()}-${this.size}-`;
+        return hashString(`${this._stringifyValue()}-${this.size}-`);
     }
 }
 export default class Input extends Chunk {
@@ -221,8 +222,7 @@ export default class Input extends Chunk {
         return p;
     }
     _getHash() {
-        var hash = `${this.size}-${this.comps}-${this.name}`;
-        return hash;
+        return hashString(`${this.size}-${this.comps}-${this.name}`);
     }
     _genCode(slots) {
         this.genAvailable(slots);

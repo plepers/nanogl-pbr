@@ -1,8 +1,9 @@
-class ChunkSlots {
+import { mergeHash } from "./Hash";
+export default class ChunkSlots {
     constructor() {
+        this.hash = 0;
         this.slots = [];
         this.slotsMap = {};
-        this.hash = '';
     }
     getSlot(id) {
         var s = this.slotsMap[id];
@@ -20,11 +21,10 @@ class ChunkSlots {
         this.getSlot(slotId).code += code + '\n';
     }
     merge(other) {
-        this.hash += other.hash;
-        for (var os of other.slots) {
-            this.add(os.key, os.code);
+        this.hash = mergeHash(this.hash, other.hash);
+        for (var slot of other.slots) {
+            this.add(slot.key, slot.code);
         }
     }
 }
 ;
-export default ChunkSlots;

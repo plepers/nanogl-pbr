@@ -12,6 +12,7 @@ import pointLightCode from './glsl/templates/standard/point-light.frag';
 import shadPreCode from './glsl/templates/standard/shadow-maps-pre.frag';
 import preLightCode from './glsl/templates/standard/pre-light-setup.frag';
 import postLightCode from './glsl/templates/standard/post-light-setup.frag';
+import { hashString } from './Hash';
 class StandardModel {
     constructor() {
         this._datas = {};
@@ -77,9 +78,10 @@ class PreLightsChunk extends Chunk {
         slots.add('lightsf', code);
     }
     _getHash() {
-        return '0';
+        return PreLightsChunk._hash;
     }
 }
+PreLightsChunk._hash = hashString('PreLightsChunk');
 class PostLightsChunk extends Chunk {
     constructor() {
         super(true, false);
@@ -89,9 +91,10 @@ class PostLightsChunk extends Chunk {
         slots.add('lightsf', code);
     }
     _getHash() {
-        return '0';
+        return PostLightsChunk._hash;
     }
 }
+PostLightsChunk._hash = hashString('PostLightsChunk');
 const MAX_SHADOWS = 4;
 const AA = Math.PI / 4.0;
 class ShadowsChunk extends Chunk {
@@ -128,7 +131,7 @@ class ShadowsChunk extends Chunk {
         return i;
     }
     _getHash() {
-        return '' + this.shadowCount;
+        return hashString('shck' + this.shadowCount);
     }
     check() {
         if (this.genCount !== this.shadowCount) {
@@ -193,7 +196,7 @@ class LightDatas extends Chunk {
                 h += i;
             }
         }
-        return h;
+        return hashString(h);
     }
     setup(prg) {
         for (var i = 0; i < this.shadowIndices.length; i++) {

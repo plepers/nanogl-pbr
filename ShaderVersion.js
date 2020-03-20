@@ -1,4 +1,5 @@
 import Chunk from './Chunk';
+import { hashString } from './Hash';
 class ShaderVersion extends Chunk {
     constructor(v = '100') {
         super(true, false);
@@ -12,7 +13,7 @@ class ShaderVersion extends Chunk {
         return this.version;
     }
     _getHash() {
-        return 'v' + this.version;
+        return hashString('v' + this.version);
     }
     _genCode(slots) {
         var s = `#version ${this.version}`;

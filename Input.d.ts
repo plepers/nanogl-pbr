@@ -3,6 +3,7 @@ import Chunk from './Chunk';
 import Swizzle from './Swizzle';
 import ChunkSlots from './ChunksSlots';
 import Program from 'nanogl/program';
+import { Hash } from './Hash';
 export declare enum ShaderType {
     FRAGMENT = 1,
     VERTEX = 2,
@@ -29,7 +30,7 @@ export declare class Sampler extends Chunk implements IInputParam {
     set(t: Texture2D): void;
     _genCode(slots: ChunkSlots): void;
     setup(prg: Program): void;
-    _getHash(): string;
+    _getHash(): number;
 }
 export declare class Uniform extends Chunk implements IInputParam {
     name: string;
@@ -41,7 +42,7 @@ export declare class Uniform extends Chunk implements IInputParam {
     set(...args: number[]): void;
     _genCode(slots: ChunkSlots): void;
     setup(prg: Program): void;
-    _getHash(): string;
+    _getHash(): number;
 }
 export declare class Attribute extends Chunk implements IInputParam {
     name: string;
@@ -50,7 +51,7 @@ export declare class Attribute extends Chunk implements IInputParam {
     _input: Input | null;
     constructor(name: string, size: InputSize);
     _genCode(slots: ChunkSlots): void;
-    _getHash(): string;
+    _getHash(): number;
 }
 export declare class Constant extends Chunk implements IInputParam {
     name: string;
@@ -61,7 +62,7 @@ export declare class Constant extends Chunk implements IInputParam {
     constructor(value: ArrayLike<number> | number);
     _genCode(slots: ChunkSlots): void;
     _stringifyValue(): string;
-    _getHash(): string;
+    _getHash(): number;
 }
 export default class Input extends Chunk {
     static readonly Sampler: typeof Sampler;
@@ -83,7 +84,7 @@ export default class Input extends Chunk {
     attachUniform(name: string, size?: InputSize, comps?: Swizzle): Uniform;
     attachAttribute(name: string, size?: InputSize, comps?: Swizzle): Attribute;
     attachConstant(value: ArrayLike<number> | number, comps?: Swizzle): Constant;
-    _getHash(): string;
+    _getHash(): Hash;
     _genCode(slots: ChunkSlots): void;
     genAvailable(slots: ChunkSlots): void;
 }

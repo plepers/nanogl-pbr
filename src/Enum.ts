@@ -1,6 +1,7 @@
 
 import Chunk from './Chunk'
 import ChunkSlots from './ChunksSlots'
+import hashBuilder, { hashString } from './Hash';
 
 
 function defReducer( res:string, v:string, i:number ){
@@ -83,7 +84,8 @@ class Enum<T extends readonly string[]> extends Chunk {
 
 
   _getHash() {
-    return `${this.name}${this._valIndex}`;
+    // should we hash all possible values
+    return hashString(`${this.name}${this._val}`);
   }
 
 }

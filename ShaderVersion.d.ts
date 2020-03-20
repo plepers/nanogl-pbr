@@ -6,7 +6,7 @@ declare class ShaderVersion extends Chunk {
     constructor(v?: GlslVersion);
     set(v: GlslVersion): void;
     get(): GlslVersion;
-    _getHash(): string;
+    _getHash(): number;
     _genCode(slots: ChunkSlots): void;
 }
 export default ShaderVersion;

@@ -25,6 +25,7 @@ import pointLightCode from './glsl/templates/standard/point-light.frag'
 import shadPreCode from './glsl/templates/standard/shadow-maps-pre.frag'
 import preLightCode from './glsl/templates/standard/pre-light-setup.frag'
 import postLightCode from './glsl/templates/standard/post-light-setup.frag'
+import { hashString } from './Hash'
 
 
 
@@ -141,21 +142,19 @@ class StandardModel implements ILightModel {
 
 class PreLightsChunk extends Chunk {
 
+  static _hash = hashString( 'PreLightsChunk' )
 
   constructor() {
     super(true, false);
   }
-
-
 
   _genCode(slots: ChunkSlots) {
     const code = preLightCode(this)
     slots.add('lightsf', code);
   }
 
-
   _getHash() {
-    return '0';
+    return PreLightsChunk._hash;
   }
 }
 
@@ -165,6 +164,8 @@ class PreLightsChunk extends Chunk {
 
 
 class PostLightsChunk extends Chunk {
+
+  static _hash = hashString( 'PostLightsChunk' )
 
   constructor() {
     super(true, false);
@@ -176,7 +177,7 @@ class PostLightsChunk extends Chunk {
   }
 
   _getHash() {
-    return '0';
+    return PostLightsChunk._hash;
   }
 
 }
@@ -258,7 +259,7 @@ class ShadowsChunk extends Chunk {
 
 
   _getHash() {
-    return '' + this.shadowCount;
+    return hashString('shck' + this.shadowCount);
   }
 
 
@@ -362,7 +363,7 @@ abstract class LightDatas<TLight extends Light> extends Chunk {
         h += i;
       }
     }
-    return h;
+    return hashString(h);
   }
 
 

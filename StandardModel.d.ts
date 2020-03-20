@@ -24,14 +24,16 @@ declare class StandardModel implements ILightModel {
     getChunks(): Chunk[];
 }
 declare class PreLightsChunk extends Chunk {
+    static _hash: number;
     constructor();
     _genCode(slots: ChunkSlots): void;
-    _getHash(): string;
+    _getHash(): number;
 }
 declare class PostLightsChunk extends Chunk {
+    static _hash: number;
     constructor();
     _genCode(slots: ChunkSlots): void;
-    _getHash(): string;
+    _getHash(): number;
 }
 declare class ShadowsChunk extends Chunk {
     lightModel: StandardModel;
@@ -46,7 +48,7 @@ declare class ShadowsChunk extends Chunk {
     constructor(lightModel: StandardModel);
     _genCode(slots: ChunkSlots): void;
     addLight(light: Light): number;
-    _getHash(): string;
+    _getHash(): number;
     check(): void;
     setup(prg: Program): void;
 }

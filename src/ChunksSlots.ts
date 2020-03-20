@@ -1,26 +1,30 @@
+import { Hash, mergeHash } from "./Hash";
 
-type Slot = {
+export type ChunkSlot = {
   key: string;
   code: string;
 }
 
-class ChunkSlots {
+type HashedChunkSlot = ChunkSlot & {
+  hash: Hash;
+}
 
-  slots: Slot[];
-  slotsMap: Record<string, Slot>;
-  hash: string;
+export default class ChunkSlots {
+
+  slots: ChunkSlot[];
+  slotsMap: Record<string, ChunkSlot>;
+  hash: Hash = 0;
 
 
   constructor() {
     this.slots    = [];
     this.slotsMap = {};
-    this.hash     = '';
   }
 
 
 
   getSlot(id: string) {
-    var s: Slot = this.slotsMap[id];
+    var s: ChunkSlot = this.slotsMap[id];
     if (s === undefined) {
       s = {
         key: id,
@@ -39,13 +43,11 @@ class ChunkSlots {
   
 
   merge( other : ChunkSlots ){
-    this.hash += other.hash;
-    for( var os of other.slots ){
-      this.add( os.key, os.code );
+    this.hash = mergeHash( this.hash, other.hash );
+    for( var slot of other.slots ){
+      this.add( slot.key, slot.code );
     }
   }
 
 };
 
-
-export default ChunkSlots

@@ -1,56 +1,31 @@
 import GLConfig from 'nanogl-state/config';
-import ProgramCache from './ProgramCache';
 import ChunkCollection from './ChunkCollection';
-import ChunkSlots from './ChunksSlots';
+import ProgramSource from './ProgramSource';
 export class PassInstance {
-    constructor(material, id, pass) {
+    constructor(material, pass) {
         this._program = null;
-        this._revision = 0;
-        this.id = id;
+        this.programSource = new ProgramSource(material.gl, pass._shaderSource);
+        this.programSource.addChunkCollection(material.inputs);
+        this.programSource.addChunkCollection(pass.inputs);
         this.pass = pass;
         this.material = material;
     }
-    getSourceRevision() {
-        return this.pass.inputs.getRevision() + this.material.inputs.getRevision();
-    }
     prepare(node, camera) {
-        const prg = this.getProgram();
-        prg.use();
-        this.pass.inputs.setupProgram(prg);
-        this.material.inputs.setupProgram(prg);
+        const prg = this.programSource.setupProgram();
         this.pass.prepare(prg, node, camera);
         return prg;
     }
     getProgram() {
-        const sourceRev = this.getSourceRevision();
-        if (this._program === null || this._revision !== sourceRev) {
-            this.compile();
-            this._revision = sourceRev;
-        }
-        return this._program;
-    }
-    compile() {
-        const pcache = this.material._prgcache;
-        if (this._program !== null) {
-            pcache.release(this._program);
-        }
-        const slots = new ChunkSlots();
-        this.pass.inputs.getCode(slots);
-        this.material.inputs.getCode(slots);
-        const prgSource = {
-            shaderSource: this.pass._shaderSource,
-            slots: slots,
-        };
-        this._program = pcache.compile(prgSource);
+        return this.programSource.getProgram();
     }
 }
 export default class BaseMaterial {
     constructor(gl, name = '') {
         this.mask = ~0;
+        this.gl = gl;
         this.name = name;
         this.glconfig = new GLConfig();
         this.inputs = new ChunkCollection();
-        this._prgcache = ProgramCache.getCache(gl);
         this._passMap = new Map();
         this._passes = [];
     }
@@ -58,7 +33,7 @@ export default class BaseMaterial {
         if (this._passMap.has(id)) {
             this.removePass(id);
         }
-        const pInst = new PassInstance(this, id, pass);
+        const pInst = new PassInstance(this, pass);
         this._passMap.set(id, pInst);
         this._passes.push(pInst);
         return pInst;
