@@ -25,7 +25,7 @@ describe("TexCoord", function () {
 
     it('code should have 2 tc', function () {
 
-      tcA = TexCoord.create('aTexCoord0');
+      tcA = TexCoord.create();
       tcB = TexCoord.create('aTexCoord1');
 
       collection.add(tcA);
@@ -49,7 +49,7 @@ describe("TexCoord", function () {
 
     it('2 same tc code should output 1 code', function () {
 
-      tcA = TexCoord.create('aTexCoord0');
+      tcA = TexCoord.create();
       tcB = TexCoord.create('aTexCoord0');
 
       collection.add(tcA);
@@ -71,7 +71,7 @@ describe("TexCoord", function () {
     it('2 tc with diff xforms code should output 2 code', function () {
       const m3 = mat3.create()
       m3.set([1,0,0,0,1,0,1,0,0])
-      tcA = TexCoord.create('aTexCoord0');
+      tcA = TexCoord.create();
       tcB = TexCoord.createTransformed('aTexCoord0', m3);
 
       collection.add(tcA);

@@ -1,6 +1,11 @@
 import { mat3, vec2 } from "gl-matrix";
 import Chunk from "./Chunk";
 import ChunkSlots from "./ChunksSlots";
+declare type TRSOpts = {
+    translation?: [number, number];
+    rotation?: number;
+    scale?: number;
+};
 declare class TexCoordTransform {
     readonly buffer: Float32Array;
     readonly translation: vec2;
@@ -11,9 +16,10 @@ declare class TexCoordTransform {
     getTransformHash(): number;
 }
 declare abstract class TexCoord extends Chunk {
-    static create(attrib: string): StaticTexCoord;
-    static createTransformed(attrib: string, matrix: mat3): StaticTexCoord;
-    static createTransformedDynamic(attrib: string): DynamicTexCoord;
+    static create(attrib?: string): StaticTexCoord;
+    static createTransformed(attrib?: string, matrix?: mat3): StaticTexCoord;
+    static createFromTRS(attrib?: string, trsOpt?: TRSOpts): StaticTexCoord;
+    static createTransformedDynamic(attrib?: string): DynamicTexCoord;
     readonly _transform: TexCoordTransform;
     readonly attrib: string;
     protected _uid: string;
@@ -28,7 +34,7 @@ export declare class DynamicTexCoord extends TexCoord {
     private readonly _translateUniform;
     private readonly _rotationScaleUniform;
     private static _UID;
-    constructor(attrib: string);
+    constructor(attrib?: string);
     varying(): string;
     getTransformCode(): string;
     translate(x: number, y: number): this;
@@ -40,7 +46,7 @@ export declare class DynamicTexCoord extends TexCoord {
 export declare class StaticTexCoord extends TexCoord {
     private _translateConst?;
     private _rotateScalesConst?;
-    constructor(attrib: string, matrix: mat3);
+    constructor(attrib: string | undefined, matrix: mat3);
     varying(): string;
     getTransformCode(): string;
 }

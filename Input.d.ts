@@ -77,7 +77,7 @@ export default class Input extends Chunk {
     constructor(name: string, size: InputSize, shader?: ShaderType);
     attach(param: InputParam, comps?: Swizzle): void;
     detach(): void;
-    attachSampler(name: string, texCoords: string, comps?: Swizzle): Sampler;
+    attachSampler(name: string, texCoords: string | TexCoord, comps?: Swizzle): Sampler;
     attachUniform(name: string, size?: InputSize, comps?: Swizzle): Uniform;
     attachAttribute(name: string, size?: InputSize, comps?: Swizzle): Attribute;
     attachConstant(value: ArrayLike<number> | number, comps?: Swizzle): Constant;

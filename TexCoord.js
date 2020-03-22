@@ -3,6 +3,7 @@ import Chunk from "./Chunk";
 import Input, { Uniform } from "./Input";
 import { hashString, hashView, stringifyHash, mergeHash } from "./Hash";
 const EPSILON = 0.000001;
+const M3 = mat3.create();
 const M3_IDENTITY = mat3.create();
 function almostZero(f) {
     return Math.abs(f) < EPSILON;
@@ -14,6 +15,20 @@ function noScale(v) {
     return almostZero(v[0] - 1) && almostZero(v[1] - 1);
 }
 const M2 = new Float32Array(4);
+function fromTRS(res, translation, rotation, scale) {
+    const cos = Math.cos(rotation);
+    const sin = Math.sin(rotation);
+    res[0] = scale[0] * cos;
+    res[1] = scale[0] * -sin;
+    res[3] = scale[1] * sin;
+    res[4] = scale[1] * cos;
+    res[6] = translation[0];
+    res[7] = translation[0];
+    res[2] = 0;
+    res[5] = 0;
+    res[8] = 0;
+}
+const _DefaultTexCoord = 'aTexCoord0';
 const GLSL = {
     declareIn(name) {
         return `IN mediump vec2 ${name};`;
@@ -58,7 +73,7 @@ class TexCoordTransform {
     }
 }
 class TexCoord extends Chunk {
-    constructor(attrib = 'aTexCoord0', hasSetup) {
+    constructor(attrib = _DefaultTexCoord, hasSetup) {
         super(true, hasSetup);
         this._uid = '';
         this.attrib = attrib;
@@ -67,8 +82,16 @@ class TexCoord extends Chunk {
     static create(attrib) {
         return new StaticTexCoord(attrib, M3_IDENTITY);
     }
-    static createTransformed(attrib, matrix) {
+    static createTransformed(attrib, matrix = M3_IDENTITY) {
         return new StaticTexCoord(attrib, matrix);
+    }
+    static createFromTRS(attrib, trsOpt = {}) {
+        var _a, _b, _c;
+        const t = (_a = trsOpt.translation) !== null && _a !== void 0 ? _a : [0, 0];
+        const r = (_b = trsOpt.rotation) !== null && _b !== void 0 ? _b : 0;
+        const s = (_c = trsOpt.scale) !== null && _c !== void 0 ? _c : 0;
+        fromTRS(M3, t, r, [s, s]);
+        return new StaticTexCoord(attrib, M3);
     }
     static createTransformedDynamic(attrib) {
         return new DynamicTexCoord(attrib);
@@ -81,7 +104,7 @@ class TexCoord extends Chunk {
     }
 }
 export class DynamicTexCoord extends TexCoord {
-    constructor(attrib) {
+    constructor(attrib = _DefaultTexCoord) {
         super(attrib, true);
         this._uid = `${DynamicTexCoord._UID++}`;
         this._translateInput = this.addChild(new Input(`tct_t_${this._uid}`, 2, Input.VERTEX));
@@ -125,7 +148,7 @@ export class DynamicTexCoord extends TexCoord {
 }
 DynamicTexCoord._UID = 0;
 export class StaticTexCoord extends TexCoord {
-    constructor(attrib, matrix) {
+    constructor(attrib = _DefaultTexCoord, matrix) {
         super(attrib, false);
         this._transform.decomposeMatrix(matrix);
         const thash = stringifyHash(this._transform.getTransformHash());

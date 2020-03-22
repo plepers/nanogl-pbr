@@ -424,7 +424,7 @@ export default class Input extends Chunk {
   }
 
 
-  attachSampler(name: string, texCoords: string, comps: Swizzle = 'rgba') {
+  attachSampler(name: string, texCoords: string | TexCoord, comps: Swizzle = 'rgba') {
     var p = new Sampler(name, texCoords);
     this.attach(p, comps);
     return p;

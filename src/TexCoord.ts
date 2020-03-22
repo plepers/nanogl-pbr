@@ -4,10 +4,11 @@ import Chunk from "./Chunk";
 import ChunkSlots from "./ChunksSlots";
 import Input, { Uniform, Constant } from "./Input";
 
-import hashBuilder, { Hash, hashString, hashView, stringifyHash, hashNumber, mergeHash } from "./Hash";
+import { hashString, hashView, stringifyHash, mergeHash } from "./Hash";
 
 
 const EPSILON = 0.000001;
+const M3 = mat3.create()
 const M3_IDENTITY = mat3.create()
 
 function almostZero( f:number ) : boolean {
@@ -24,6 +25,32 @@ function noScale( v:vec2) : boolean {
 
 const M2 = new Float32Array(4);
 
+
+function fromTRS( res : mat3, translation :[number, number] , rotation : number, scale : [number, number]){
+  const cos = Math.cos( rotation );
+  const sin = Math.sin( rotation );
+  res[0]= scale[0] * cos
+  res[1]= scale[0] * -sin
+  res[3]= scale[1] * sin
+  res[4]= scale[1] * cos
+  
+  res[6]=translation[0];
+  res[7]=translation[0];
+
+  res[2]=0
+  res[5]=0
+  res[8]=0
+}
+
+
+
+type TRSOpts = {
+  translation? : [number,number]
+  rotation? : number
+  scale? : number
+}
+
+const _DefaultTexCoord = 'aTexCoord0'
 
 
 
@@ -100,16 +127,23 @@ class TexCoordTransform {
 
 abstract class TexCoord extends Chunk {
 
-
-  static create( attrib : string ) : StaticTexCoord {
+  static create( attrib? : string ) : StaticTexCoord {
     return new StaticTexCoord( attrib, M3_IDENTITY );
   }
   
-  static createTransformed( attrib : string, matrix : mat3 ) : StaticTexCoord {
+  static createTransformed( attrib? : string, matrix : mat3 = M3_IDENTITY ) : StaticTexCoord {
     return new StaticTexCoord( attrib, matrix );
   }
+
+  static createFromTRS( attrib? : string, trsOpt : TRSOpts = {} ) : StaticTexCoord {
+    const t = trsOpt.translation ?? [0,0]
+    const r = trsOpt.rotation ?? 0
+    const s = trsOpt.scale ?? 0
+    fromTRS( M3, t, r, [s,s])
+    return new StaticTexCoord( attrib, M3 );
+  }
   
-  static createTransformedDynamic( attrib : string ) : DynamicTexCoord {
+  static createTransformedDynamic( attrib? : string ) : DynamicTexCoord {
     return new DynamicTexCoord( attrib );
   }
 
@@ -119,7 +153,7 @@ abstract class TexCoord extends Chunk {
   readonly attrib: string;
   protected _uid : string = '';
 
-  constructor( attrib : string = 'aTexCoord0', hasSetup : boolean ){
+  constructor( attrib : string = _DefaultTexCoord, hasSetup : boolean ){
     super( true, hasSetup )
     this.attrib = attrib;
     this._transform = new TexCoordTransform();
@@ -148,7 +182,7 @@ export class DynamicTexCoord extends TexCoord {
 
   private static _UID = 0
   
-  constructor( attrib : string ){
+  constructor( attrib : string = _DefaultTexCoord ){
     super( attrib, true )
     this._uid = `${DynamicTexCoord._UID++}`
 
@@ -213,7 +247,7 @@ export class StaticTexCoord extends TexCoord {
   private _translateConst?: Constant;
   private _rotateScalesConst?: Constant;
   
-  constructor( attrib : string, matrix : mat3 ){
+  constructor( attrib : string = _DefaultTexCoord, matrix : mat3 ){
     super( attrib, false )
     
     this._transform.decomposeMatrix( matrix );
@@ -246,11 +280,5 @@ export class StaticTexCoord extends TexCoord {
 
 
 }
-
-
-
-
-
-
 
 export default TexCoord;
