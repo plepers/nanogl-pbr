@@ -1,5 +1,4 @@
 import Chunk from './Chunk';
-import { hashString } from './Hash';
 function defReducer(res, v, i) {
     res += `#define ${v} ${i + 1}\n`;
     return res;
@@ -35,9 +34,6 @@ class Enum extends Chunk {
             this._accesDef
         ].join('\n');
         slots.add('definitions', c);
-    }
-    _getHash() {
-        return hashString(`${this.name}${this._val}`);
     }
 }
 export default Enum;

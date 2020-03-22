@@ -90,13 +90,6 @@ export default abstract class Chunk {
     }
   }
 
-  getHash():Hash{
-    if( this._ref !== null ) {
-      return this._ref.getHash();
-    } else {
-      return this._getHash();
-    }
-  }
 
   get hasCode():boolean{
     if( this._ref !== null ) {
@@ -123,7 +116,6 @@ export default abstract class Chunk {
   }
 
   protected abstract _genCode( slots : ChunkSlots ):void;
-  protected abstract _getHash() : Hash;
   
 
   setup(prg : Program ) {

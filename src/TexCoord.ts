@@ -2,10 +2,9 @@ import { mat3, vec2 } from "gl-matrix";
 
 import Chunk from "./Chunk";
 import ChunkSlots from "./ChunksSlots";
-import Input, { Uniform } from "./Input";
+import Input, { Uniform, Constant } from "./Input";
 
-import code from './glsl/templates/texCoord.glsl'
-import hashBuilder, { Hash, hashString } from "./Hash";
+import hashBuilder, { Hash, hashString, hashView, stringifyHash, hashNumber, mergeHash } from "./Hash";
 
 
 const EPSILON = 0.000001;
@@ -26,125 +25,174 @@ function noScale( v:vec2) : boolean {
 const M2 = new Float32Array(4);
 
 
-function composeMat2( scale : vec2, r : number ) : Float32Array {
-  const cos = Math.cos( r );
-  const sin = Math.sin( r );
-  M2[0]= scale[0] * cos
-  M2[1]= scale[0] * -sin
-  M2[2]= scale[1] * sin
-  M2[3]= scale[1] * cos
-  return M2;
+
+
+// function mat3Equals( m1 : mat3, m2 : mat3 ) : boolean {
+//   return (
+//     almostZero( m1[0] - m2[0] ) &&
+//     almostZero( m1[1] - m2[1] ) &&
+//     almostZero( m1[3] - m2[3] ) &&
+//     almostZero( m1[4] - m2[4] ) &&
+//     almostZero( m1[6] - m2[6] ) &&
+//     almostZero( m1[7] - m2[7] )
+//   );
+// }
+
+
+
+const GLSL = {
+
+  declareIn( name : string ): string {
+    return `IN mediump vec2 ${name};`
+  },
+
+  declareOut( name : string ): string {
+    return `OUT mediump vec2 ${name};`
+  },
+
+  transformCode(tc : TexCoord, tSource? : string, rsSource? : string ) : string {
+    let tattrib = tc.attrib;
+    if( rsSource !== undefined ) 
+      tattrib = `mat2( ${rsSource}() ) * ${tattrib}`
+    if( tSource  !== undefined ) 
+      tattrib = `${tattrib} + ${tSource}()`
+    return `${tc.varying()} = ${tattrib};`
+  }
+
 }
 
-function mat3Equals( m1 : mat3, m2 : mat3 ) : boolean {
-  return (
-    almostZero( m1[0] - m2[0] ) &&
-    almostZero( m1[1] - m2[1] ) &&
-    almostZero( m1[3] - m2[3] ) &&
-    almostZero( m1[4] - m2[4] ) &&
-    almostZero( m1[6] - m2[6] ) &&
-    almostZero( m1[7] - m2[7] )
-  );
+
+class TexCoordTransform {
+
+
+
+  readonly buffer      : Float32Array = new Float32Array( 5 );
+
+  readonly translation : vec2 = <vec2> new Float32Array (this.buffer.buffer, 0, 2);
+  readonly scale       : vec2 = <vec2> new Float32Array (this.buffer.buffer, 8, 2);
+  readonly rotation    : Float32Array = new Float32Array(this.buffer.buffer, 16, 1);
+
+
+  decomposeMatrix( m : mat3 ){
+    this.translation[0] = m[6];
+    this.translation[1] = m[7];
+    this.scale[0]       = Math.sqrt(m[0] * m[0] + m[1] * m[1]);
+    this.scale[1]       = Math.sqrt(m[3] * m[3] + m[4] * m[4]);
+    this.rotation[0]    = Math.atan2( m[1], m[0] )
+
+  }
+
+  composeMat2() : Float32Array {
+    const cos = Math.cos( this.rotation[0] );
+    const sin = Math.sin( this.rotation[0] );
+    M2[0]= this.scale[0] * cos
+    M2[1]= this.scale[0] * -sin
+    M2[2]= this.scale[1] * sin
+    M2[3]= this.scale[1] * cos
+    return M2;
+  }
+
+  getTransformHash() : number {
+    return hashView( this.buffer );
+  }
 }
 
 
+abstract class TexCoord extends Chunk {
 
 
-export abstract class TexCoordTransform extends Chunk {
+  static create( attrib : string ) : StaticTexCoord {
+    return new StaticTexCoord( attrib, M3_IDENTITY );
+  }
+  
+  static createTransformed( attrib : string, matrix : mat3 ) : StaticTexCoord {
+    return new StaticTexCoord( attrib, matrix );
+  }
+  
+  static createTransformedDynamic( attrib : string ) : DynamicTexCoord {
+    return new DynamicTexCoord( attrib );
+  }
 
-  private static _UID = 0
+
+  readonly _transform : TexCoordTransform;
 
   readonly attrib: string;
+  protected _uid : string = '';
 
-  readonly _translateInput   : Input;
-  readonly _rotateScalesInput: Input;
-  
-  _buffer      : Float32Array = new Float32Array( 5 );
-
-  _translation : vec2 = <vec2> new Float32Array(this._buffer.buffer, 0, 2);
-  _scale       : vec2 = <vec2> new Float32Array(this._buffer.buffer, 8, 2);
-  _rotation    : Float32Array = new Float32Array(this._buffer.buffer, 16, 1);
-
-
-  protected _uid : string = `${TexCoordTransform._UID++}`
-
-  constructor( attrib : string, hasSetup: boolean ){
-    super( true, hasSetup );
+  constructor( attrib : string = 'aTexCoord0', hasSetup : boolean ){
+    super( true, hasSetup )
     this.attrib = attrib;
-    this._translateInput    = this.addChild( new Input(`tct_t_${this._uid}` , 2, Input.VERTEX ));
-    this._rotateScalesInput = this.addChild( new Input(`tct_rs_${this._uid}`, 4, Input.VERTEX ));
+    this._transform = new TexCoordTransform();
   }
 
-  protected _genCode(slots: ChunkSlots): void {
-    const varying = this.varying();
-    slots.add('pf', code({ declare_fragment_varying: true, varying }));
-    slots.add('pv', code({ declare_vertex_varying  : true, varying }));
-    slots.add('v' , code({ vertex_body: true, uid: this._uid, varying, attrib : this.attrib  }));
+  abstract varying() : string;
+  abstract getTransformCode() : string;
+
+  _genCode(slots: ChunkSlots): void {
+    slots.add('pf', GLSL.declareIn ( this.varying() ) );
+    slots.add('pv', GLSL.declareOut( this.varying() ) );
+    slots.add('pv', GLSL.declareIn( this.attrib ));
+    slots.add('v' , this.getTransformCode() );
   }
-
-  varying() : string {
-    return `vTexCoord_tct${this._uid}`
-  }
-
-  protected _getHash(): Hash {
-    return hashBuilder.start()
-      .hashView(this._buffer)
-      .hashString( this.varying() )
-      .get()
-  }
-
-
-  protected decomposeMatrix( m : mat3 ){
-    this._translation[0] = m[6];
-    this._translation[1] = m[7];
-    this._scale[0]       = Math.sqrt(m[0] * m[0] + m[1] * m[1]);
-    this._scale[1]       = Math.sqrt(m[3] * m[3] + m[4] * m[4]);
-    this._rotation[0]    = Math.atan2( m[1], m[0] )
-    this.updateTransform()
-  }
-
-
-
-  abstract updateTransform() : void;
 }
 
 
 
-export class DynamicTexCoordTransform extends TexCoordTransform {
 
+export class DynamicTexCoord extends TexCoord {
+
+  private readonly _translateInput   : Input;
+  private readonly _rotateScalesInput: Input;
   private readonly _translateUniform     : Uniform;
   private readonly _rotationScaleUniform : Uniform;
 
+  private static _UID = 0
+  
   constructor( attrib : string ){
     super( attrib, true )
+    this._uid = `${DynamicTexCoord._UID++}`
+
+    this._translateInput    = this.addChild( new Input(`tct_t_${this._uid}` , 2, Input.VERTEX ));
+    this._rotateScalesInput = this.addChild( new Input(`tct_rs_${this._uid}`, 4, Input.VERTEX ));
 
     this._translateUniform      = new Uniform(`tct_ut_${this._uid}`,  2);
     this._rotationScaleUniform  = new Uniform(`tct_urs_${this._uid}`, 4);
 
+    this._translateInput.attach( this._translateUniform );
+    this._rotateScalesInput.attach( this._rotationScaleUniform );
+  }
+
+  varying() : string {
+    return `vTexCoord_dtt${this._uid}`
+  }
+
+  getTransformCode() : string {
+    return GLSL.transformCode( this, this._translateInput.name, this._rotateScalesInput.name )
   }
 
   translate(x:number, y:number) : this {
-    this._translation[0]=x;
-    this._translation[1]=y;
+    this._transform.translation[0]=x;
+    this._transform.translation[1]=y;
     this.updateTransform()
     return this;
   }
 
   rotate(rad:number) : this {
-    this._rotation[0] = rad;
+    this._transform.rotation[0] = rad;
     this.updateTransform()
     return this;
   }
 
   scale(x:number, y:number = x) : this {
-    this._scale[0]=x;
-    this._scale[1]=y;
+    this._transform.scale[0]=x;
+    this._transform.scale[1]=y;
     this.updateTransform()
     return this;
   }
-
+  
   setMatrix( m : mat3 ){
-    this.decomposeMatrix(m);
+    this._transform.decomposeMatrix(m);
+    this.updateTransform()
   }
 
 
@@ -152,109 +200,57 @@ export class DynamicTexCoordTransform extends TexCoordTransform {
    * TODO: maybe not a good idea to trigger code invalidation when some transformation become null, in case of animation for example
    */
   updateTransform(){
-    if (noTranslate(this._translation ) ) {
-      this._translateInput.detach();
-    } else {
-      this._translateInput.attach( this._translateUniform );
-      this._translateUniform.set( ...this._translation );
-    }
-
-    if( noScale(this._scale) && almostZero( this._rotation[0]) ){
-      this._rotateScalesInput.detach();
-    } else {
-      this._rotateScalesInput.attach( this._rotationScaleUniform );
-      
-      this._rotationScaleUniform.set( ...composeMat2( this._scale, this._rotation[0] ) )
-    }
+    this._translateUniform.set( ...this._transform.translation );
+    this._rotationScaleUniform.set( ...this._transform.composeMat2() )
   }
 
 
 }
 
 
-export class StaticTexCoordTransform extends TexCoordTransform {
-
-  _matrix: mat3;
-
+export class StaticTexCoord extends TexCoord {
+  
+  private _translateConst?: Constant;
+  private _rotateScalesConst?: Constant;
+  
   constructor( attrib : string, matrix : mat3 ){
     super( attrib, false )
-    this._matrix = mat3.copy( mat3.create(), matrix);
-    this.decomposeMatrix( matrix );
-  }
-  
-  updateTransform(){
-    if (noTranslate(this._translation ) ) {
-      this._translateInput.detach();
-    } else {
-      this._translateInput.attachConstant( this._translation );
-    }
-
-    if( noScale(this._scale) && almostZero( this._rotation[0]) ){
-      this._rotateScalesInput.detach();
-    } else {
-      this._rotateScalesInput.attachConstant( composeMat2( this._scale, this._rotation[0] ) )
-    }
-  }
-
-  equalMatrix( m:mat3 ){
-    return mat3Equals( m, this._matrix );
-  }
-
-}
-
-
-
-export default class TexCoord extends Chunk {
-
-
-  readonly attrib: string;
-  readonly _statics : StaticTexCoordTransform[] = [];
-  private _identity : StaticTexCoordTransform | null = null;
-
-  constructor( attrib : string = 'aTexCoord0' ){
-    super( true, false )
-    this.attrib = attrib;
-  }
-
-
-  addTransform() : DynamicTexCoordTransform {
-    const tct =  new DynamicTexCoordTransform(this.attrib);
-    this.addChild(tct);
-    return tct;
-  }
-  
-  addStaticTransform( matrix : mat3 ) : StaticTexCoordTransform {
-    const matchTct = this.getStaticTransform( matrix );
-    if( matchTct !== null ) return matchTct;
     
-    const tct = new StaticTexCoordTransform(this.attrib, matrix );
-    this.addChild(tct);
-    this._statics.push( tct );
-    return tct;
-  }
+    this._transform.decomposeMatrix( matrix );
+    const thash = stringifyHash( this._transform.getTransformHash() );
+    
+    
+    if( !noTranslate(this._transform.translation ) ) {
+      const input = new Input(`tct_t_${thash}` , 2, Input.VERTEX )
+      this._translateConst = input.attachConstant(this._transform.translation);
+      this.addChild( input );
+    }
+    
+    if( !noScale(this._transform.scale) || !almostZero( this._transform.rotation[0]) ){
+      const input = new Input(`tct_rs_${thash}`, 4, Input.VERTEX )
+      this._rotateScalesConst = input.attachConstant(this._transform.composeMat2());
+      this.addChild( input );
+    }
 
+
+  }
+  
   varying() : string {
-    if( this._identity === null ){
-      this._identity = this.addStaticTransform(M3_IDENTITY)
-    }
-    return this._identity.varying();
+    const hash = mergeHash( hashString( this.attrib ) , this._transform.getTransformHash() ) 
+    return `vTexCoord_${stringifyHash( hash )}`
   }
 
-  private getStaticTransform( matrix : mat3 ) : StaticTexCoordTransform | null{
-    for (const tct of this._statics) {
-      if( tct.equalMatrix(matrix) ){
-        return tct;
-      }
-    }
-    return null;
+  getTransformCode() : string {
+    return GLSL.transformCode( this, this._translateConst?._input?.name, this._rotateScalesConst?._input?.name )
   }
 
-  protected _genCode(slots: ChunkSlots): void {
-    slots.add('pv', code({ declare_attribute: true, attrib: this.attrib }));
-  }
-  
-  protected _getHash(): Hash {
-    return hashString(`_tc_${this.attrib}`)
-  }
-  
+
 }
+
+
+
+
+
+
+
+export default TexCoord;

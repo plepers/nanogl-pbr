@@ -28,11 +28,6 @@ class ShaderPrecision extends Chunk {
   }
 
 
-  _getHash() {
-    return hashString(this.fprecision);
-  }
-
-
   _genCode( slots  :ChunkSlots ) {
     const s = `precision ${this.fprecision} float;\n`;
     slots.add('precision', s);

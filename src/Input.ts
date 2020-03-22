@@ -5,7 +5,8 @@ import Chunk from './Chunk'
 import Swizzle from './Swizzle'
 import ChunkSlots from './ChunksSlots'
 import Program from 'nanogl/program'
-import { hashString, Hash } from './Hash'
+import { hashString, Hash, stringifyHash } from './Hash'
+import TexCoord from './TexCoord'
 
 
 
@@ -127,33 +128,29 @@ export class Sampler extends Chunk implements IInputParam {
   token: string;
   _input: Input | null;
   _tex: Texture2D | null;
-  _linkAttrib: boolean;
 
-  texCoords: string | Attribute;
-  uvsToken: string;
+  texCoords: TexCoord | string;
+  _varying : string;
 
 
-  constructor(name: string, texCoords: Attribute | string) {
+  constructor(name: string, texCoords: TexCoord | string) {
 
     super(true, true);
 
     this._input = null;
     this.name = name;
-    this.texCoords = texCoords;
     this._tex = null;
     this.size = 4;
-
-
-    if (isAttribute(texCoords)) {
-      this._linkAttrib = true;
-      this.addChild(texCoords);
-      this.uvsToken = texCoords.token;
+    
+    if( typeof texCoords === 'string' ){
+      this.texCoords = texCoords;
+      this._varying = texCoords;
     } else {
-      this._linkAttrib = false;
-      this.uvsToken = texCoords;
+      this.texCoords = texCoords;
+      this.addChild( this.texCoords );
+      this._varying = texCoords.varying();
     }
-
-    this.token = `VAL_${this.name}${this.uvsToken}`;
+    this.token = `VAL_${this.name}${this._varying}`;
   }
 
 
@@ -166,8 +163,8 @@ export class Sampler extends Chunk implements IInputParam {
   _genCode(slots: ChunkSlots) {
     if (this._input == null) return;
 
-    var name = this.name,
-      c;
+    const name = this.name;
+    let c;
 
     // PF
     c = `uniform sampler2D ${name};\n`;
@@ -175,7 +172,7 @@ export class Sampler extends Chunk implements IInputParam {
     // slots.add( 'pf', c );
 
     // F
-    c = `vec4 ${this.token} = texture2D( ${name}, ${this.uvsToken});\n`;
+    c = `vec4 ${this.token} = texture2D( ${name}, ${this._varying});\n`;
     _addCode(slots, this._input.shader, c);
     // slots.add( 'f', c );
 
@@ -188,9 +185,6 @@ export class Sampler extends Chunk implements IInputParam {
   }
 
 
-  _getHash() {
-    return hashString(`${this._linkAttrib ? '' : this.texCoords}-${this.name}`);
-  }
 }
 
 
@@ -252,11 +246,6 @@ export class Uniform extends Chunk implements IInputParam {
     this._invalid = false;
   }
 
-
-  _getHash() {
-    return hashString(`${this.size}-${this.name}`);
-  }
-
 }
 
 
@@ -309,11 +298,6 @@ export class Attribute extends Chunk implements IInputParam {
 
   }
 
-
-  _getHash() {
-    return hashString(`${this.size}-${this.name}`);
-  }
-
 }
 //                        _              _
 //                       | |            | |
@@ -333,13 +317,14 @@ export class Constant extends Chunk implements IInputParam {
   token: string;
   _input: Input | null;
   value: ArrayLike<number> | number;
+  _hash: Hash
 
   constructor(value: ArrayLike<number> | number) {
     super(true, false);
 
     this._input = null;
 
-    this.name = `CONST_${(0 | (Math.random() * 0x7FFFFFFF)).toString(16)}`;
+
     if ( typeof value === 'number' ) {
       this.size = 1;
       this.value = value;
@@ -347,6 +332,9 @@ export class Constant extends Chunk implements IInputParam {
       this.size = <InputSize>value.length;
       this.value = Array.from(value);
     }
+
+    this._hash = hashString( `${this.size}-${this._stringifyValue()}` )
+    this.name = `CONST_${stringifyHash( this._hash )}`;
     this.token = `VAR_${this.name}`;
   }
 
@@ -358,7 +346,7 @@ export class Constant extends Chunk implements IInputParam {
 
     // PF
     c = `#define ${this.token} ${TYPES[this.size]}(${this._stringifyValue()})\n`;
-    _addPreCode(slots, this._input.shader, c);
+    _addPreCode(slots, this._input.shader, c );
     // slots.add( 'pf', c );
 
   }
@@ -373,11 +361,6 @@ export class Constant extends Chunk implements IInputParam {
     }
   }
 
-
-  _getHash() {
-    // TODO: hash view
-    return hashString(`${this._stringifyValue()}-${this.size}-`);
-  }
 
 }
 
@@ -477,14 +460,12 @@ export default class Input extends Chunk {
   // ===================================================
 
 
-  _getHash(): Hash {
-    return hashString(`${this.size}-${this.comps}-${this.name}`);
-  }
-
 
   _genCode(slots: ChunkSlots) {
 
-    this.genAvailable(slots);
+    const val = (this.param === null) ? '0' : '1';
+    const def = `#define HAS_${this.name} ${val}\n`;
+    slots.add('definitions', def );
 
     if (this.param !== null) {
 
@@ -499,14 +480,5 @@ export default class Input extends Chunk {
 
   }
 
-
-
-  genAvailable(slots: ChunkSlots) {
-    const val = (this.param === null) ? '0' : '1';
-    const def = `#define HAS_${this.name} ${val}\n`;
-
-    slots.add('definitions', def);
-
-  }
 
 }

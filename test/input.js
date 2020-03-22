@@ -5,6 +5,7 @@ var expect  = require( 'expect.js' );
 
 import Input, { Sampler }    from '../Input'
 import ChunkCollection from '../ChunkCollection'
+import TexCoord from '../TexCoord';
 
 
 
@@ -66,16 +67,15 @@ describe( "Input", function(){
 
     it( 'should attach sampler float', function(){
 
-      var attr = new Input.Attribute( 'aTexcoord10', 2 );
-      var u = input.attachSampler( 'tInput', attr );
+      var u = input.attachSampler( 'tInput', TexCoord.create( 'aTexCoord3') );
 
     //   inputs.compile()
       var codes = inputs.getCode();
-      expect( codes.slotsMap.pv.code ).to.be( 'attribute vec2 aTexcoord10;\nvarying   vec2 v_aTexcoord10;\n\n' );
-      expect( codes.slotsMap.v.code  ).to.be( 'v_aTexcoord10 = aTexcoord10;\n\n' );
+      expect( codes.slotsMap.pv ).to.be.ok()
+      expect( codes.slotsMap.v  ).to.be.ok()
 
-      expect( codes.slotsMap.pf.code ).to.be( 'varying vec2 v_aTexcoord10;\n\nuniform sampler2D tInput;\n\n#define _input(k) VAL_tInputv_aTexcoord10.r\n' );
-      expect( codes.slotsMap.f.code  ).to.be( 'vec4 VAL_tInputv_aTexcoord10 = texture2D( tInput, v_aTexcoord10);\n\n' );
+      expect( codes.slotsMap.pf ).to.be.ok()
+      expect( codes.slotsMap.f  ).to.be.ok()
 
     });
 

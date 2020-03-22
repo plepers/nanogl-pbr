@@ -83,6 +83,12 @@ export function hashView(a, hash = 0) {
     }
     return hash;
 }
+export function stringifyHash(h) {
+    let res = h.toString(16);
+    if (res[0] === '-')
+        res = res.replace('-', 'z');
+    return res;
+}
 export class HashBuilder {
     constructor() {
         this._hash = 0;

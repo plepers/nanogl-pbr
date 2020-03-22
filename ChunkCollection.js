@@ -1,5 +1,4 @@
 import ChunkSlots from './ChunksSlots';
-import { mergeHash } from './Hash';
 export default class ChunkCollection {
     constructor() {
         this._invalidList = true;
@@ -82,9 +81,7 @@ export default class ChunkCollection {
             const hash = 0;
             for (const chunk of this._codes) {
                 chunk.genCode(slots);
-                mergeHash(hash, chunk.getHash());
             }
-            slots.hash = hash;
             this._cachedSlots = slots;
             this._invalidCode = false;
         }

@@ -78,15 +78,10 @@ class Enum<T extends readonly string[]> extends Chunk {
       this._accesDef
     ].join('\n');
 
-    slots.add('definitions', c);
+    slots.add('definitions', c );
 
   }
 
-
-  _getHash() {
-    // should we hash all possible values
-    return hashString(`${this.name}${this._val}`);
-  }
 
 }
 

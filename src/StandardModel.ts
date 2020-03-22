@@ -150,11 +150,7 @@ class PreLightsChunk extends Chunk {
 
   _genCode(slots: ChunkSlots) {
     const code = preLightCode(this)
-    slots.add('lightsf', code);
-  }
-
-  _getHash() {
-    return PreLightsChunk._hash;
+    slots.add('lightsf', code );
   }
 }
 
@@ -174,10 +170,6 @@ class PostLightsChunk extends Chunk {
   _genCode(slots: ChunkSlots) {
     const code = postLightCode(this)
     slots.add('lightsf', code);
-  }
-
-  _getHash() {
-    return PostLightsChunk._hash;
   }
 
 }
@@ -255,11 +247,6 @@ class ShadowsChunk extends Chunk {
     }
 
     return i;
-  }
-
-
-  _getHash() {
-    return hashString('shck' + this.shadowCount);
   }
 
 
@@ -355,16 +342,6 @@ abstract class LightDatas<TLight extends Light> extends Chunk {
   abstract update( model : ILightModel ) : void;
 
 
-
-  _getHash() {
-    let h = this.type + '' + this.lights.length;
-    for (var i = 0; i < this.lights.length; i++) {
-      if (this.lights[i]._castShadows) {
-        h += i;
-      }
-    }
-    return hashString(h);
-  }
 
 
   setup(prg: Program) {

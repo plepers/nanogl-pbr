@@ -36,7 +36,6 @@ describe("Chunk", function () {
     it('collection num slots should be 1', function () {
       collection.add(chunk);
       var code = collection.getCode();
-
       expect(code.slots.length).to.be(1);
     });
 

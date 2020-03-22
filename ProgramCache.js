@@ -23,7 +23,7 @@ class ProgramCache {
         return agl._prgcache;
     }
     compile(source) {
-        const hash = hashString(source.shaderSource.uid, source.slots.hash);
+        const hash = hashString(source.shaderSource.uid, source.slots.getHash());
         const cached = this._cache[hash];
         if (cached !== undefined) {
             return cached;

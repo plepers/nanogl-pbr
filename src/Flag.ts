@@ -45,11 +45,6 @@ class Flag<T extends string = string> extends Chunk {
 
   }
 
-
-  _getHash() {
-    return hashString(`${this.name}${~~this._val}`);
-  }
-
 }
 
 export default Flag

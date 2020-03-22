@@ -8,6 +8,5 @@ declare class Flag<T extends string = string> extends Chunk {
     disable(): void;
     set(val?: boolean): void;
     _genCode(slots: ChunkSlots): void;
-    _getHash(): number;
 }
 export default Flag;

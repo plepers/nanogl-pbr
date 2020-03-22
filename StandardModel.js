@@ -77,9 +77,6 @@ class PreLightsChunk extends Chunk {
         const code = preLightCode(this);
         slots.add('lightsf', code);
     }
-    _getHash() {
-        return PreLightsChunk._hash;
-    }
 }
 PreLightsChunk._hash = hashString('PreLightsChunk');
 class PostLightsChunk extends Chunk {
@@ -89,9 +86,6 @@ class PostLightsChunk extends Chunk {
     _genCode(slots) {
         const code = postLightCode(this);
         slots.add('lightsf', code);
-    }
-    _getHash() {
-        return PostLightsChunk._hash;
     }
 }
 PostLightsChunk._hash = hashString('PostLightsChunk');
@@ -129,9 +123,6 @@ class ShadowsChunk extends Chunk {
             lightSetup.depthFormat.set(hasDepthTex ? 'D_DEPTH' : 'D_RGB');
         }
         return i;
-    }
-    _getHash() {
-        return hashString('shck' + this.shadowCount);
     }
     check() {
         if (this.genCount !== this.shadowCount) {
@@ -188,15 +179,6 @@ class LightDatas extends Chunk {
             code += this.genCodePerLights(this.lights[i], i, this.shadowIndices[i]);
         }
         slots.add('lightsf', code);
-    }
-    _getHash() {
-        let h = this.type + '' + this.lights.length;
-        for (var i = 0; i < this.lights.length; i++) {
-            if (this.lights[i]._castShadows) {
-                h += i;
-            }
-        }
-        return hashString(h);
     }
     setup(prg) {
         for (var i = 0; i < this.shadowIndices.length; i++) {

@@ -13,7 +13,7 @@ const PRAGMA_REGEX = /^\s*#pragma SLOT\s\w+\s*$/gm;
 function processSlots( source : string, slots : ChunkSlots ) : string {
 
   for (const {code, key} of slots.slots) {
-      source = source.replace(PRAGMA_SLOT + ' ' + key, code);
+    source = source.replace(PRAGMA_SLOT + ' ' + key, code);
   }
 
   // cleanup unmatched slots
@@ -48,7 +48,7 @@ class ProgramCache {
 
   compile(source : IProgramSource) : Program {
 
-    const hash = hashString( source.shaderSource.uid, source.slots.hash );
+    const hash = hashString( source.shaderSource.uid, source.slots.getHash() );
 
     const cached = this._cache[hash];
     if (cached !== undefined) {

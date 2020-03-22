@@ -51,14 +51,6 @@ export default class Chunk {
             this._genCode(slots);
         }
     }
-    getHash() {
-        if (this._ref !== null) {
-            return this._ref.getHash();
-        }
-        else {
-            return this._getHash();
-        }
-    }
     get hasCode() {
         if (this._ref !== null) {
             return this._ref.hasCode;

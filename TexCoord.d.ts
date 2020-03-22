@@ -1,50 +1,47 @@
 import { mat3, vec2 } from "gl-matrix";
 import Chunk from "./Chunk";
 import ChunkSlots from "./ChunksSlots";
-import Input from "./Input";
-import { Hash } from "./Hash";
-export declare abstract class TexCoordTransform extends Chunk {
-    private static _UID;
-    readonly attrib: string;
-    readonly _translateInput: Input;
-    readonly _rotateScalesInput: Input;
-    _buffer: Float32Array;
-    _translation: vec2;
-    _scale: vec2;
-    _rotation: Float32Array;
-    protected _uid: string;
-    constructor(attrib: string, hasSetup: boolean);
-    protected _genCode(slots: ChunkSlots): void;
-    varying(): string;
-    protected _getHash(): Hash;
-    protected decomposeMatrix(m: mat3): void;
-    abstract updateTransform(): void;
+declare class TexCoordTransform {
+    readonly buffer: Float32Array;
+    readonly translation: vec2;
+    readonly scale: vec2;
+    readonly rotation: Float32Array;
+    decomposeMatrix(m: mat3): void;
+    composeMat2(): Float32Array;
+    getTransformHash(): number;
 }
-export declare class DynamicTexCoordTransform extends TexCoordTransform {
+declare abstract class TexCoord extends Chunk {
+    static create(attrib: string): StaticTexCoord;
+    static createTransformed(attrib: string, matrix: mat3): StaticTexCoord;
+    static createTransformedDynamic(attrib: string): DynamicTexCoord;
+    readonly _transform: TexCoordTransform;
+    readonly attrib: string;
+    protected _uid: string;
+    constructor(attrib: string | undefined, hasSetup: boolean);
+    abstract varying(): string;
+    abstract getTransformCode(): string;
+    _genCode(slots: ChunkSlots): void;
+}
+export declare class DynamicTexCoord extends TexCoord {
+    private readonly _translateInput;
+    private readonly _rotateScalesInput;
     private readonly _translateUniform;
     private readonly _rotationScaleUniform;
+    private static _UID;
     constructor(attrib: string);
+    varying(): string;
+    getTransformCode(): string;
     translate(x: number, y: number): this;
     rotate(rad: number): this;
     scale(x: number, y?: number): this;
     setMatrix(m: mat3): void;
     updateTransform(): void;
 }
-export declare class StaticTexCoordTransform extends TexCoordTransform {
-    _matrix: mat3;
+export declare class StaticTexCoord extends TexCoord {
+    private _translateConst?;
+    private _rotateScalesConst?;
     constructor(attrib: string, matrix: mat3);
-    updateTransform(): void;
-    equalMatrix(m: mat3): boolean;
-}
-export default class TexCoord extends Chunk {
-    readonly attrib: string;
-    readonly _statics: StaticTexCoordTransform[];
-    private _identity;
-    constructor(attrib?: string);
-    addTransform(): DynamicTexCoordTransform;
-    addStaticTransform(matrix: mat3): StaticTexCoordTransform;
     varying(): string;
-    private getStaticTransform;
-    protected _genCode(slots: ChunkSlots): void;
-    protected _getHash(): Hash;
+    getTransformCode(): string;
 }
+export default TexCoord;

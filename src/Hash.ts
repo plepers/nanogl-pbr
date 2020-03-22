@@ -140,6 +140,12 @@ export function hashView( a : ArrayBufferView, hash : Hash = 0 ) : Hash {
 }
 
 
+export function stringifyHash( h:Hash ) : string {
+  let res =  h.toString(16)
+  if( res[0] === '-' ) 
+    res = res.replace('-', 'z')
+  return res;
+}
 
 
 export class HashBuilder {

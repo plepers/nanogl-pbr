@@ -131,13 +131,9 @@ export default class ChunkCollection {
 
       for ( const chunk of this._codes ){
         chunk.genCode( slots );
-        mergeHash( hash, chunk.getHash() );
       }
 
-      slots.hash = hash;
-
       this._cachedSlots = slots;
-
       this._invalidCode = false;
   
     }

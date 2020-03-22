@@ -1,5 +1,4 @@
 import Chunk from './Chunk';
-import { hashString } from './Hash';
 class Flag extends Chunk {
     constructor(name, val = false) {
         super(true, false);
@@ -21,9 +20,6 @@ class Flag extends Chunk {
     _genCode(slots) {
         const c = `#define ${this.name} ${~~this._val}`;
         slots.add('definitions', c);
-    }
-    _getHash() {
-        return hashString(`${this.name}${~~this._val}`);
     }
 }
 export default Flag;

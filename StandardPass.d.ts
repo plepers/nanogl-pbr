@@ -10,10 +10,8 @@ import { ICameraLens } from 'nanogl-camera/ICameraLens';
 import { GammaModeEnum } from './GammaModeEnum';
 import MaterialPass from './MaterialPass';
 import Program from 'nanogl/program';
-import TexCoordCollection from './TexCoordCollection';
 export default class StandardPass extends MaterialPass {
     ibl: IBL | null;
-    texCoords: TexCoordCollection;
     version: Version;
     precision: Precision;
     albedo: Input;
