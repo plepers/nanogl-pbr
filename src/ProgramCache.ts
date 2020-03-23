@@ -9,11 +9,14 @@ import { hashString } from './Hash';
 const PRAGMA_SLOT = '#pragma SLOT';
 const PRAGMA_REGEX = /^\s*#pragma SLOT\s\w+\s*$/gm;
 
+function _slotRegex(token : string) : RegExp{
+  return new RegExp( `${PRAGMA_SLOT}\\s+${token}\\s+`, 'g' )
+}
 
 function processSlots( source : string, slots : ChunkSlots ) : string {
 
   for (const {code, key} of slots.slots) {
-    source = source.replace(PRAGMA_SLOT + ' ' + key, code);
+    source = source.replace(_slotRegex(key), code);
   }
 
   // cleanup unmatched slots

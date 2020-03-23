@@ -132,12 +132,12 @@ export class Attribute extends Chunk {
     _genCode(slots) {
         var c;
         const typeId = TYPES[this.size];
-        c = `varying ${typeId} ${this.token};\n`;
+        c = `IN ${typeId} ${this.token};\n`;
         slots.add('pf', c);
-        c = `attribute ${typeId} ${this.name};\n`;
-        c += `varying   ${typeId} ${this.token};\n`;
+        c = `IN ${typeId} ${this.name};\n`;
+        c += `OUT ${typeId} ${this.token};\n`;
         slots.add('pv', c);
-        c = `${this.token} = ${this.name};\n`;
+        c = `${this.token} = ${this.name}; //coucou\n`;
         slots.add('v', c);
     }
 }

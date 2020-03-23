@@ -297,12 +297,12 @@ export class Attribute extends Chunk implements IInputParam {
     const typeId = TYPES[this.size];
 
     // PF
-    c = `varying ${typeId} ${this.token};\n`;
+    c = `IN ${typeId} ${this.token};\n`;
     slots.add('pf', c);
 
     // PV
-    c = `attribute ${typeId} ${this.name};\n`;
-    c += `varying   ${typeId} ${this.token};\n`;
+    c = `IN ${typeId} ${this.name};\n`;
+    c += `OUT ${typeId} ${this.token};\n`;
     slots.add('pv', c);
 
     // V

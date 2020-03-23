@@ -127,7 +127,6 @@ export default class ChunkCollection {
     if( this._cachedSlots === null || this._invalidCode )  {
 
       const slots = new ChunkSlots();
-      const hash : Hash = 0;
 
       for ( const chunk of this._codes ){
         chunk.genCode( slots );
