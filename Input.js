@@ -137,7 +137,7 @@ export class Attribute extends Chunk {
         c = `IN ${typeId} ${this.name};\n`;
         c += `OUT ${typeId} ${this.token};\n`;
         slots.add('pv', c);
-        c = `${this.token} = ${this.name}; //coucou\n`;
+        c = `${this.token} = ${this.name};\n`;
         slots.add('v', c);
     }
 }
