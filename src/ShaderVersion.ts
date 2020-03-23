@@ -17,8 +17,10 @@ class ShaderVersion extends Chunk {
 
 
   set( v : GlslVersion ) {
-    this.version = v;
-    this.invalidateCode();
+    if( this.version !== v ){
+      this.version = v;
+      this.invalidateCode();
+    }
   }
 
   get() : GlslVersion{

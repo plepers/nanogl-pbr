@@ -46,12 +46,20 @@ function _addPreCode(slots, type, code) {
         slots.add('pv', code);
     }
 }
+var ParamType;
+(function (ParamType) {
+    ParamType[ParamType["SAMPLER"] = 0] = "SAMPLER";
+    ParamType[ParamType["UNIFORM"] = 1] = "UNIFORM";
+    ParamType[ParamType["ATTRIBUTE"] = 2] = "ATTRIBUTE";
+    ParamType[ParamType["CONSTANT"] = 3] = "CONSTANT";
+})(ParamType || (ParamType = {}));
 function isAttribute(x) {
     return x instanceof Attribute;
 }
 export class Sampler extends Chunk {
     constructor(name, texCoords) {
         super(true, true);
+        this.ptype = ParamType.SAMPLER;
         this._input = null;
         this.name = name;
         this._tex = null;
@@ -87,6 +95,7 @@ export class Sampler extends Chunk {
 export class Uniform extends Chunk {
     constructor(name, size) {
         super(true, true);
+        this.ptype = ParamType.UNIFORM;
         this._input = null;
         this.name = name;
         this.size = size;
@@ -114,6 +123,7 @@ export class Uniform extends Chunk {
 export class Attribute extends Chunk {
     constructor(name, size) {
         super(true, false);
+        this.ptype = ParamType.ATTRIBUTE;
         this._input = null;
         this.name = name;
         this.size = size;
@@ -134,6 +144,7 @@ export class Attribute extends Chunk {
 export class Constant extends Chunk {
     constructor(value) {
         super(true, false);
+        this.ptype = ParamType.CONSTANT;
         this._input = null;
         if (typeof value === 'number') {
             this.size = 1;
@@ -220,6 +231,10 @@ export default class Input extends Chunk {
                 c += `.${this.comps}`;
             }
             _addPreCode(slots, this.shader, c);
+            if (this.param.ptype === ParamType.SAMPLER) {
+                var c = `#define ${this.name}_texCoord(k) ${this.param._varying}`;
+                _addPreCode(slots, this.shader, c);
+            }
         }
     }
 }

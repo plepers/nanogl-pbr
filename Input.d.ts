@@ -11,14 +11,22 @@ export declare enum ShaderType {
     ALL = 3
 }
 declare type InputSize = 1 | 2 | 3 | 4;
+declare enum ParamType {
+    SAMPLER = 0,
+    UNIFORM = 1,
+    ATTRIBUTE = 2,
+    CONSTANT = 3
+}
 export interface IInputParam {
+    readonly ptype: ParamType;
     name: string;
     size: InputSize;
     token: string;
     _input: Input | null;
 }
-declare type InputParam = IInputParam & Chunk;
+declare type InputParam = Sampler | Uniform | Attribute | Constant;
 export declare class Sampler extends Chunk implements IInputParam {
+    readonly ptype: ParamType.SAMPLER;
     name: string;
     size: InputSize;
     token: string;
@@ -32,6 +40,7 @@ export declare class Sampler extends Chunk implements IInputParam {
     setup(prg: Program): void;
 }
 export declare class Uniform extends Chunk implements IInputParam {
+    readonly ptype: ParamType.UNIFORM;
     name: string;
     size: InputSize;
     token: string;
@@ -43,6 +52,7 @@ export declare class Uniform extends Chunk implements IInputParam {
     setup(prg: Program): void;
 }
 export declare class Attribute extends Chunk implements IInputParam {
+    readonly ptype: ParamType.ATTRIBUTE;
     name: string;
     size: InputSize;
     token: string;
@@ -51,6 +61,7 @@ export declare class Attribute extends Chunk implements IInputParam {
     _genCode(slots: ChunkSlots): void;
 }
 export declare class Constant extends Chunk implements IInputParam {
+    readonly ptype: ParamType.CONSTANT;
     name: string;
     size: InputSize;
     token: string;

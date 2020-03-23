@@ -58,7 +58,7 @@ describe( "Input", function(){
     //   inputs.compile()
       var codes = inputs.getCode();
       expect( codes.slotsMap.definitions.code ).to.be( '#define HAS__input 1\n\n' );
-      expect( codes.slotsMap.pf.code ).to.be( 'uniform sampler2D tInput;\n\n#define _input(k) VAL_tInputvTexCoord.r\n' );
+      expect( codes.slotsMap.pf.code ).to.be( 'uniform sampler2D tInput;\n\n#define _input(k) VAL_tInputvTexCoord.r\n#define _input_texCoord(k) vTexCoord\n' );
       expect( codes.slotsMap.f.code  ).to.be( 'vec4 VAL_tInputvTexCoord = texture2D( tInput, vTexCoord);\n\n' );
       expect( codes.slotsMap.v  ).to.be( undefined );
 

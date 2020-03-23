@@ -91,10 +91,17 @@ function _addPreCode(slots: ChunkSlots, type: ShaderType, code: string) {
 // }
 
 
+enum ParamType {
+  SAMPLER,
+  UNIFORM,
+  ATTRIBUTE,
+  CONSTANT,
+}
+
 
 
 export interface IInputParam {
-
+  readonly ptype : ParamType;
   name: string;
   size: InputSize;
   token: string;
@@ -103,7 +110,7 @@ export interface IInputParam {
 
 }
 
-type InputParam = IInputParam & Chunk;
+type InputParam = Sampler | Uniform | Attribute | Constant;
 
 //                              _
 //                             | |
@@ -122,6 +129,8 @@ function isAttribute(x: string | Attribute): x is Attribute {
 
 
 export class Sampler extends Chunk implements IInputParam {
+
+  readonly ptype : ParamType.SAMPLER = ParamType.SAMPLER
 
   name: string;
   size: InputSize;
@@ -199,6 +208,8 @@ export class Sampler extends Chunk implements IInputParam {
 
 export class Uniform extends Chunk implements IInputParam {
 
+  readonly ptype : ParamType.UNIFORM = ParamType.UNIFORM
+  
   name: string;
   size: InputSize;
   token: string;
@@ -261,6 +272,8 @@ export class Uniform extends Chunk implements IInputParam {
 
 export class Attribute extends Chunk implements IInputParam {
 
+  readonly ptype : ParamType.ATTRIBUTE = ParamType.ATTRIBUTE
+  
   name: string;
   size: InputSize;
   token: string;
@@ -312,6 +325,8 @@ export class Attribute extends Chunk implements IInputParam {
 
 export class Constant extends Chunk implements IInputParam {
 
+  readonly ptype : ParamType.CONSTANT = ParamType.CONSTANT
+  
   name: string;
   size: InputSize;
   token: string;
@@ -473,10 +488,15 @@ export default class Input extends Chunk {
       if (this.param.size > 1) {
         c += `.${this.comps}`;
       }
-
+      
       _addPreCode(slots, this.shader, c);
-
+      
+      if( this.param.ptype === ParamType.SAMPLER ){
+        var c = `#define ${this.name}_texCoord(k) ${this.param._varying}`;
+        _addPreCode(slots, this.shader, c);
+      }
     }
+
 
   }
 
