@@ -6,7 +6,7 @@ import Enum             from './Enum'
 import Flag             from './Flag'
 import LightSetup       from './LightSetup'
 import ILightModel      from './interfaces/ILightModel'
-import ChunkSlots       from './ChunksSlots'
+import ChunksSlots       from './ChunksSlots'
 import LightType        from './LightType'
 import SpotLight        from './SpotLight'
 import DirectionalLight from './DirectionalLight'
@@ -148,7 +148,7 @@ class PreLightsChunk extends Chunk {
     super(true, false);
   }
 
-  _genCode(slots: ChunkSlots) {
+  _genCode(slots: ChunksSlots) {
     const code = preLightCode(this)
     slots.add('lightsf', code );
   }
@@ -167,7 +167,7 @@ class PostLightsChunk extends Chunk {
     super(true, false);
   }
 
-  _genCode(slots: ChunkSlots) {
+  _genCode(slots: ChunksSlots) {
     const code = postLightCode(this)
     slots.add('lightsf', code);
   }
@@ -218,7 +218,7 @@ class ShadowsChunk extends Chunk {
 
 
 
-  _genCode(slots: ChunkSlots) {
+  _genCode(slots: ChunksSlots) {
 
     if (this.shadowCount > 0) {
       slots.add('pf', shadPreCode(this));
@@ -320,7 +320,7 @@ abstract class LightDatas<TLight extends Light> extends Chunk {
   }
 
 
-  _genCode(slots: ChunkSlots) {
+  _genCode(slots: ChunksSlots) {
 
     let code = this.preCodeTemplate!({
       count: this.lights.length

@@ -1,7 +1,7 @@
 import { mat3, vec2 } from "gl-matrix";
 
 import Chunk from "./Chunk";
-import ChunkSlots from "./ChunksSlots";
+import ChunksSlots from "./ChunksSlots";
 import Input, { Uniform, Constant } from "./Input";
 
 import { hashString, hashView, stringifyHash, mergeHash } from "./Hash";
@@ -162,7 +162,7 @@ abstract class TexCoord extends Chunk {
   abstract varying() : string;
   abstract getTransformCode() : string;
 
-  _genCode(slots: ChunkSlots): void {
+  _genCode(slots: ChunksSlots): void {
     slots.add('pf', GLSL.declareIn ( this.varying() ) );
     slots.add('pv', GLSL.declareOut( this.varying() ) );
     slots.add('pv', GLSL.declareIn( this.attrib ));

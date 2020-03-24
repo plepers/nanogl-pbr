@@ -3,7 +3,7 @@ import IProgramSource, { ShaderSource } from "./interfaces/IProgramSource";
 import { GLContext } from "nanogl/types";
 import ProgramCache from "./ProgramCache";
 import Program from "nanogl/program";
-import ChunkSlots from "./ChunksSlots";
+import ChunksSlots from "./ChunksSlots";
 
 
 export default class ProgramSource {
@@ -64,7 +64,7 @@ export default class ProgramSource {
       pcache.release( this._program );
     }
 
-    const slots = new ChunkSlots();
+    const slots = new ChunksSlots();
 
     for (const collection of this._chunkCollections) {
       collection.getCode( slots );

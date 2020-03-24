@@ -1,6 +1,6 @@
 
 import Chunk from './Chunk'
-import ChunkSlots from './ChunksSlots'
+import ChunksSlots from './ChunksSlots'
 
 import {GlslPrecision} from './interfaces/GlslPrecision'
 import { hashString } from './Hash';
@@ -28,7 +28,7 @@ class ShaderPrecision extends Chunk {
   }
 
 
-  _genCode( slots  :ChunkSlots ) {
+  _genCode( slots  :ChunksSlots ) {
     const s = `precision ${this.fprecision} float;\n`;
     slots.add('precision', s);
   }

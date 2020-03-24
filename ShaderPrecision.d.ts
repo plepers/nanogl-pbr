@@ -1,10 +1,10 @@
 import Chunk from './Chunk';
-import ChunkSlots from './ChunksSlots';
+import ChunksSlots from './ChunksSlots';
 import { GlslPrecision } from './interfaces/GlslPrecision';
 declare class ShaderPrecision extends Chunk {
     private fprecision;
     constructor(p?: GlslPrecision);
     set(p: GlslPrecision): void;
-    _genCode(slots: ChunkSlots): void;
+    _genCode(slots: ChunksSlots): void;
 }
 export default ShaderPrecision;

@@ -13,7 +13,7 @@ function generateMorphFunction(infos) {
   }`;
 }
 function generateMorphCall(infos) {
-    return `MorphAttribute_${infos.name}( ${infos.name} );`;
+    return `MorphAttribute_${infos.name}( vertex.${infos.name} );`;
 }
 function declareAttributes(infos) {
     return infos.map(declareAttribute).join('\n');

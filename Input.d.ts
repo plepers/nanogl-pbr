@@ -1,7 +1,7 @@
 import Texture2D from 'nanogl/texture-2d';
 import Chunk from './Chunk';
 import Swizzle from './Swizzle';
-import ChunkSlots from './ChunksSlots';
+import ChunksSlots from './ChunksSlots';
 import Program from 'nanogl/program';
 import { Hash } from './Hash';
 import TexCoord from './TexCoord';
@@ -36,7 +36,7 @@ export declare class Sampler extends Chunk implements IInputParam {
     _varying: string;
     constructor(name: string, texCoords: TexCoord | string);
     set(t: Texture2D): void;
-    _genCode(slots: ChunkSlots): void;
+    _genCode(slots: ChunksSlots): void;
     setup(prg: Program): void;
 }
 export declare class Uniform extends Chunk implements IInputParam {
@@ -48,7 +48,7 @@ export declare class Uniform extends Chunk implements IInputParam {
     _value: Float32Array;
     constructor(name: string, size: InputSize);
     set(...args: number[]): void;
-    _genCode(slots: ChunkSlots): void;
+    _genCode(slots: ChunksSlots): void;
     setup(prg: Program): void;
 }
 export declare class Attribute extends Chunk implements IInputParam {
@@ -58,7 +58,7 @@ export declare class Attribute extends Chunk implements IInputParam {
     token: string;
     _input: Input | null;
     constructor(name: string, size: InputSize);
-    _genCode(slots: ChunkSlots): void;
+    _genCode(slots: ChunksSlots): void;
 }
 export declare class Constant extends Chunk implements IInputParam {
     readonly ptype: ParamType.CONSTANT;
@@ -69,7 +69,7 @@ export declare class Constant extends Chunk implements IInputParam {
     value: ArrayLike<number> | number;
     _hash: Hash;
     constructor(value: ArrayLike<number> | number);
-    _genCode(slots: ChunkSlots): void;
+    _genCode(slots: ChunksSlots): void;
     _stringifyValue(): string;
 }
 export default class Input extends Chunk {
@@ -92,6 +92,6 @@ export default class Input extends Chunk {
     attachUniform(name: string, size?: InputSize, comps?: Swizzle): Uniform;
     attachAttribute(name: string, size?: InputSize, comps?: Swizzle): Attribute;
     attachConstant(value: ArrayLike<number> | number, comps?: Swizzle): Constant;
-    _genCode(slots: ChunkSlots): void;
+    _genCode(slots: ChunksSlots): void;
 }
 export {};

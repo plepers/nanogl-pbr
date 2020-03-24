@@ -4,6 +4,7 @@ export const WEIGHTS_UNIFORM = 'uMorphWeights'
 
 
 export type MorphAttributeType = 'float' | 'vec2' | 'vec3' | 'vec4';
+export type MorphAttributeName = 'position' | 'normal' | 'tangent';
 /**
  * {
  *    type:  'vec3'
@@ -17,7 +18,7 @@ export type MorphAttributeType = 'float' | 'vec2' | 'vec3' | 'vec4';
  */
 export type MorphAttribInfos = {
   type : MorphAttributeType
-  name : string
+  name : MorphAttributeName
   attributes : string[]
 }
 
@@ -57,7 +58,7 @@ function generateMorphFunction( infos : MorphAttribInfos ) : string {
 
 
 function generateMorphCall( infos : MorphAttribInfos ) : string {
-  return `MorphAttribute_${infos.name}( ${infos.name} );`
+  return `MorphAttribute_${infos.name}( vertex.${infos.name} );`
 }
 
 

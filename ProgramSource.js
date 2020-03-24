@@ -1,5 +1,5 @@
 import ProgramCache from "./ProgramCache";
-import ChunkSlots from "./ChunksSlots";
+import ChunksSlots from "./ChunksSlots";
 export default class ProgramSource {
     constructor(gl, shaderSource) {
         this._chunkCollections = [];
@@ -39,7 +39,7 @@ export default class ProgramSource {
         if (this._program !== null) {
             pcache.release(this._program);
         }
-        const slots = new ChunkSlots();
+        const slots = new ChunksSlots();
         for (const collection of this._chunkCollections) {
             collection.getCode(slots);
         }

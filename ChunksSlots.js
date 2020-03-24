@@ -33,7 +33,7 @@ class ChunkSlot {
         return this._hash;
     }
 }
-export default class ChunkSlots {
+export default class ChunksSlots {
     constructor() {
         this.hash = 0;
         this.slots = [];

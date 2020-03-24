@@ -1,5 +1,5 @@
 import Chunk from './Chunk';
-import ChunkSlots from './ChunksSlots';
+import ChunksSlots from './ChunksSlots';
 declare class Enum<T extends readonly string[]> extends Chunk {
     name: string;
     values: T;
@@ -9,6 +9,6 @@ declare class Enum<T extends readonly string[]> extends Chunk {
     private _accesDef;
     constructor(name: string, penum: T);
     set(val: T[number]): void;
-    _genCode(slots: ChunkSlots): void;
+    _genCode(slots: ChunksSlots): void;
 }
 export default Enum;

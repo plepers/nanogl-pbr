@@ -1,4 +1,4 @@
-import ChunkSlots from './ChunksSlots';
+import ChunksSlots from './ChunksSlots';
 export default class ChunkCollection {
     constructor() {
         this._invalidList = true;
@@ -77,7 +77,7 @@ export default class ChunkCollection {
             this._collectChunks();
         }
         if (this._cachedSlots === null || this._invalidCode) {
-            const slots = new ChunkSlots();
+            const slots = new ChunksSlots();
             for (const chunk of this._codes) {
                 chunk.genCode(slots);
             }

@@ -1,6 +1,6 @@
 
 import Chunk from './Chunk'
-import ChunkSlots from './ChunksSlots'
+import ChunksSlots from './ChunksSlots'
 import { hashString } from './Hash';
 
 
@@ -38,7 +38,7 @@ class Flag<T extends string = string> extends Chunk {
   }
 
 
-  _genCode(slots : ChunkSlots) {
+  _genCode(slots : ChunksSlots) {
     
     const c = `#define ${this.name} ${~~this._val}`;
     slots.add('definitions', c);

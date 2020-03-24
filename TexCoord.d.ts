@@ -1,6 +1,6 @@
 import { mat3, vec2 } from "gl-matrix";
 import Chunk from "./Chunk";
-import ChunkSlots from "./ChunksSlots";
+import ChunksSlots from "./ChunksSlots";
 declare type TRSOpts = {
     translation?: [number, number];
     rotation?: number;
@@ -26,7 +26,7 @@ declare abstract class TexCoord extends Chunk {
     constructor(attrib: string | undefined, hasSetup: boolean);
     abstract varying(): string;
     abstract getTransformCode(): string;
-    _genCode(slots: ChunkSlots): void;
+    _genCode(slots: ChunksSlots): void;
 }
 export declare class DynamicTexCoord extends TexCoord {
     private readonly _translateInput;

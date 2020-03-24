@@ -3,7 +3,7 @@ import Texture2D from 'nanogl/texture-2d'
 import Chunk from './Chunk'
 
 import Swizzle from './Swizzle'
-import ChunkSlots from './ChunksSlots'
+import ChunksSlots from './ChunksSlots'
 import Program from 'nanogl/program'
 import { hashString, Hash, stringifyHash } from './Hash'
 import TexCoord from './TexCoord'
@@ -60,7 +60,7 @@ function _floatStr(n: number) {
 }
 
 
-function _addCode(slots: ChunkSlots, type: ShaderType, code: string) {
+function _addCode(slots: ChunksSlots, type: ShaderType, code: string) {
   if ((type & ShaderType.FRAGMENT) !== 0) {
     slots.add('f', code);
   }
@@ -70,7 +70,7 @@ function _addCode(slots: ChunkSlots, type: ShaderType, code: string) {
 }
 
 
-function _addPreCode(slots: ChunkSlots, type: ShaderType, code: string) {
+function _addPreCode(slots: ChunksSlots, type: ShaderType, code: string) {
   if ((type & ShaderType.FRAGMENT) !== 0) {
     slots.add('pf', code);
   }
@@ -169,7 +169,7 @@ export class Sampler extends Chunk implements IInputParam {
   }
 
 
-  _genCode(slots: ChunkSlots) {
+  _genCode(slots: ChunksSlots) {
     if (this._input == null) return;
 
     const name = this.name;
@@ -240,7 +240,7 @@ export class Uniform extends Chunk implements IInputParam {
   }
 
 
-  _genCode(slots: ChunkSlots) {
+  _genCode(slots: ChunksSlots) {
     if (this._input === null) return;
     var c;
 
@@ -291,7 +291,7 @@ export class Attribute extends Chunk implements IInputParam {
 
 
 
-  _genCode(slots: ChunkSlots) {
+  _genCode(slots: ChunksSlots) {
 
     var c;
     const typeId = TYPES[this.size];
@@ -355,7 +355,7 @@ export class Constant extends Chunk implements IInputParam {
 
 
 
-  _genCode(slots: ChunkSlots) {
+  _genCode(slots: ChunksSlots) {
     if (this._input === null) return;
     var c;
 
@@ -476,7 +476,7 @@ export default class Input extends Chunk {
 
 
 
-  _genCode(slots: ChunkSlots) {
+  _genCode(slots: ChunksSlots) {
 
     const val = (this.param === null) ? '0' : '1';
     const def = `#define HAS_${this.name} ${val}\n`;

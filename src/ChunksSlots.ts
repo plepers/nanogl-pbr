@@ -52,7 +52,7 @@ class ChunkSlot {
 
 
 
-export default class ChunkSlots {
+export default class ChunksSlots {
 
   slots   : ChunkSlot[];
   slotsMap: Record<string, ChunkSlot>;
@@ -97,7 +97,7 @@ export default class ChunkSlots {
    * merge all Hashed code from another ChunkSlots into this one
    * 
    */
-  merge( other : ChunkSlots ){
+  merge( other : ChunksSlots ){
     for( var slot of other.slots ){
       this.getSlot(slot.key).merge( slot );
     }

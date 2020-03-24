@@ -1,6 +1,6 @@
 
 import Chunk from './Chunk'
-import ChunkSlots from './ChunksSlots'
+import ChunksSlots from './ChunksSlots'
 import hashBuilder, { hashString } from './Hash';
 
 
@@ -69,7 +69,7 @@ class Enum<T extends readonly string[]> extends Chunk {
  *
  * @param slots 
  */
-  _genCode(slots : ChunkSlots) {
+  _genCode(slots : ChunksSlots) {
 
     // PF
     const c = [

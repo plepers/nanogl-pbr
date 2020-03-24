@@ -1,5 +1,5 @@
 import Chunk from './Chunk'
-import ChunkSlots from './ChunksSlots'
+import ChunksSlots from './ChunksSlots'
 import Program from 'nanogl/program';
 import hashBuilder, { Hash, mergeHash } from './Hash';
 
@@ -18,7 +18,7 @@ export default class ChunkCollection {
   _setups  : Chunk[] = [];
   _codes   : Chunk[] = [];
   
-  _cachedSlots : ChunkSlots|null = null;
+  _cachedSlots : ChunksSlots|null = null;
   
   
 
@@ -118,7 +118,7 @@ export default class ChunkCollection {
   }
 
 
-  getCode( base? : ChunkSlots ) : ChunkSlots {
+  getCode( base? : ChunksSlots ) : ChunksSlots {
 
     if( this._invalidList ){
       this._collectChunks();
@@ -126,7 +126,7 @@ export default class ChunkCollection {
 
     if( this._cachedSlots === null || this._invalidCode )  {
 
-      const slots = new ChunkSlots();
+      const slots = new ChunksSlots();
 
       for ( const chunk of this._codes ){
         chunk.genCode( slots );

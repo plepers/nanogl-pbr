@@ -1,4 +1,4 @@
-import ChunkSlots from "../ChunksSlots";
+import ChunksSlots from "../ChunksSlots";
 export declare type ShaderSource = {
     vert: string;
     frag: string;
@@ -6,5 +6,5 @@ export declare type ShaderSource = {
 };
 export default interface IProgramSource {
     shaderSource: ShaderSource;
-    slots: ChunkSlots;
+    slots: ChunksSlots;
 }

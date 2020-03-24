@@ -1,7 +1,7 @@
 import Program from 'nanogl/program'
 import { GLContext } from 'nanogl/types'
 import GLConfig from 'nanogl-state/config'
-import ChunkSlots from './ChunksSlots'
+import ChunksSlots from './ChunksSlots'
 import IMaterial from './interfaces/IMaterial';
 import IProgramSource from './interfaces/IProgramSource';
 import { hashString } from './Hash';
@@ -13,7 +13,7 @@ function _slotRegex(token : string) : RegExp{
   return new RegExp( `${PRAGMA_SLOT}\\s+${token}\\s+`, 'g' )
 }
 
-function processSlots( source : string, slots : ChunkSlots ) : string {
+function processSlots( source : string, slots : ChunksSlots ) : string {
 
   for (const {code, key} of slots.slots) {
     source = source.replace(_slotRegex(key), code);

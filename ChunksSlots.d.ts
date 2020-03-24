@@ -16,7 +16,7 @@ declare class ChunkSlot {
     get code(): string;
     get hash(): Hash;
 }
-export default class ChunkSlots {
+export default class ChunksSlots {
     slots: ChunkSlot[];
     slotsMap: Record<string, ChunkSlot>;
     hash: Hash;
@@ -24,6 +24,6 @@ export default class ChunkSlots {
     getHash(): Hash;
     getSlot(id: string): ChunkSlot;
     add(slotId: string, code: string): void;
-    merge(other: ChunkSlots): void;
+    merge(other: ChunksSlots): void;
 }
 export {};
