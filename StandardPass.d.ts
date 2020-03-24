@@ -7,12 +7,10 @@ import MaterialPass from './MaterialPass';
 import Program from 'nanogl/program';
 import Node from 'nanogl-node';
 import Camera from 'nanogl-camera';
-import IBL from './Ibl';
 import LightSetup from './LightSetup';
 import PbrInputs from './PbrInputs';
 import { AlphaModeEnum } from './AlphaModeEnum';
 export default class StandardPass extends MaterialPass {
-    ibl: IBL | null;
     version: Version;
     precision: Precision;
     shaderid: Flag;
@@ -35,7 +33,6 @@ export default class StandardPass extends MaterialPass {
     glossNearest: Flag;
     surface: PbrInputs;
     constructor(name?: string);
-    setIBL(ibl: IBL): void;
     setLightSetup(setup: LightSetup): void;
     prepare(prg: Program, node: Node, camera: Camera): void;
 }

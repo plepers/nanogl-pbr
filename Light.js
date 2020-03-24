@@ -14,10 +14,11 @@ const ScreenMtx = new Float32Array([
 const LightMtx = mat4.create();
 const V6 = new Float32Array(6);
 const V3 = vec3.create();
+const GL_DEPTH_ATTACHMENT = 0x8D00;
+const GL_COLOR_ATTACHMENT0 = 0x8CE0;
 class Light extends Node {
-    constructor(gl) {
+    constructor() {
         super();
-        this.gl = gl;
         this._type = LightType.UNKNOWN;
         this._color = new Float32Array([1.0, 1.0, 1.0]);
         this._wdir = new Float32Array(this._wmatrix.buffer, 8 * 4, 3);
@@ -36,32 +37,34 @@ class Light extends Node {
     castShadows(flag) {
         if (this._castShadows !== flag) {
             this._castShadows = flag;
-            (flag) ? this._initShadowMapping() : this._releaseShadowMapping();
+            if (!flag)
+                this._releaseShadowMapping();
         }
     }
     hasDepthShadowmap() {
-        return this._castShadows && this._fbo.getAttachment(this.gl.DEPTH_ATTACHMENT).isTexture();
+        return this._castShadows && this._fbo.getAttachment(GL_DEPTH_ATTACHMENT).isTexture();
     }
-    getShadowmap() {
+    getShadowmap(gl) {
         if (this._castShadows) {
-            var att = this._fbo.getAttachment(this.gl.DEPTH_ATTACHMENT);
+            if (this._fbo === null) {
+                this._initShadowMapping(gl);
+            }
+            var att = this._fbo.getAttachment(gl.DEPTH_ATTACHMENT);
             if (att !== null)
-                return att.isTexture() ? att.target : this._fbo.getAttachment(this.gl.COLOR_ATTACHMENT0).target;
+                return att.isTexture() ? att.target : this._fbo.getAttachment(GL_COLOR_ATTACHMENT0).target;
         }
         return null;
     }
-    _initShadowMapping() {
+    _initShadowMapping(gl) {
         var s = this._shadowmapSize;
-        var gl = this.gl;
         this._fbo = new Fbo(gl);
         this._fbo.bind();
         this._fbo.resize(s, s);
         this._fbo.attach(gl.COLOR_ATTACHMENT0, new Texture2D(gl, gl.RGB));
         var hasDTex = PF.getInstance(gl).hasDepthTexture();
-        this._fbo.attachDepth(true, false, hasDTex);
-        var smap = this.getShadowmap();
+        const att = this._fbo.attachDepth(true, false, hasDTex);
+        var smap = (att.isTexture() ? att.target : this._fbo.getAttachment(GL_COLOR_ATTACHMENT0).target);
         smap.bind();
-        var gl = this.gl;
         if (isWebgl2(gl)) {
             smap.setFilter(true, false, false);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_COMPARE_MODE, gl.COMPARE_REF_TO_TEXTURE);

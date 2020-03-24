@@ -3,8 +3,8 @@ import Camera from 'nanogl-camera';
 import LightType from './LightType';
 const BiasVector = new Float32Array(4);
 class DirectionalLight extends Light {
-    constructor(gl) {
-        super(gl);
+    constructor() {
+        super();
         this._camera = null;
         this._type = LightType.DIRECTIONAL;
         this._shadowmapNearOffset = 0;

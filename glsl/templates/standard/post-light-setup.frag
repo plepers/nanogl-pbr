@@ -1,4 +1,4 @@
 
 // post light setup
-
-specularColor += lSpecularColor * specular()*specular();
+// todo: should not be
+// specularColor += lSpecularColor * input.specularF0;

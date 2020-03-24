@@ -2,20 +2,25 @@ import Program from 'nanogl/program';
 import Light from './Light';
 import Flag from './Flag';
 import LightSetup from './LightSetup';
-import ILightModel from './interfaces/ILightModel';
+import ILightModel, { ILightModelCode } from './interfaces/ILightModel';
 import ChunksSlots from './ChunksSlots';
 import Chunk from './Chunk';
 import { ShadowFilteringEnum } from './ShadowFilteringEnum';
+import IBL from './Ibl';
+declare type GlslCode = (o: any) => string;
 declare class StandardModel implements ILightModel {
+    modelCode: ILightModelCode;
     preLightsChunk: PreLightsChunk;
     postLightsChunk: PostLightsChunk;
     shadowChunk: ShadowsChunk;
     shadowFilter: ShadowFilteringEnum;
     iblShadowing: Flag;
+    iblChunk: IblChunk;
     private _datas;
     private _dataList;
     private _setup;
-    constructor();
+    constructor(modelCode?: ILightModelCode);
+    setIbl(ibl: IBL | null): void;
     getLightSetup(): LightSetup;
     setLightSetup(ls: LightSetup): void;
     add(l: Light): void;
@@ -24,13 +29,13 @@ declare class StandardModel implements ILightModel {
     getChunks(): Chunk[];
 }
 declare class PreLightsChunk extends Chunk {
-    static _hash: number;
-    constructor();
+    code: GlslCode;
+    constructor(code: GlslCode);
     _genCode(slots: ChunksSlots): void;
 }
 declare class PostLightsChunk extends Chunk {
-    static _hash: number;
-    constructor();
+    code: GlslCode;
+    constructor(code: GlslCode);
     _genCode(slots: ChunksSlots): void;
 }
 declare class ShadowsChunk extends Chunk {
@@ -48,5 +53,14 @@ declare class ShadowsChunk extends Chunk {
     addLight(light: Light): number;
     check(): void;
     setup(prg: Program): void;
+}
+declare class IblChunk extends Chunk {
+    preCode: GlslCode;
+    code: GlslCode;
+    ibl: IBL | null;
+    constructor(code: GlslCode, preCode: GlslCode);
+    setIbl(ibl: IBL | null): void;
+    setup(prg: Program): void;
+    _genCode(slots: ChunksSlots): void;
 }
 export default StandardModel;

@@ -17,8 +17,8 @@ class DirectionalLight extends Light {
   _camera: Camera<OrthographicLens>|null = null;
   
 
-  constructor( gl: GLContext ) {
-    super( gl );
+  constructor() {
+    super();
     this._type = LightType.DIRECTIONAL;
     this._shadowmapNearOffset = 0;
   }

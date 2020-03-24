@@ -2,8 +2,8 @@ import Light from './Light';
 import LightType from './LightType';
 const BiasVector = new Float32Array(4);
 class PointLight extends Light {
-    constructor(gl) {
-        super(gl);
+    constructor() {
+        super();
         this._type = LightType.POINT;
         this._falloffData = new Float32Array(3);
         this._radius = 0.0;

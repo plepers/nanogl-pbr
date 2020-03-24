@@ -1,13 +1,12 @@
 import Light from './Light';
 import Camera from 'nanogl-camera';
 import { mat4 } from 'gl-matrix';
-import { GLContext } from 'nanogl/types';
 import Bounds from './Bounds';
 declare class PointLight extends Light {
     private _radius;
     private _falloffCurve;
     _falloffData: Float32Array;
-    constructor(gl: GLContext);
+    constructor();
     castShadows(flag: boolean): void;
     _updateFalloffData(): void;
     get radius(): number;

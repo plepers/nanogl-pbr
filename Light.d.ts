@@ -8,7 +8,6 @@ import Camera from 'nanogl-camera';
 import Bounds from './Bounds';
 import LightType from './LightType';
 declare abstract class Light extends Node {
-    gl: GLContext;
     _type: LightType;
     _color: Float32Array;
     _wdir: Float32Array;
@@ -17,15 +16,15 @@ declare abstract class Light extends Node {
     _camera: Camera | null;
     _shadowmapSize: number;
     iblShadowing: number;
-    constructor(gl: GLContext);
+    constructor();
     getShadowProjection(bounds: Bounds): mat4;
     abstract projectionFromBounds(bounds: Bounds): void;
     abstract _createCamera(): Camera;
     abstract getTexelBiasVector(): Float32Array;
     castShadows(flag: boolean): void;
     hasDepthShadowmap(): boolean;
-    getShadowmap(): Texture2D | RB | null;
-    _initShadowMapping(): void;
+    getShadowmap(gl: GLContext): Texture2D | RB | null;
+    _initShadowMapping(gl: GLContext): void;
     _releaseShadowMapping(): void;
     prepareShadowmap(): void;
     boundsInLocalSpace(bounds: Bounds): Float32Array;

@@ -18,7 +18,7 @@
   // -------- DIFFUSE
   float dContrib = (1.0/3.141592) * sdot( lightDir, worldNormal );
 
-  diffuseCoef   += dContrib * lightContrib;
+  LS_DIFFUSE    += dContrib  * lightContrib;
   LS_SPECULAR   += sContrib  * lightContrib;
 
   // specularColor *= 0.0;

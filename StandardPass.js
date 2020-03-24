@@ -19,7 +19,6 @@ export default class StandardPass extends MaterialPass {
             vert: vShader(),
             frag: fShader(),
         });
-        this.ibl = null;
         const inputs = this.inputs;
         inputs.add(this.version = new Version('100'));
         inputs.add(this.precision = new Precision('highp'));
@@ -43,15 +42,10 @@ export default class StandardPass extends MaterialPass {
         inputs.add(this.horizonFading = new Flag('horizonFading', false));
         inputs.add(this.glossNearest = new Flag('glossNearest', false));
     }
-    setIBL(ibl) {
-        this.ibl = ibl;
-    }
     setLightSetup(setup) {
         this.inputs.addChunks(setup.getChunks('std'));
     }
     prepare(prg, node, camera) {
-        var _a;
-        (_a = this.ibl) === null || _a === void 0 ? void 0 : _a.setupProgram(prg);
         if (prg.uMVP) {
             camera.modelViewProjectionMatrix(M4, node._wmatrix);
             prg.uMVP(M4);

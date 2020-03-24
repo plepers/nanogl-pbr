@@ -36,7 +36,7 @@
       #if hasNormals 
         vec3 worldNormal = normalize( vWorldNormal );
       #else
-        vec3 worldNormal = cross(pos_dx, pos_dy);
+        vec3 worldNormal = normalize( cross(pos_dx, pos_dy) );
       #endif
       
 
@@ -60,8 +60,7 @@
     #else
       vec3 pos_dx = dFdx(vWorldPosition);
       vec3 pos_dy = dFdy(vWorldPosition);
-      vec3 worldNormal = cross(pos_dx, pos_dy);
-      return cross(pos_dx, pos_dy);
+      return normalize( cross(pos_dx, pos_dy) );
     #endif
   }
 #endif

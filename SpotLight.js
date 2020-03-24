@@ -3,18 +3,17 @@ import Camera from 'nanogl-camera';
 import LightType from './LightType';
 const BiasVector = new Float32Array(4);
 class SpotLight extends Light {
-    constructor(gl) {
-        super(gl);
+    constructor() {
+        super();
+        this._innerAngle = 0;
+        this._outerAngle = 0;
+        this._radius = 0;
+        this._falloffCurve = 0;
         this._camera = null;
         this._type = LightType.SPOT;
-        this._spotData = new Float32Array(2);
+        this._coneData = new Float32Array(2);
         this._falloffData = new Float32Array(3);
-        this._angle = 0.0;
-        this._sharpness = 0.0;
-        this._radius = 0.0;
-        this._falloffCurve = 0.0;
-        this.angle = Math.PI / 4;
-        this.sharpness = 0.0;
+        this.outerAngle = Math.PI / 4;
         this.radius = 50.0;
         this.falloffCurve = 2.0;
     }
@@ -29,7 +28,7 @@ class SpotLight extends Light {
     }
     getTexelBiasVector() {
         var mtx = this._camera._view;
-        var zMin = -2.0 * Math.tan(this._angle);
+        var zMin = -2.0 * Math.tan(this._outerAngle);
         BiasVector[0] = mtx[2] * zMin;
         BiasVector[1] = mtx[6] * zMin;
         BiasVector[2] = mtx[10] * zMin;
@@ -39,23 +38,25 @@ class SpotLight extends Light {
     _createCamera() {
         var cam = Camera.makePerspectiveCamera();
         cam.lens.aspect = 1;
-        cam.lens.fov = this._angle;
+        cam.lens.fov = this._outerAngle;
         cam.lens.near = 15 - 5;
         cam.lens.far = 15 + 5;
         return cam;
     }
-    get angle() { return this._angle; }
-    set angle(v) {
-        this._angle = v;
+    get innerAngle() { return this._innerAngle; }
+    set innerAngle(v) {
+        this._innerAngle = v;
+        this._updateSpotData();
+    }
+    get angle() { return this._outerAngle; }
+    set angle(v) { this.outerAngle = v; }
+    get outerAngle() { return this._outerAngle; }
+    set outerAngle(v) {
+        this._outerAngle = v;
         this._updateSpotData();
         if (this._castShadows) {
-            this._camera.lens.fov = this._angle;
+            this._camera.lens.fov = this._outerAngle;
         }
-    }
-    get sharpness() { return this._sharpness; }
-    set sharpness(v) {
-        this._sharpness = v;
-        this._updateSpotData();
     }
     get radius() { return this._radius; }
     set radius(v) {
@@ -68,8 +69,8 @@ class SpotLight extends Light {
         this._updateFalloffData();
     }
     _updateSpotData() {
-        this._spotData[0] = 1.0 + (this._sharpness * 100.0);
-        this._spotData[1] = 2 / (1 - Math.cos(this._angle)) * this._spotData[0];
+        this._coneData[0] = 1.0 / Math.max(0.001, Math.cos(this._innerAngle) - Math.cos(this._outerAngle));
+        this._coneData[1] = -Math.cos(this._outerAngle) * this._coneData[0];
     }
     _updateFalloffData() {
         this._falloffData[0] = -this._falloffCurve;

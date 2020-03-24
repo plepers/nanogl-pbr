@@ -5,16 +5,20 @@ import StandardModel from './StandardModel'
 import Light from './Light'
 import ILightModel from './interfaces/ILightModel';
 import DepthFormat, { DepthFormatEnum } from './DepthFormatEnum';
+import IBL from './Ibl';
+import Chunk from './Chunk';
 
 class LightSetup {
 
-  _lights: Light[];
-  depthFormat: DepthFormatEnum;
-  bounds: Bounds;
-  stdModel: StandardModel;
+  _lights     : Light[];
+  depthFormat : DepthFormatEnum;
+  bounds      : Bounds;
+  stdModel    : StandardModel;
 
-  _models: ILightModel[];
-  _modelsMap: Record<string,ILightModel>;
+  _models     : ILightModel[];
+  _modelsMap  : Record<string,ILightModel>;
+
+  _ibl        : IBL|null = null;
 
 
   constructor() {
@@ -33,6 +37,16 @@ class LightSetup {
   }
 
 
+  set ibl( v:IBL|null ){
+    this._ibl = v;
+    for (var i = 0; i < this._models.length; i++) {
+      this._models[i].setIbl(v);
+    }
+  }
+
+  get ibl() : IBL|null {
+    return this._ibl;
+  }
 
 
   add(l:Light) {
@@ -66,7 +80,7 @@ class LightSetup {
   }
 
 
-  getChunks( modelId : string ) {
+  getChunks( modelId : string ) : Chunk[] {
     if (modelId === undefined) {
       modelId = 'std';
     }

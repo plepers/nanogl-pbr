@@ -17,8 +17,8 @@ class PointLight extends Light {
   
   _falloffData: Float32Array;
 
-  constructor( gl : GLContext ) {
-    super( gl );
+  constructor() {
+    super();
 
     this._type = LightType.POINT;
 

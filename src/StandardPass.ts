@@ -31,7 +31,6 @@ const MAT_ID = 'std';
 export default class StandardPass extends MaterialPass {
 
 
-  ibl                  : IBL|null
   version              : Version
   precision            : Precision
   shaderid             : Flag
@@ -67,7 +66,6 @@ export default class StandardPass extends MaterialPass {
       frag : fShader(),
     } );
 
-    this.ibl = null;
 
 
     const inputs = this.inputs;
@@ -108,14 +106,6 @@ export default class StandardPass extends MaterialPass {
   }
 
 
-  /**
-   * 
-   * @param {Ibl} ibl 
-   */
-  setIBL( ibl:IBL ){
-    this.ibl = ibl;
-  }
-
 
   setLightSetup( setup : LightSetup ){
     this.inputs.addChunks( setup.getChunks( 'std' ) );
@@ -123,8 +113,6 @@ export default class StandardPass extends MaterialPass {
 
   
   prepare( prg:Program, node : Node, camera : Camera ){
-    
-    this.ibl?.setupProgram( prg );
     
     // matrices
     

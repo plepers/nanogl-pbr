@@ -24,10 +24,11 @@ const LightMtx = mat4.create();
 const V6 = new Float32Array(6);
 const V3 = vec3.create();
 
+const GL_DEPTH_ATTACHMENT               = 0x8D00
+const GL_COLOR_ATTACHMENT0              = 0x8CE0
 
 abstract class Light extends Node {
 
-  gl: GLContext;
   _type: LightType;
   _color: Float32Array;
   _wdir: Float32Array;
@@ -40,10 +41,9 @@ abstract class Light extends Node {
 
 
 
-  constructor(gl: GLContext) {
+  constructor() {
     super();
 
-    this.gl = gl;
 
     this._type = LightType.UNKNOWN;
     this._color = new Float32Array([1.0, 1.0, 1.0]);
@@ -77,7 +77,7 @@ abstract class Light extends Node {
   castShadows(flag:boolean) {
     if (this._castShadows !== flag) {
       this._castShadows = flag;
-      (flag) ? this._initShadowMapping() : this._releaseShadowMapping();
+      if(!flag) this._releaseShadowMapping();
     }
   }
 
@@ -86,7 +86,7 @@ abstract class Light extends Node {
    * return true if shadowmap support depth texture
    */
   hasDepthShadowmap() {
-    return this._castShadows && this._fbo!.getAttachment(this.gl.DEPTH_ATTACHMENT)!.isTexture();
+    return this._castShadows && this._fbo!.getAttachment(GL_DEPTH_ATTACHMENT)!.isTexture();
   }
 
   /**
@@ -94,21 +94,23 @@ abstract class Light extends Node {
    * otherwise return depth texture
    * return null if light don't cast shadows
    */
-  getShadowmap() {
+  getShadowmap( gl : GLContext ) {
     if (this._castShadows) {
-      var att = this._fbo!.getAttachment(this.gl.DEPTH_ATTACHMENT);
+      if( this._fbo === null ) {
+        this._initShadowMapping( gl );
+      }
+      var att = this._fbo!.getAttachment(gl.DEPTH_ATTACHMENT);
       if( att !== null )
-        return att.isTexture() ? att.target : this._fbo!.getAttachment(this.gl.COLOR_ATTACHMENT0)!.target;
+        return att.isTexture() ? att.target : this._fbo!.getAttachment(GL_COLOR_ATTACHMENT0)!.target;
     }
     return null;
   }
 
 
 
-  _initShadowMapping() {
+  _initShadowMapping( gl : GLContext ) {
     // assert this._castShadows == true
     var s = this._shadowmapSize;
-    var gl = this.gl;
 
 
     // color attachment
@@ -123,14 +125,12 @@ abstract class Light extends Node {
     // ----------------
     // use depth texture if possible
     var hasDTex = PF.getInstance(gl).hasDepthTexture();
-    this._fbo.attachDepth(true, false, hasDTex);
+    const att = this._fbo.attachDepth(true, false, hasDTex);
 
 
+    var smap : Texture2D = (att.isTexture() ? att.target : this._fbo!.getAttachment(GL_COLOR_ATTACHMENT0)!.target) as Texture2D;
+    smap.bind();
 
-    var smap = this.getShadowmap() as Texture2D;
-    smap.bind()
-
-    var gl = this.gl;
     if (isWebgl2(gl)) {
       // TODO filtering option for GLSL 300
       smap.setFilter(true, false, false);

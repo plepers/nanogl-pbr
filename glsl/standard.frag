@@ -43,19 +43,6 @@ IN mediump vec3 vWorldBitangent;
 
 
 
-// IBL
-// ========
-uniform sampler2D tEnv;
-
-#if perVertexIrrad
-  IN vec3 vIrradiance;
-#else
-  uniform vec4 uSHCoeffs[7];
-  {{ require( "./includes/spherical-harmonics.glsl" )() }}
-#endif
-
-
-
 // MATH
 // =========
 #define saturate(x) clamp( x, 0.0, 1.0 )
@@ -65,7 +52,6 @@ uniform sampler2D tEnv;
 // INCLUDES
 // =========
 
-{{ require( "./includes/ibl.glsl" )() }}
 {{ require( "./includes/normals.glsl" )() }}
 {{ require( "./includes/tonemap.glsl" )() }}
 
@@ -79,17 +65,6 @@ vec3 F_Schlick( float VoH,vec3 spec,float glo )
   return( 1.0 - dot )*spec + dot;
 }
 
-
-
-
-
-vec3 ComputeIBLDiffuse( vec3 worldNormal ){
-  #if perVertexIrrad
-    return vIrradiance;
-  #else
-    return SampleSH(worldNormal, uSHCoeffs );
-  #endif
-}
 
 
 //                MAIN
@@ -122,22 +97,28 @@ void main( void ){
   // SH Irradiance diffuse coeff
   // -------------
 
-  vec3 diffuseCoef = ComputeIBLDiffuse( worldNormal );
 
 
-  // IBL reflexion
+  // used by IBL reflexion
   // --------------
-
   vec3 viewDir = normalize( uCameraPosition - vWorldPosition );
   vec3 worldReflect = reflect( -viewDir, worldNormal );
-  vec3 specularColor = SpecularIBL( tEnv, worldReflect, surface.roughness );
+  float NoV = sdot( viewDir, worldNormal );
 
+
+
+
+  vec3 diffuseContrib = vec3(0.0);
+  vec3 specularContrib = vec3(0.0);
+
+  #define LS_SPECULAR specularContrib
+  #define LS_DIFFUSE  diffuseContrib
 
   #pragma SLOT lightsf
 
-
-  float NoV = sdot( viewDir, worldNormal );
-  specularColor *= F_Schlick( NoV, surface.specularF0, 1.0-surface.roughness );
+  // todo: apply this only to ibl contrib
+  // add proper Fresnel to ponctual lights
+  specularContrib *= F_Schlick( NoV, surface.specularF0, 1.0-surface.roughness );
 
 
 
@@ -174,7 +155,7 @@ void main( void ){
   #endif
 
 
-  vec3 color = diffuseCoef*surface.diffuse + specularColor;
+  vec3 color = diffuseContrib*surface.diffuse + specularContrib;
 
 
  #if HAS_occlusion
@@ -198,10 +179,10 @@ void main( void ){
 
   // FragColor.rgb = FragColor.rgb*0.0001 + gloss();
   // FragColor.rgb = FragColor.rgb*0.0001 + surface.specularF0;
-  // FragColor.rgb = FragColor.rgb*0.0001 + specularColor;
+  // FragColor.rgb = FragColor.rgb*0.0001 + specularContrib;
   // FragColor.rgb = FragColor.rgb*0.0001 + albedo();
   // FragColor.rgb = FragColor.rgb*0.0001 + albedoSq;
-  // FragColor.rgb = FragColor.rgb*0.0001 + diffuseCoef;
+  // FragColor.rgb = FragColor.rgb*0.0001 + diffuseContrib;
   // FragColor.rgb = FragColor.rgb*0.0001 + worldNormal;
   // FragColor.rgb = FragColor.rgb*0.0001 + vWorldNormal;
   // FragColor.rgb = FragColor.rgb*0.0001 + vWorldBitangent;

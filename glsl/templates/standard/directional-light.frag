@@ -1,6 +1,5 @@
 // --------- SPEC
 {
-
   vec3 H = normalize( uLDirDirections[{{@index}}] + viewDir );
   float NoH = sdot( H,worldNormal );
   float sContib = specularMul * pow( NoH, roughness );
@@ -21,7 +20,7 @@
   }
   {{= } }}
 
-  diffuseCoef   += dContrib * uLDirColors[{{@index}}].rgb;
-  LS_SPECULAR   += sContib  * uLDirColors[{{@index}}].rgb;
+  LS_DIFFUSE  += dContrib * uLDirColors[{{@index}}].rgb;
+  LS_SPECULAR += sContib  * uLDirColors[{{@index}}].rgb;
 
 }

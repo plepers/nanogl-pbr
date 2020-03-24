@@ -4,6 +4,7 @@ import StandardModel from './StandardModel';
 import DepthFormat from './DepthFormatEnum';
 class LightSetup {
     constructor() {
+        this._ibl = null;
         this._lights = [];
         this._models = [];
         this._modelsMap = {};
@@ -11,6 +12,15 @@ class LightSetup {
         this.bounds = new Bounds();
         this.stdModel = new StandardModel();
         this._registerModel('std', this.stdModel);
+    }
+    set ibl(v) {
+        this._ibl = v;
+        for (var i = 0; i < this._models.length; i++) {
+            this._models[i].setIbl(v);
+        }
+    }
+    get ibl() {
+        return this._ibl;
     }
     add(l) {
         if (this._lights.indexOf(l) === -1) {
