@@ -8,8 +8,6 @@ import  Input          from './Input'
 import  Flag           from './Flag'
 import  Enum           from './Enum'
 import {GammaModeEnum, GammaModes} from './GammaModeEnum'
-import  Precision      from './ShaderPrecision'
-import  Version        from './ShaderVersion'
 import  MaterialPass   from './MaterialPass'
 import  Program        from 'nanogl/program'
 import  Node           from 'nanogl-node'
@@ -19,6 +17,8 @@ import  LightSetup     from './LightSetup'
 import PbrInputs from './PbrInputs'
 import PbrSurface from './PbrInputs'
 import { AlphaModeEnum, AlphaModes } from './AlphaModeEnum'
+import ShaderVersion from './ShaderVersion'
+import ShaderPrecision from './ShaderPrecision'
 
 
 const M4 = mat4.create();
@@ -31,8 +31,8 @@ const MAT_ID = 'std';
 export default class StandardPass extends MaterialPass {
 
 
-  version              : Version
-  precision            : Precision
+  version              : ShaderVersion
+  precision            : ShaderPrecision
   shaderid             : Flag
   alpha                : Input
   alphaFactor          : Input
@@ -71,8 +71,8 @@ export default class StandardPass extends MaterialPass {
     const inputs = this.inputs;
 
 
-    inputs.add( this.version               = new Version( '100' ) );
-    inputs.add( this.precision             = new Precision( 'highp' ) );
+    inputs.add( this.version               = new ShaderVersion( '100' ) );
+    inputs.add( this.precision             = new ShaderPrecision( 'highp' ) );
     inputs.add( this.shaderid              = new Flag ( 'id_'+MAT_ID,  true  ) );
 
     inputs.add( this.surface               = PbrSurface.SpecularSurface() )

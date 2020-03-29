@@ -8,19 +8,16 @@ class SpotLight extends Light {
         this._innerAngle = 0;
         this._outerAngle = 0;
         this._radius = 0;
-        this._falloffCurve = 0;
         this._camera = null;
         this._type = LightType.SPOT;
         this._coneData = new Float32Array(2);
-        this._falloffData = new Float32Array(3);
         this.outerAngle = Math.PI / 4;
         this.radius = 50.0;
-        this.falloffCurve = 2.0;
     }
     projectionFromBounds(bounds) {
         const oBounds = this.boundsInLocalSpace(bounds);
         let zMin = -oBounds[2], zMax = -oBounds[5];
-        zMin = Math.min(zMin, 1 / this._falloffData[2]);
+        zMin = Math.min(zMin, this._radius);
         zMax = Math.max(0.005 * zMin, zMax);
         const lens = this._camera.lens;
         lens.near = zMax;
@@ -61,21 +58,10 @@ class SpotLight extends Light {
     get radius() { return this._radius; }
     set radius(v) {
         this._radius = v;
-        this._updateFalloffData();
-    }
-    get falloffCurve() { return this._falloffCurve; }
-    set falloffCurve(v) {
-        this._falloffCurve = v;
-        this._updateFalloffData();
     }
     _updateSpotData() {
         this._coneData[0] = 1.0 / Math.max(0.001, Math.cos(this._innerAngle) - Math.cos(this._outerAngle));
         this._coneData[1] = -Math.cos(this._outerAngle) * this._coneData[0];
-    }
-    _updateFalloffData() {
-        this._falloffData[0] = -this._falloffCurve;
-        this._falloffData[1] = -1 + this._falloffCurve;
-        this._falloffData[2] = 1 / this._radius;
     }
 }
 export default SpotLight;

@@ -446,7 +446,6 @@ class SpotDatas extends LightDatas<SpotLight> {
   _colors    : Float32Array | null
   _positions : Float32Array | null
   _cone      : Float32Array | null
-  _falloff   : Float32Array | null
 
   constructor(code : GlslCode, preCode : GlslCode) {
     super(code, preCode);
@@ -457,17 +456,17 @@ class SpotDatas extends LightDatas<SpotLight> {
     this._colors = null;
     this._positions = null;
     this._cone = null;
-    this._falloff = null;
   }
 
 
 
 
 
-  genCodePerLights(light: Light, index: number, shadowIndex: number) {
+  genCodePerLights(light: SpotLight, index: number, shadowIndex: number) {
     var o = {
       index: index,
-      shadowIndex: shadowIndex
+      shadowIndex: shadowIndex,
+      infinite: light.radius<=0,
     }
     return this.codeTemplate(o);
   }
@@ -475,11 +474,10 @@ class SpotDatas extends LightDatas<SpotLight> {
   allocate(n: number) {
 
     if (this._colors === null || this._colors.length / 4 !== n) {
-      this._directions = new Float32Array(n * 3);
+      this._directions = new Float32Array(n * 4);
       this._colors     = new Float32Array(n * 4);
       this._positions  = new Float32Array(n * 3);
       this._cone       = new Float32Array(n * 2);
-      this._falloff    = new Float32Array(n * 3);
     }
   }
 
@@ -490,12 +488,12 @@ class SpotDatas extends LightDatas<SpotLight> {
 
     for (var i = 0; i < lights.length; i++) {
       var l = lights[i]
-      this._directions!.set(l._wdir       , i * 3)
+      this._directions!.set(l._wdir       , i * 4)
       this._colors    !.set(l._color      , i * 4)
       this._positions !.set(l._wposition  , i * 3)
       this._cone      !.set(l._coneData   , i * 2)
-      this._falloff   !.set(l._falloffData, i * 3)
 
+      this._directions![i * 4 + 3] = l.radius;
       this._colors![i * 4 + 3] = l.iblShadowing;
 
       if (l._castShadows) {
@@ -522,7 +520,6 @@ class SpotDatas extends LightDatas<SpotLight> {
       prg.uLSpotColors(this._colors);
       prg.uLSpotPositions(this._positions);
       prg.uLSpotCone(this._cone);
-      prg.uLSpotFalloff(this._falloff);
 
       this._invalid = false;
     }
@@ -617,7 +614,6 @@ class PointDatas extends LightDatas<PointLight> {
 
   _colors   : Float32Array | null;
   _positions: Float32Array | null;
-  _falloff  : Float32Array | null;
 
   constructor(code : GlslCode, preCode : GlslCode) {
     super(code, preCode);
@@ -626,7 +622,6 @@ class PointDatas extends LightDatas<PointLight> {
 
     this._colors = null;
     this._positions = null;
-    this._falloff = null;
   }
 
 
@@ -634,7 +629,8 @@ class PointDatas extends LightDatas<PointLight> {
   genCodePerLights(light: PointLight, index: number, shadowIndex: number) {
     var o = {
       index: index,
-      shadowIndex: shadowIndex
+      shadowIndex: shadowIndex,
+      infinite: light.radius<=0,
     }
     return this.codeTemplate(o);
   }
@@ -643,8 +639,7 @@ class PointDatas extends LightDatas<PointLight> {
 
     if (this._colors === null || this._colors.length / 3 !== n) {
       this._colors    = new Float32Array(n * 3);
-      this._positions = new Float32Array(n * 3);
-      this._falloff   = new Float32Array(n * 3);
+      this._positions = new Float32Array(n * 4);
     }
   }
 
@@ -657,10 +652,9 @@ class PointDatas extends LightDatas<PointLight> {
     for (var i = 0; i < lights.length; i++) {
       var l = lights[i]
       this._colors   !.set(l._color      , i * 3)
-      this._positions!.set(l._wposition  , i * 3)
-      this._falloff  !.set(l._falloffData, i * 3)
+      this._positions!.set(l._wposition  , i * 4)
 
-      // this._colors[i*4+3] = l.iblShadowing;
+      this._positions![i*4+3] = l.radius;
 
       if (l._castShadows) {
         var shIndex = model.shadowChunk.addLight(l);
@@ -684,7 +678,6 @@ class PointDatas extends LightDatas<PointLight> {
 
       prg.uLPointColors(this._colors);
       prg.uLPointPositions(this._positions);
-      prg.uLPointFalloff(this._falloff);
 
       this._invalid = false;
     }

@@ -15,10 +15,8 @@ class SpotLight extends Light {
   private _innerAngle: number = 0;
   private _outerAngle: number = 0;
   private _radius: number = 0;
-  private _falloffCurve: number = 0;
   
   _coneData   : Float32Array;
-  _falloffData: Float32Array;
 
   _camera: Camera<PerspectiveLens>|null = null;
 
@@ -28,11 +26,9 @@ class SpotLight extends Light {
     this._type = LightType.SPOT;
 
     this._coneData    = new Float32Array(2);
-    this._falloffData = new Float32Array(3);
 
     this.outerAngle = Math.PI / 4;
     this.radius = 50.0;
-    this.falloffCurve = 2.0;
   }
 
 
@@ -45,7 +41,7 @@ class SpotLight extends Light {
     let zMin = -oBounds[2],
         zMax = -oBounds[5];
 
-    zMin = Math.min(zMin, 1 / this._falloffData[2]);
+    zMin = Math.min(zMin, this._radius );
     zMax = Math.max(0.005 * zMin, zMax);
 
     const lens = this._camera!.lens;
@@ -99,15 +95,8 @@ class SpotLight extends Light {
   get radius() { return this._radius }
   set radius( v : number ) {
     this._radius = v;
-    this._updateFalloffData();
   }
 
-
-  get falloffCurve() { return this._falloffCurve }
-  set falloffCurve( v : number ) {
-    this._falloffCurve = v;
-    this._updateFalloffData();
-  }
 
 
   _updateSpotData() {
@@ -116,11 +105,6 @@ class SpotLight extends Light {
   }
 
 
-  _updateFalloffData() {
-    this._falloffData[0] = -this._falloffCurve;
-    this._falloffData[1] = -1 + this._falloffCurve;
-    this._falloffData[2] = 1 / this._radius;
-  }
   
 }
 

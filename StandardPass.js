@@ -5,11 +5,11 @@ import Input from './Input';
 import Flag from './Flag';
 import Enum from './Enum';
 import { GammaModes } from './GammaModeEnum';
-import Precision from './ShaderPrecision';
-import Version from './ShaderVersion';
 import MaterialPass from './MaterialPass';
 import PbrSurface from './PbrInputs';
 import { AlphaModes } from './AlphaModeEnum';
+import ShaderVersion from './ShaderVersion';
+import ShaderPrecision from './ShaderPrecision';
 const M4 = mat4.create();
 const MAT_ID = 'std';
 export default class StandardPass extends MaterialPass {
@@ -20,8 +20,8 @@ export default class StandardPass extends MaterialPass {
             frag: fShader(),
         });
         const inputs = this.inputs;
-        inputs.add(this.version = new Version('100'));
-        inputs.add(this.precision = new Precision('highp'));
+        inputs.add(this.version = new ShaderVersion('100'));
+        inputs.add(this.precision = new ShaderPrecision('highp'));
         inputs.add(this.shaderid = new Flag('id_' + MAT_ID, true));
         inputs.add(this.surface = PbrSurface.SpecularSurface());
         inputs.add(this.alpha = new Input('alpha', 1));

@@ -1,15 +1,21 @@
 {
 
   vec3 lightDir= uLSpotPositions[{{@index}}] - vWorldPosition;
-  float invLightDist = inversesqrt(dot(lightDir,lightDir));
-  lightDir *= invLightDist;
+  float lightdist = length(lightDir);
+  lightDir /= lightdist;
 
   // falloff
-  float falloff = saturate( uLSpotFalloff[{{@index}}].z / invLightDist );
-  falloff = 1.0 + falloff * ( uLSpotFalloff[{{@index}}].x + uLSpotFalloff[{{@index}}].y * falloff );
+  
+
+  {{= if(obj.infinite){ }}
+  float falloff = 1.0 / (lightdist*lightdist);
+  {{= } else { }}
+  float distFactor = pow( lightdist/uLSpotDirections[{{@index}}].w, 4.0 );
+  float falloff = clamp( 1.0 - distFactor, 0.0, 1.0 ) / (lightdist*lightdist);
+  {{= } }}
 
   // cone
-  float cd= dot( lightDir, uLSpotDirections[{{@index}}] );
+  float cd= dot( lightDir, uLSpotDirections[{{@index}}].xyz );
   float angularAttenuation = saturate(cd * uLSpotCone[{{@index}}].x + uLSpotCone[{{@index}}].y);
   angularAttenuation *= angularAttenuation;
 

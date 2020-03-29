@@ -1,8 +1,6 @@
 import Input from './Input';
 import Flag from './Flag';
 import { GammaModeEnum } from './GammaModeEnum';
-import Precision from './ShaderPrecision';
-import Version from './ShaderVersion';
 import MaterialPass from './MaterialPass';
 import Program from 'nanogl/program';
 import Node from 'nanogl-node';
@@ -10,9 +8,11 @@ import Camera from 'nanogl-camera';
 import LightSetup from './LightSetup';
 import PbrInputs from './PbrInputs';
 import { AlphaModeEnum } from './AlphaModeEnum';
+import ShaderVersion from './ShaderVersion';
+import ShaderPrecision from './ShaderPrecision';
 export default class StandardPass extends MaterialPass {
-    version: Version;
-    precision: Precision;
+    version: ShaderVersion;
+    precision: ShaderPrecision;
     shaderid: Flag;
     alpha: Input;
     alphaFactor: Input;

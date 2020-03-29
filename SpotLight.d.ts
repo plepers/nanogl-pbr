@@ -6,9 +6,7 @@ declare class SpotLight extends Light {
     private _innerAngle;
     private _outerAngle;
     private _radius;
-    private _falloffCurve;
     _coneData: Float32Array;
-    _falloffData: Float32Array;
     _camera: Camera<PerspectiveLens> | null;
     constructor();
     projectionFromBounds(bounds: Bounds): void;
@@ -22,9 +20,6 @@ declare class SpotLight extends Light {
     set outerAngle(v: number);
     get radius(): number;
     set radius(v: number);
-    get falloffCurve(): number;
-    set falloffCurve(v: number);
     _updateSpotData(): void;
-    _updateFalloffData(): void;
 }
 export default SpotLight;
