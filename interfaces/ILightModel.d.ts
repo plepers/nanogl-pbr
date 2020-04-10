@@ -1,13 +1,11 @@
-import Light from "../Light";
+import Light from "../lighting/Light";
 import Chunk from "../Chunk";
-import LightSetup from "../LightSetup";
-import IBL from "../Ibl";
+import LightSetup from "../lighting/LightSetup";
 export default interface ILightModel {
     setLightSetup(ls: LightSetup): void;
     getLightSetup(): LightSetup;
     add(l: Light): void;
     remove(l: Light): void;
-    setIbl(ibl: IBL | null): void;
     update(): void;
     getChunks(): Chunk[];
 }

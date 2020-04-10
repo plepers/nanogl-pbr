@@ -5,7 +5,7 @@ import MaterialPass from './MaterialPass';
 import Program from 'nanogl/program';
 import Node from 'nanogl-node';
 import Camera from 'nanogl-camera';
-import LightSetup from './LightSetup';
+import LightSetup from './lighting/LightSetup';
 import PbrInputs from './PbrInputs';
 import { AlphaModeEnum } from './AlphaModeEnum';
 import ShaderVersion from './ShaderVersion';

@@ -18,7 +18,7 @@ import PbrSurface, { PbrInputs } from './PbrInputs'
 import Enum from './Enum'
 import ShaderVersion from './ShaderVersion'
 import ShaderPrecision from './ShaderPrecision'
-import LightSetup from './LightSetup'
+import LightSetup from './lighting/LightSetup'
 
 
 const M4 = mat4.create();

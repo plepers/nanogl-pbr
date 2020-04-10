@@ -15,7 +15,7 @@ import IMaterial from './interfaces/IMaterial';
 import VertShader from './glsl/depthpass.vert';
 import FragShader from './glsl/depthpass.frag';
 import Program from 'nanogl/program'
-import LightSetup from './LightSetup';
+import LightSetup from './lighting/LightSetup';
 import { ICameraLens } from 'nanogl-camera/ICameraLens';
 import DepthFormat, { DepthFormatEnum } from './DepthFormatEnum';
 import ChunkCollection from './ChunkCollection';

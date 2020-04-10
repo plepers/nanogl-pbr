@@ -7,7 +7,7 @@ import Input from './Input';
 import { AlphaModeEnum } from './AlphaModeEnum';
 import ShaderVersion from './ShaderVersion';
 import ShaderPrecision from './ShaderPrecision';
-import LightSetup from './LightSetup';
+import LightSetup from './lighting/LightSetup';
 export default class UnlitPass extends MaterialPass {
     version: ShaderVersion;
     precision: ShaderPrecision;
