@@ -1,6 +1,6 @@
 module.exports = function( obj ){
 var __t,__p='';
-__p+='// --------- SPEC\n{\n\n  vec3 H = normalize( uLDirDirections['+
+__p+='// --------- SPEC\n{\n  vec3 H = normalize( uLDirDirections['+
 (obj.index)+
 '] + viewDir );\n  float NoH = sdot( H,worldNormal );\n  float sContib = specularMul * pow( NoH, roughness );\n  // -------- DIFFUSE\n  float dContrib = (1.0/3.141592) * sdot( uLDirDirections['+
 (obj.index)+
@@ -20,9 +20,9 @@ __p+='\n  {\n    vec3 fragCoord = calcShadowPosition( uShadowTexelBiasVector['+
 (obj.index)+
 '].a;\n      specularColor *= mix( sDamp, 1.0, shOccl );\n    #endif\n  }\n  ';
  } 
-__p+='\n\n  diffuseCoef   += dContrib * uLDirColors['+
+__p+='\n\n  LS_DIFFUSE  += dContrib * uLDirColors['+
 (obj.index)+
-'].rgb;\n  LS_SPECULAR   += sContib  * uLDirColors['+
+'].rgb;\n  LS_SPECULAR += sContib  * uLDirColors['+
 (obj.index)+
 '].rgb;\n\n}';
 return __p;

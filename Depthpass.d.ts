@@ -2,7 +2,7 @@ import Node from 'nanogl-node';
 import Camera from 'nanogl-camera';
 import { GLContext } from 'nanogl/types';
 import Program from 'nanogl/program';
-import LightSetup from './LightSetup';
+import LightSetup from './lighting/LightSetup';
 import { ICameraLens } from 'nanogl-camera/ICameraLens';
 import { DepthFormatEnum } from './DepthFormatEnum';
 import ShaderPrecision from './ShaderPrecision';

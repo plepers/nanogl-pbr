@@ -2,19 +2,21 @@ module.exports = function( obj ){
 var __t,__p='';
 __p+='{\n\n  vec3 lightDir= uLSpotPositions['+
 (obj.index)+
-'] - vWorldPosition;\n  float invLightDist=inversesqrt(dot(lightDir,lightDir));\n  lightDir *= invLightDist;\n\n  // spot effect\n  float falloff = saturate( uLSpotFalloff['+
+'] - vWorldPosition;\n  float lightdist = length(lightDir);\n  lightDir /= lightdist;\n\n  // falloff\n  \n\n  ';
+ if(obj.infinite){ 
+__p+='\n  float falloff = 1.0 / (lightdist*lightdist);\n  ';
+ } else { 
+__p+='\n  float distFactor = pow( lightdist/uLSpotDirections['+
 (obj.index)+
-'].z / invLightDist );\n  falloff = 1.0 + falloff * ( uLSpotFalloff['+
+'].w, 4.0 );\n  float falloff = clamp( 1.0 - distFactor, 0.0, 1.0 ) / (lightdist*lightdist);\n  ';
+ } 
+__p+='\n\n  // cone\n  float cd= dot( lightDir, uLSpotDirections['+
 (obj.index)+
-'].x + uLSpotFalloff['+
+'].xyz );\n  float angularAttenuation = saturate(cd * uLSpotCone['+
 (obj.index)+
-'].y * falloff );\n\n  float s = saturate( dot( lightDir, uLSpotDirections['+
+'].x + uLSpotCone['+
 (obj.index)+
-'] ) );\n  s = saturate( uLSpotSpot['+
-(obj.index)+
-'].x-uLSpotSpot['+
-(obj.index)+
-'].y * (1.0-s*s) );\n\n  vec3 lightContrib = (falloff *s ) * uLSpotColors['+
+'].y);\n  angularAttenuation *= angularAttenuation;\n\n  vec3 lightContrib = (falloff * angularAttenuation ) * uLSpotColors['+
 (obj.index)+
 '].rgb;\n\n\n  // --------- SPEC\n  vec3 H = normalize( lightDir + viewDir );\n  float NoH = sdot( H,worldNormal );\n  float sContrib = specularMul * pow( NoH, roughness );\n  // -------- DIFFUSE\n  float dContrib = (1.0/3.141592) * sdot( lightDir, worldNormal );\n\n  ';
  if(obj.shadowIndex>-1){ 
@@ -38,6 +40,6 @@ __p+='\n  {\n    vec3 fragCoord = calcShadowPosition( uShadowTexelBiasVector['+
 (obj.shadowIndex)+
 ',fragCoord.xy).xyz ) );\n  }\n  ';
  } 
-__p+='\n\n\n  diffuseCoef   += dContrib * lightContrib;\n  LS_SPECULAR   += sContrib  * lightContrib;\n\n  // specularColor *= 0.0;\n\n}';
+__p+='\n\n\n  LS_DIFFUSE    += dContrib * lightContrib;\n  LS_SPECULAR   += sContrib  * lightContrib;\n\n  // specularColor *= 0.0;\n\n}';
 return __p;
 }

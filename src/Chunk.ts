@@ -1,6 +1,6 @@
 import Program    from 'nanogl/program'
 import ChunksTree from './ChunkCollection' 
-import ChunkSlots from './ChunksSlots'
+import ChunksSlots from './ChunksSlots'
 
 
 
@@ -38,25 +38,24 @@ export default abstract class Chunk {
    * populate given array with this chunk and all it's descendant
    * all array 
    */
-  collectChunks( all : Chunk[], actives : Chunk[] ){
-    all.push( this );
+  collectChunks( all : Set<Chunk>, actives : Set<Chunk> ){
+    all.add( this );
     if( this._ref !== null ) {
       this._ref.collectChunks( all, actives );
     } else {
       for (const child of this._children ) {
         child.collectChunks( all, actives );
       }
-      actives.push( this );
+      actives.add( this );
     }
   }
 
 
   detectCyclicDependency( chunk : Chunk ) : boolean {
-    const all     :Chunk[] = [];
-    const actives :Chunk[] = [];
+    const all     :Set<Chunk> = new Set();
+    const actives :Set<Chunk> = new Set();
     chunk.collectChunks( all, actives );
-    const index = all.indexOf(this);
-    return index > -1;
+    return all.has(this);
   }
 
   addChild<T extends Chunk>( child : T ) : T {
@@ -82,7 +81,7 @@ export default abstract class Chunk {
 
 
 
-  genCode(slots : ChunkSlots ):void{
+  genCode(slots : ChunksSlots ):void{
     if( this._ref !== null ) {
       this._ref.genCode( slots );
     } else {
@@ -90,13 +89,6 @@ export default abstract class Chunk {
     }
   }
 
-  getHash():string{
-    if( this._ref !== null ) {
-      return this._ref.getHash();
-    } else {
-      return this._getHash();
-    }
-  }
 
   get hasCode():boolean{
     if( this._ref !== null ) {
@@ -122,9 +114,8 @@ export default abstract class Chunk {
     }
   }
 
-  protected abstract _genCode( slots : ChunkSlots ):void;
-  protected abstract _getHash() : string;
-
+  protected abstract _genCode( slots : ChunksSlots ):void;
+  
 
   setup(prg : Program ) {
     // noop

@@ -10,8 +10,6 @@ export default interface IMaterial {
     _vertSrc : string;
     _fragSrc : string;
 
-
-
     compile():void;
 
 }

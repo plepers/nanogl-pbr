@@ -21,8 +21,5 @@ class Flag extends Chunk {
         const c = `#define ${this.name} ${~~this._val}`;
         slots.add('definitions', c);
     }
-    _getHash() {
-        return `${this.name}${~~this._val}`;
-    }
 }
 export default Flag;

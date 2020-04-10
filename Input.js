@@ -1,4 +1,5 @@
 import Chunk from './Chunk';
+import { hashString, stringifyHash } from './Hash';
 const TYPES = [
     null,
     'float',
@@ -45,27 +46,34 @@ function _addPreCode(slots, type, code) {
         slots.add('pv', code);
     }
 }
+var ParamType;
+(function (ParamType) {
+    ParamType[ParamType["SAMPLER"] = 0] = "SAMPLER";
+    ParamType[ParamType["UNIFORM"] = 1] = "UNIFORM";
+    ParamType[ParamType["ATTRIBUTE"] = 2] = "ATTRIBUTE";
+    ParamType[ParamType["CONSTANT"] = 3] = "CONSTANT";
+})(ParamType || (ParamType = {}));
 function isAttribute(x) {
     return x instanceof Attribute;
 }
 export class Sampler extends Chunk {
     constructor(name, texCoords) {
         super(true, true);
+        this.ptype = ParamType.SAMPLER;
         this._input = null;
         this.name = name;
-        this.texCoords = texCoords;
         this._tex = null;
         this.size = 4;
-        if (isAttribute(texCoords)) {
-            this._linkAttrib = true;
-            this.addChild(texCoords);
-            this.uvsToken = texCoords.token;
+        if (typeof texCoords === 'string') {
+            this.texCoords = texCoords;
+            this._varying = texCoords;
         }
         else {
-            this._linkAttrib = false;
-            this.uvsToken = texCoords;
+            this.texCoords = texCoords;
+            this.addChild(this.texCoords);
+            this._varying = texCoords.varying();
         }
-        this.token = `VAL_${this.name}${this.uvsToken}`;
+        this.token = `VAL_${this.name}${this._varying}`;
     }
     set(t) {
         this._tex = t;
@@ -73,22 +81,21 @@ export class Sampler extends Chunk {
     _genCode(slots) {
         if (this._input == null)
             return;
-        var name = this.name, c;
+        const name = this.name;
+        let c;
         c = `uniform sampler2D ${name};\n`;
         _addPreCode(slots, this._input.shader, c);
-        c = `vec4 ${this.token} = texture2D( ${name}, ${this.uvsToken});\n`;
+        c = `vec4 ${this.token} = texture2D( ${name}, ${this._varying});\n`;
         _addCode(slots, this._input.shader, c);
     }
     setup(prg) {
         prg[this.name](this._tex);
     }
-    _getHash() {
-        return `${this._linkAttrib ? '' : this.texCoords}-${this.name}`;
-    }
 }
 export class Uniform extends Chunk {
     constructor(name, size) {
         super(true, true);
+        this.ptype = ParamType.UNIFORM;
         this._input = null;
         this.name = name;
         this.size = size;
@@ -112,13 +119,11 @@ export class Uniform extends Chunk {
         prg[this.name](this._value);
         this._invalid = false;
     }
-    _getHash() {
-        return `${this.size}-${this.name}`;
-    }
 }
 export class Attribute extends Chunk {
     constructor(name, size) {
         super(true, false);
+        this.ptype = ParamType.ATTRIBUTE;
         this._input = null;
         this.name = name;
         this.size = size;
@@ -127,30 +132,30 @@ export class Attribute extends Chunk {
     _genCode(slots) {
         var c;
         const typeId = TYPES[this.size];
-        c = `varying ${typeId} ${this.token};\n`;
+        c = `IN ${typeId} ${this.token};\n`;
         slots.add('pf', c);
-        c = `attribute ${typeId} ${this.name};\n`;
-        c += `varying   ${typeId} ${this.token};\n`;
+        c = `IN ${typeId} ${this.name};\n`;
+        c += `OUT ${typeId} ${this.token};\n`;
         slots.add('pv', c);
         c = `${this.token} = ${this.name};\n`;
         slots.add('v', c);
-    }
-    _getHash() {
-        return `${this.size}-${this.name}`;
     }
 }
 export class Constant extends Chunk {
     constructor(value) {
         super(true, false);
+        this.ptype = ParamType.CONSTANT;
         this._input = null;
-        this.name = `CONST_${(0 | (Math.random() * 0x7FFFFFFF)).toString(16)}`;
-        if (Array.isArray(value)) {
-            this.size = value.length;
+        if (typeof value === 'number') {
+            this.size = 1;
+            this.value = value;
         }
         else {
-            this.size = 1;
+            this.size = value.length;
+            this.value = Array.from(value);
         }
-        this.value = value;
+        this._hash = hashString(`${this.size}-${this._stringifyValue()}`);
+        this.name = `CONST_${stringifyHash(this._hash)}`;
         this.token = `VAR_${this.name}`;
     }
     _genCode(slots) {
@@ -168,9 +173,6 @@ export class Constant extends Chunk {
             const a = this.value;
             return a.map(_floatStr).join(',');
         }
-    }
-    _getHash() {
-        return `${this._stringifyValue()}-${this.size}-`;
     }
 }
 export default class Input extends Chunk {
@@ -219,24 +221,21 @@ export default class Input extends Chunk {
         this.attach(p, comps);
         return p;
     }
-    _getHash() {
-        var hash = `${this.size}-${this.comps}-${this.name}`;
-        return hash;
-    }
     _genCode(slots) {
-        this.genAvailable(slots);
+        const val = (this.param === null) ? '0' : '1';
+        const def = `#define HAS_${this.name} ${val}\n`;
+        slots.add('definitions', def);
         if (this.param !== null) {
             var c = `#define ${this.name}(k) ${this.param.token}`;
             if (this.param.size > 1) {
                 c += `.${this.comps}`;
             }
             _addPreCode(slots, this.shader, c);
+            if (this.param.ptype === ParamType.SAMPLER) {
+                var c = `#define ${this.name}_texCoord(k) ${this.param._varying}`;
+                _addPreCode(slots, this.shader, c);
+            }
         }
-    }
-    genAvailable(slots) {
-        const val = (this.param === null) ? '0' : '1';
-        const def = `#define HAS_${this.name} ${val}\n`;
-        slots.add('definitions', def);
     }
 }
 Input.Sampler = Sampler;

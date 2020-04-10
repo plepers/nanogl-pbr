@@ -3,8 +3,10 @@ import Texture2D from 'nanogl/texture-2d'
 import Chunk from './Chunk'
 
 import Swizzle from './Swizzle'
-import ChunkSlots from './ChunksSlots'
+import ChunksSlots from './ChunksSlots'
 import Program from 'nanogl/program'
+import { hashString, Hash, stringifyHash } from './Hash'
+import TexCoord from './TexCoord'
 
 
 
@@ -58,7 +60,7 @@ function _floatStr(n: number) {
 }
 
 
-function _addCode(slots: ChunkSlots, type: ShaderType, code: string) {
+function _addCode(slots: ChunksSlots, type: ShaderType, code: string) {
   if ((type & ShaderType.FRAGMENT) !== 0) {
     slots.add('f', code);
   }
@@ -68,7 +70,7 @@ function _addCode(slots: ChunkSlots, type: ShaderType, code: string) {
 }
 
 
-function _addPreCode(slots: ChunkSlots, type: ShaderType, code: string) {
+function _addPreCode(slots: ChunksSlots, type: ShaderType, code: string) {
   if ((type & ShaderType.FRAGMENT) !== 0) {
     slots.add('pf', code);
   }
@@ -89,10 +91,17 @@ function _addPreCode(slots: ChunkSlots, type: ShaderType, code: string) {
 // }
 
 
+enum ParamType {
+  SAMPLER,
+  UNIFORM,
+  ATTRIBUTE,
+  CONSTANT,
+}
+
 
 
 export interface IInputParam {
-
+  readonly ptype : ParamType;
   name: string;
   size: InputSize;
   token: string;
@@ -101,7 +110,7 @@ export interface IInputParam {
 
 }
 
-type InputParam = IInputParam & Chunk;
+type InputParam = Sampler | Uniform | Attribute | Constant;
 
 //                              _
 //                             | |
@@ -121,38 +130,36 @@ function isAttribute(x: string | Attribute): x is Attribute {
 
 export class Sampler extends Chunk implements IInputParam {
 
+  readonly ptype : ParamType.SAMPLER = ParamType.SAMPLER
+
   name: string;
   size: InputSize;
   token: string;
   _input: Input | null;
   _tex: Texture2D | null;
-  _linkAttrib: boolean;
 
-  texCoords: string | Attribute;
-  uvsToken: string;
+  texCoords: TexCoord | string;
+  _varying : string;
 
 
-  constructor(name: string, texCoords: Attribute | string) {
+  constructor(name: string, texCoords: TexCoord | string) {
 
     super(true, true);
 
     this._input = null;
     this.name = name;
-    this.texCoords = texCoords;
     this._tex = null;
     this.size = 4;
-
-
-    if (isAttribute(texCoords)) {
-      this._linkAttrib = true;
-      this.addChild(texCoords);
-      this.uvsToken = texCoords.token;
+    
+    if( typeof texCoords === 'string' ){
+      this.texCoords = texCoords;
+      this._varying = texCoords;
     } else {
-      this._linkAttrib = false;
-      this.uvsToken = texCoords;
+      this.texCoords = texCoords;
+      this.addChild( this.texCoords );
+      this._varying = texCoords.varying();
     }
-
-    this.token = `VAL_${this.name}${this.uvsToken}`;
+    this.token = `VAL_${this.name}${this._varying}`;
   }
 
 
@@ -162,11 +169,11 @@ export class Sampler extends Chunk implements IInputParam {
   }
 
 
-  _genCode(slots: ChunkSlots) {
+  _genCode(slots: ChunksSlots) {
     if (this._input == null) return;
 
-    var name = this.name,
-      c;
+    const name = this.name;
+    let c;
 
     // PF
     c = `uniform sampler2D ${name};\n`;
@@ -174,7 +181,7 @@ export class Sampler extends Chunk implements IInputParam {
     // slots.add( 'pf', c );
 
     // F
-    c = `vec4 ${this.token} = texture2D( ${name}, ${this.uvsToken});\n`;
+    c = `vec4 ${this.token} = texture2D( ${name}, ${this._varying});\n`;
     _addCode(slots, this._input.shader, c);
     // slots.add( 'f', c );
 
@@ -187,9 +194,6 @@ export class Sampler extends Chunk implements IInputParam {
   }
 
 
-  _getHash() {
-    return `${this._linkAttrib ? '' : this.texCoords}-${this.name}`;
-  }
 }
 
 
@@ -204,6 +208,8 @@ export class Sampler extends Chunk implements IInputParam {
 
 export class Uniform extends Chunk implements IInputParam {
 
+  readonly ptype : ParamType.UNIFORM = ParamType.UNIFORM
+  
   name: string;
   size: InputSize;
   token: string;
@@ -234,7 +240,7 @@ export class Uniform extends Chunk implements IInputParam {
   }
 
 
-  _genCode(slots: ChunkSlots) {
+  _genCode(slots: ChunksSlots) {
     if (this._input === null) return;
     var c;
 
@@ -249,11 +255,6 @@ export class Uniform extends Chunk implements IInputParam {
   setup(prg: Program) {
     prg[this.name](this._value);
     this._invalid = false;
-  }
-
-
-  _getHash() {
-    return `${this.size}-${this.name}`;
   }
 
 }
@@ -271,6 +272,8 @@ export class Uniform extends Chunk implements IInputParam {
 
 export class Attribute extends Chunk implements IInputParam {
 
+  readonly ptype : ParamType.ATTRIBUTE = ParamType.ATTRIBUTE
+  
   name: string;
   size: InputSize;
   token: string;
@@ -288,29 +291,24 @@ export class Attribute extends Chunk implements IInputParam {
 
 
 
-  _genCode(slots: ChunkSlots) {
+  _genCode(slots: ChunksSlots) {
 
     var c;
     const typeId = TYPES[this.size];
 
     // PF
-    c = `varying ${typeId} ${this.token};\n`;
+    c = `IN ${typeId} ${this.token};\n`;
     slots.add('pf', c);
 
     // PV
-    c = `attribute ${typeId} ${this.name};\n`;
-    c += `varying   ${typeId} ${this.token};\n`;
+    c = `IN ${typeId} ${this.name};\n`;
+    c += `OUT ${typeId} ${this.token};\n`;
     slots.add('pv', c);
 
     // V
     c = `${this.token} = ${this.name};\n`;
     slots.add('v', c);
 
-  }
-
-
-  _getHash() {
-    return `${this.size}-${this.name}`;
   }
 
 }
@@ -324,38 +322,46 @@ export class Attribute extends Chunk implements IInputParam {
 //
 
 
+
 export class Constant extends Chunk implements IInputParam {
 
+  readonly ptype : ParamType.CONSTANT = ParamType.CONSTANT
+  
   name: string;
   size: InputSize;
   token: string;
   _input: Input | null;
   value: ArrayLike<number> | number;
+  _hash: Hash
 
   constructor(value: ArrayLike<number> | number) {
     super(true, false);
 
     this._input = null;
 
-    this.name = `CONST_${(0 | (Math.random() * 0x7FFFFFFF)).toString(16)}`;
-    if (Array.isArray(value)) {
-      this.size = <InputSize>value.length;
-    } else {
+
+    if ( typeof value === 'number' ) {
       this.size = 1;
+      this.value = value;
+    } else {
+      this.size = <InputSize>value.length;
+      this.value = Array.from(value);
     }
-    this.value = value;
+
+    this._hash = hashString( `${this.size}-${this._stringifyValue()}` )
+    this.name = `CONST_${stringifyHash( this._hash )}`;
     this.token = `VAR_${this.name}`;
   }
 
 
 
-  _genCode(slots: ChunkSlots) {
+  _genCode(slots: ChunksSlots) {
     if (this._input === null) return;
     var c;
 
     // PF
     c = `#define ${this.token} ${TYPES[this.size]}(${this._stringifyValue()})\n`;
-    _addPreCode(slots, this._input.shader, c);
+    _addPreCode(slots, this._input.shader, c );
     // slots.add( 'pf', c );
 
   }
@@ -370,10 +376,6 @@ export class Constant extends Chunk implements IInputParam {
     }
   }
 
-
-  _getHash() {
-    return `${this._stringifyValue()}-${this.size}-`;
-  }
 
 }
 
@@ -437,7 +439,7 @@ export default class Input extends Chunk {
   }
 
 
-  attachSampler(name: string, texCoords: string, comps: Swizzle = 'rgba') {
+  attachSampler(name: string, texCoords: string | TexCoord, comps: Swizzle = 'rgba') {
     var p = new Sampler(name, texCoords);
     this.attach(p, comps);
     return p;
@@ -473,16 +475,12 @@ export default class Input extends Chunk {
   // ===================================================
 
 
-  _getHash(): string {
-    var hash = `${this.size}-${this.comps}-${this.name}`;
 
-    return hash;
-  }
+  _genCode(slots: ChunksSlots) {
 
-
-  _genCode(slots: ChunkSlots) {
-
-    this.genAvailable(slots);
+    const val = (this.param === null) ? '0' : '1';
+    const def = `#define HAS_${this.name} ${val}\n`;
+    slots.add('definitions', def );
 
     if (this.param !== null) {
 
@@ -490,21 +488,17 @@ export default class Input extends Chunk {
       if (this.param.size > 1) {
         c += `.${this.comps}`;
       }
-
+      
       _addPreCode(slots, this.shader, c);
-
+      
+      if( this.param.ptype === ParamType.SAMPLER ){
+        var c = `#define ${this.name}_texCoord(k) ${this.param._varying}`;
+        _addPreCode(slots, this.shader, c);
+      }
     }
 
-  }
-
-
-
-  genAvailable(slots: ChunkSlots) {
-    const val = (this.param === null) ? '0' : '1';
-    const def = `#define HAS_${this.name} ${val}\n`;
-
-    slots.add('definitions', def);
 
   }
+
 
 }

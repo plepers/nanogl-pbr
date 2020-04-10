@@ -1,6 +1,6 @@
 
 import Chunk from './Chunk'
-import ChunkSlots from './ChunksSlots'
+import ChunksSlots from './ChunksSlots'
 
 
 function defReducer( res:string, v:string, i:number ){
@@ -36,7 +36,9 @@ class Enum<T extends readonly string[]> extends Chunk {
     this._accesDef = `#define ${this.name}(k) VAL_${this.name} == k`;
   }
 
-
+  value() : T[number] {
+    return this._val;
+  }
 
   set( val : T[number] ) {
       
@@ -68,7 +70,7 @@ class Enum<T extends readonly string[]> extends Chunk {
  *
  * @param slots 
  */
-  _genCode(slots : ChunkSlots) {
+  _genCode(slots : ChunksSlots) {
 
     // PF
     const c = [
@@ -77,14 +79,10 @@ class Enum<T extends readonly string[]> extends Chunk {
       this._accesDef
     ].join('\n');
 
-    slots.add('definitions', c);
+    slots.add('definitions', c );
 
   }
 
-
-  _getHash() {
-    return `${this.name}${this._valIndex}`;
-  }
 
 }
 

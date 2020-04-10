@@ -1,5 +1,5 @@
 import Chunk from './Chunk'
-import ChunkSlots from './ChunksSlots'
+import ChunksSlots from './ChunksSlots'
 import Program from 'nanogl/program';
 
 
@@ -11,13 +11,13 @@ export default class ChunkCollection {
   private _invalidCode : boolean = true;
   private _revision : number = 0;
   
+  _all     : Set<Chunk> = new Set();
+  _actives : Set<Chunk> = new Set();
   _chunks  : Chunk[] = [];
-  _all     : Chunk[] = [];
-  _actives : Chunk[] = [];
   _setups  : Chunk[] = [];
   _codes   : Chunk[] = [];
   
-  _cachedSlots : ChunkSlots|null = null;
+  _cachedSlots : ChunksSlots|null = null;
   
   
 
@@ -85,10 +85,11 @@ export default class ChunkCollection {
       chunk.removeList( this );
     }
 
-    all     .length = 0;
+    all     .clear();
+    actives .clear();
+
     setups  .length = 0;
     codes   .length = 0;
-    actives .length = 0;
 
 
     for (const chunk of this._chunks ) {
@@ -116,7 +117,7 @@ export default class ChunkCollection {
   }
 
 
-  getCode( base? : ChunkSlots ) : ChunkSlots {
+  getCode( base? : ChunksSlots ) : ChunksSlots {
 
     if( this._invalidList ){
       this._collectChunks();
@@ -124,15 +125,13 @@ export default class ChunkCollection {
 
     if( this._cachedSlots === null || this._invalidCode )  {
 
-      const slots = new ChunkSlots();
+      const slots = new ChunksSlots();
 
       for ( const chunk of this._codes ){
         chunk.genCode( slots );
-        slots.hash += chunk.getHash();
       }
 
       this._cachedSlots = slots;
-
       this._invalidCode = false;
   
     }

@@ -1,14 +1,29 @@
-declare type Slot = {
-    key: string;
+import { Hash } from "./Hash";
+declare class HashedChunkCode {
     code: string;
-};
-declare class ChunkSlots {
-    slots: Slot[];
-    slotsMap: Record<string, Slot>;
-    hash: string;
-    constructor();
-    getSlot(id: string): Slot;
-    add(slotId: string, code: string): void;
-    merge(other: ChunkSlots): void;
+    hash: Hash;
+    constructor(code: string);
 }
-export default ChunkSlots;
+declare class ChunkSlot {
+    readonly key: string;
+    private _hash;
+    private hashset;
+    private codes;
+    private _code;
+    constructor(key: string);
+    add(code: HashedChunkCode): void;
+    merge(other: ChunkSlot): void;
+    get code(): string;
+    get hash(): Hash;
+}
+export default class ChunksSlots {
+    slots: ChunkSlot[];
+    slotsMap: Record<string, ChunkSlot>;
+    hash: Hash;
+    constructor();
+    getHash(): Hash;
+    getSlot(id: string): ChunkSlot;
+    add(slotId: string, code: string): void;
+    merge(other: ChunksSlots): void;
+}
+export {};

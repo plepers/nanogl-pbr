@@ -1,17 +1,25 @@
 {
 
   vec3 lightDir= uLSpotPositions[{{@index}}] - vWorldPosition;
-  float invLightDist=inversesqrt(dot(lightDir,lightDir));
-  lightDir *= invLightDist;
+  float lightdist = length(lightDir);
+  lightDir /= lightdist;
 
-  // spot effect
-  float falloff = saturate( uLSpotFalloff[{{@index}}].z / invLightDist );
-  falloff = 1.0 + falloff * ( uLSpotFalloff[{{@index}}].x + uLSpotFalloff[{{@index}}].y * falloff );
+  // falloff
+  
 
-  float s = saturate( dot( lightDir, uLSpotDirections[{{@index}}] ) );
-  s = saturate( uLSpotSpot[{{@index}}].x-uLSpotSpot[{{@index}}].y * (1.0-s*s) );
+  {{= if(obj.infinite){ }}
+  float falloff = 1.0 / (lightdist*lightdist);
+  {{= } else { }}
+  float distFactor = pow( lightdist/uLSpotDirections[{{@index}}].w, 4.0 );
+  float falloff = clamp( 1.0 - distFactor, 0.0, 1.0 ) / (lightdist*lightdist);
+  {{= } }}
 
-  vec3 lightContrib = (falloff *s ) * uLSpotColors[{{@index}}].rgb;
+  // cone
+  float cd= dot( lightDir, uLSpotDirections[{{@index}}].xyz );
+  float angularAttenuation = saturate(cd * uLSpotCone[{{@index}}].x + uLSpotCone[{{@index}}].y);
+  angularAttenuation *= angularAttenuation;
+
+  vec3 lightContrib = (falloff * angularAttenuation ) * uLSpotColors[{{@index}}].rgb;
 
 
   // --------- SPEC
@@ -41,7 +49,7 @@
   {{= } }}
 
 
-  diffuseCoef   += dContrib * lightContrib;
+  LS_DIFFUSE    += dContrib * lightContrib;
   LS_SPECULAR   += sContrib  * lightContrib;
 
   // specularColor *= 0.0;

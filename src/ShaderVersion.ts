@@ -1,6 +1,6 @@
 
 import Chunk from './Chunk'
-import ChunkSlots from './ChunksSlots'
+import ChunksSlots from './ChunksSlots'
 
 type GlslVersion = '100' | '300 es'
 
@@ -16,8 +16,10 @@ class ShaderVersion extends Chunk {
 
 
   set( v : GlslVersion ) {
-    this.version = v;
-    this.invalidateCode();
+    if( this.version !== v ){
+      this.version = v;
+      this.invalidateCode();
+    }
   }
 
   get() : GlslVersion{
@@ -25,12 +27,7 @@ class ShaderVersion extends Chunk {
   }
 
 
-  _getHash() {
-    return 'v' + this.version;
-  }
-
-
-  _genCode( slots : ChunkSlots ) {
+  _genCode( slots : ChunksSlots ) {
     var s = `#version ${this.version}`;
     slots.add('version', s);
   }

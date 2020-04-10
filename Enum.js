@@ -13,6 +13,9 @@ class Enum extends Chunk {
         this._enumDefs = this.values.reduce(defReducer, '');
         this._accesDef = `#define ${this.name}(k) VAL_${this.name} == k`;
     }
+    value() {
+        return this._val;
+    }
     set(val) {
         if (this._val === val) {
             return;
@@ -34,9 +37,6 @@ class Enum extends Chunk {
             this._accesDef
         ].join('\n');
         slots.add('definitions', c);
-    }
-    _getHash() {
-        return `${this.name}${this._valIndex}`;
     }
 }
 export default Enum;

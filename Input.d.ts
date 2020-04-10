@@ -1,37 +1,46 @@
 import Texture2D from 'nanogl/texture-2d';
 import Chunk from './Chunk';
 import Swizzle from './Swizzle';
-import ChunkSlots from './ChunksSlots';
+import ChunksSlots from './ChunksSlots';
 import Program from 'nanogl/program';
+import { Hash } from './Hash';
+import TexCoord from './TexCoord';
 export declare enum ShaderType {
     FRAGMENT = 1,
     VERTEX = 2,
     ALL = 3
 }
 declare type InputSize = 1 | 2 | 3 | 4;
+declare enum ParamType {
+    SAMPLER = 0,
+    UNIFORM = 1,
+    ATTRIBUTE = 2,
+    CONSTANT = 3
+}
 export interface IInputParam {
+    readonly ptype: ParamType;
     name: string;
     size: InputSize;
     token: string;
     _input: Input | null;
 }
-declare type InputParam = IInputParam & Chunk;
+declare type InputParam = Sampler | Uniform | Attribute | Constant;
 export declare class Sampler extends Chunk implements IInputParam {
+    readonly ptype: ParamType.SAMPLER;
     name: string;
     size: InputSize;
     token: string;
     _input: Input | null;
     _tex: Texture2D | null;
-    _linkAttrib: boolean;
-    texCoords: string | Attribute;
-    uvsToken: string;
-    constructor(name: string, texCoords: Attribute | string);
+    texCoords: TexCoord | string;
+    _varying: string;
+    constructor(name: string, texCoords: TexCoord | string);
     set(t: Texture2D): void;
-    _genCode(slots: ChunkSlots): void;
+    _genCode(slots: ChunksSlots): void;
     setup(prg: Program): void;
-    _getHash(): string;
 }
 export declare class Uniform extends Chunk implements IInputParam {
+    readonly ptype: ParamType.UNIFORM;
     name: string;
     size: InputSize;
     token: string;
@@ -39,29 +48,29 @@ export declare class Uniform extends Chunk implements IInputParam {
     _value: Float32Array;
     constructor(name: string, size: InputSize);
     set(...args: number[]): void;
-    _genCode(slots: ChunkSlots): void;
+    _genCode(slots: ChunksSlots): void;
     setup(prg: Program): void;
-    _getHash(): string;
 }
 export declare class Attribute extends Chunk implements IInputParam {
+    readonly ptype: ParamType.ATTRIBUTE;
     name: string;
     size: InputSize;
     token: string;
     _input: Input | null;
     constructor(name: string, size: InputSize);
-    _genCode(slots: ChunkSlots): void;
-    _getHash(): string;
+    _genCode(slots: ChunksSlots): void;
 }
 export declare class Constant extends Chunk implements IInputParam {
+    readonly ptype: ParamType.CONSTANT;
     name: string;
     size: InputSize;
     token: string;
     _input: Input | null;
     value: ArrayLike<number> | number;
+    _hash: Hash;
     constructor(value: ArrayLike<number> | number);
-    _genCode(slots: ChunkSlots): void;
+    _genCode(slots: ChunksSlots): void;
     _stringifyValue(): string;
-    _getHash(): string;
 }
 export default class Input extends Chunk {
     static readonly Sampler: typeof Sampler;
@@ -79,12 +88,10 @@ export default class Input extends Chunk {
     constructor(name: string, size: InputSize, shader?: ShaderType);
     attach(param: InputParam, comps?: Swizzle): void;
     detach(): void;
-    attachSampler(name: string, texCoords: string, comps?: Swizzle): Sampler;
+    attachSampler(name: string, texCoords: string | TexCoord, comps?: Swizzle): Sampler;
     attachUniform(name: string, size?: InputSize, comps?: Swizzle): Uniform;
     attachAttribute(name: string, size?: InputSize, comps?: Swizzle): Attribute;
     attachConstant(value: ArrayLike<number> | number, comps?: Swizzle): Constant;
-    _getHash(): string;
-    _genCode(slots: ChunkSlots): void;
-    genAvailable(slots: ChunkSlots): void;
+    _genCode(slots: ChunksSlots): void;
 }
 export {};

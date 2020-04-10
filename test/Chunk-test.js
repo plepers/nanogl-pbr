@@ -25,18 +25,17 @@ describe("Chunk", function () {
     });
 
 
-    it('collection hash should be ok', function () {
-      collection.add(chunk);
-      var code = collection.getCode();
+    // it('collection hash should be ok', function () {
+    //   collection.add(chunk);
+    //   var code = collection.getCode();
 
-      expect(code.hash).to.be('-A-');
-    });
+    //   expect(code.hash).to.be('-A-');
+    // });
 
 
     it('collection num slots should be 1', function () {
       collection.add(chunk);
       var code = collection.getCode();
-
       expect(code.slots.length).to.be(1);
     });
 
@@ -77,12 +76,12 @@ describe("Chunk", function () {
     });
 
 
-    it('collection hash should be ok', function () {
-      collection.add(chunkA);
-      var code = collection.getCode();
+    // it('collection hash should be ok', function () {
+    //   collection.add(chunkA);
+    //   var code = collection.getCode();
 
-      expect(code.hash).to.be('-B--A-');
-    });
+    //   expect(code.hash).to.be('-B--A-');
+    // });
 
 
     it('collection num slots should be 1', function () {
@@ -161,12 +160,12 @@ describe("Chunk", function () {
 
 
 
-    it('collection hash should be ok', function () {
-      collection.add(chunk);
-      var code = collection.getCode();
+    // it('collection hash should be ok', function () {
+    //   collection.add(chunk);
+    //   var code = collection.getCode();
 
-      expect(code.hash).to.be('-B-');
-    });
+    //   expect(code.hash).to.be('-B-');
+    // });
 
 
     it('collection num slots should be 1', function () {
@@ -471,15 +470,15 @@ describe("Chunk", function () {
 
 
 
-    it('collections hash should be ok', function () {
-      collection.add(chunk);
-      collection2.add(chunk);
-      var code1 = collection.getCode();
-      var code2 = collection2.getCode();
+    // it('collections hash should be ok', function () {
+    //   collection.add(chunk);
+    //   collection2.add(chunk);
+    //   var code1 = collection.getCode();
+    //   var code2 = collection2.getCode();
 
-      expect(code1.hash).to.be('-A-');
-      expect(code2.hash).to.be('-A-');
-    });
+    //   expect(code1.hash).to.be('-A-');
+    //   expect(code2.hash).to.be('-A-');
+    // });
 
 
     it('collections num slots should be 1', function () {

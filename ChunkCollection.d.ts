@@ -1,16 +1,16 @@
 import Chunk from './Chunk';
-import ChunkSlots from './ChunksSlots';
+import ChunksSlots from './ChunksSlots';
 import Program from 'nanogl/program';
 export default class ChunkCollection {
     private _invalidList;
     private _invalidCode;
     private _revision;
+    _all: Set<Chunk>;
+    _actives: Set<Chunk>;
     _chunks: Chunk[];
-    _all: Chunk[];
-    _actives: Chunk[];
     _setups: Chunk[];
     _codes: Chunk[];
-    _cachedSlots: ChunkSlots | null;
+    _cachedSlots: ChunksSlots | null;
     add<T extends Chunk>(chunk: T): T;
     remove(chunk: Chunk): void;
     addChunks(chunks: Chunk[]): void;
@@ -20,5 +20,5 @@ export default class ChunkCollection {
     getRevision(): number;
     _collectChunks(): void;
     setupProgram(prg: Program): void;
-    getCode(base?: ChunkSlots): ChunkSlots;
+    getCode(base?: ChunksSlots): ChunksSlots;
 }

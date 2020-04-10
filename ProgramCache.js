@@ -1,9 +1,13 @@
 import Program from 'nanogl/program';
+import { hashString } from './Hash';
 const PRAGMA_SLOT = '#pragma SLOT';
 const PRAGMA_REGEX = /^\s*#pragma SLOT\s\w+\s*$/gm;
+function _slotRegex(token) {
+    return new RegExp(`${PRAGMA_SLOT}\\s+${token}\\s+`, 'g');
+}
 function processSlots(source, slots) {
     for (const { code, key } of slots.slots) {
-        source = source.replace(PRAGMA_SLOT + ' ' + key, code);
+        source = source.replace(_slotRegex(key), code);
     }
     PRAGMA_REGEX.lastIndex = 0;
     source = source.replace(PRAGMA_REGEX, '');
@@ -22,7 +26,7 @@ class ProgramCache {
         return agl._prgcache;
     }
     compile(source) {
-        const hash = source.shaderSource.uid + source.slots.hash;
+        const hash = hashString(source.shaderSource.uid, source.slots.getHash());
         const cached = this._cache[hash];
         if (cached !== undefined) {
             return cached;

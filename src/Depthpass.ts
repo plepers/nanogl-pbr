@@ -1,26 +1,17 @@
-import Config       from 'nanogl-state/config'
 import Node       from 'nanogl-node'
 import Camera       from 'nanogl-camera'
 
-import ProgramCache from './ProgramCache'
 import { GLContext } from 'nanogl/types';
-import Input        from'./Input'
-import Flag         from'./Flag'
 import Enum         from'./Enum'
 
 import { mat4 } from 'gl-matrix';
-import { GlslPrecision } from './interfaces/GlslPrecision';
-import IMaterial from './interfaces/IMaterial';
 
 import VertShader from './glsl/depthpass.vert';
 import FragShader from './glsl/depthpass.frag';
 import Program from 'nanogl/program'
-import LightSetup from './LightSetup';
+import LightSetup from './lighting/LightSetup';
 import { ICameraLens } from 'nanogl-camera/ICameraLens';
 import DepthFormat, { DepthFormatEnum } from './DepthFormatEnum';
-import ChunkCollection from './ChunkCollection';
-import IProgramSource, { ShaderSource } from './interfaces/IProgramSource';
-import BaseMaterial from './BaseMaterial';
 import ShaderPrecision from './ShaderPrecision';
 import MaterialPass from './MaterialPass';
 

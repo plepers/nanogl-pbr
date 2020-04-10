@@ -1,6 +1,6 @@
 import Program from 'nanogl/program';
 import ChunksTree from './ChunkCollection';
-import ChunkSlots from './ChunksSlots';
+import ChunksSlots from './ChunksSlots';
 export default abstract class Chunk {
     private _lists;
     protected _hasCode: boolean;
@@ -9,17 +9,15 @@ export default abstract class Chunk {
     protected _ref: this | null;
     protected _children: Chunk[];
     constructor(hasCode?: boolean, hasSetup?: boolean);
-    collectChunks(all: Chunk[], actives: Chunk[]): void;
+    collectChunks(all: Set<Chunk>, actives: Set<Chunk>): void;
     detectCyclicDependency(chunk: Chunk): boolean;
     addChild<T extends Chunk>(child: T): T;
     removeChild(child: Chunk): void;
-    genCode(slots: ChunkSlots): void;
-    getHash(): string;
+    genCode(slots: ChunksSlots): void;
     get hasCode(): boolean;
     get hasSetup(): boolean;
     get isInvalid(): boolean;
-    protected abstract _genCode(slots: ChunkSlots): void;
-    protected abstract _getHash(): string;
+    protected abstract _genCode(slots: ChunksSlots): void;
     setup(prg: Program): void;
     addList(list: ChunksTree): void;
     removeList(list: ChunksTree): void;

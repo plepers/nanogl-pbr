@@ -1,18 +1,20 @@
 import Program from 'nanogl/program'
 import { GLContext } from 'nanogl/types'
-import GLConfig from 'nanogl-state/config'
-import ChunkSlots from './ChunksSlots'
-import IMaterial from './interfaces/IMaterial';
+import ChunksSlots from './ChunksSlots'
 import IProgramSource from './interfaces/IProgramSource';
+import { hashString } from './Hash';
 
 const PRAGMA_SLOT = '#pragma SLOT';
 const PRAGMA_REGEX = /^\s*#pragma SLOT\s\w+\s*$/gm;
 
+function _slotRegex(token : string) : RegExp{
+  return new RegExp( `${PRAGMA_SLOT}\\s+${token}\\s+`, 'g' )
+}
 
-function processSlots( source : string, slots : ChunkSlots ) : string {
+function processSlots( source : string, slots : ChunksSlots ) : string {
 
   for (const {code, key} of slots.slots) {
-      source = source.replace(PRAGMA_SLOT + ' ' + key, code);
+    source = source.replace(_slotRegex(key), code);
   }
 
   // cleanup unmatched slots
@@ -47,7 +49,7 @@ class ProgramCache {
 
   compile(source : IProgramSource) : Program {
 
-    const hash = source.shaderSource.uid + source.slots.hash;
+    const hash = hashString( source.shaderSource.uid, source.slots.getHash() );
 
     const cached = this._cache[hash];
     if (cached !== undefined) {
