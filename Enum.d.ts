@@ -8,6 +8,7 @@ declare class Enum<T extends readonly string[]> extends Chunk {
     private _enumDefs;
     private _accesDef;
     constructor(name: string, penum: T);
+    value(): T[number];
     set(val: T[number]): void;
     _genCode(slots: ChunksSlots): void;
 }
