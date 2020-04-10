@@ -37,7 +37,9 @@ class Enum<T extends readonly string[]> extends Chunk {
     this._accesDef = `#define ${this.name}(k) VAL_${this.name} == k`;
   }
 
-
+  value() : T[number] {
+    return this._val;
+  }
 
   set( val : T[number] ) {
       
