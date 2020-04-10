@@ -7,32 +7,7 @@ export var PbrWorkflowType;
     PbrWorkflowType["METALNESS"] = "METALNESS";
     PbrWorkflowType["SPECULAR"] = "SPECULAR";
 })(PbrWorkflowType || (PbrWorkflowType = {}));
-export default class PbrSurface extends Chunk {
-    constructor(inputs) {
-        super(false, false);
-        this.setInputs(inputs);
-        this._inputs = inputs;
-    }
-    static MetalnessSurface() {
-        return new PbrSurface(new MetalnessInputs());
-    }
-    static SpecularSurface() {
-        return new PbrSurface(new SpecularInputs());
-    }
-    _genCode(slots) { }
-    get inputs() {
-        return this._inputs;
-    }
-    setInputs(inputs) {
-        if (inputs !== this._inputs) {
-            if (this._inputs)
-                this.removeChild(this._inputs);
-            this._inputs = inputs;
-            this.addChild(this._inputs);
-        }
-    }
-}
-export class PbrInputs extends Chunk {
+export class AbstractPbrSurface extends Chunk {
     constructor() {
         super(true, false);
         this.type = PbrWorkflowType.NONE;
@@ -44,7 +19,7 @@ export class PbrInputs extends Chunk {
     }
 }
 import metalnessGlsl from './glsl/includes/pbr-inputs-metalness.glsl';
-export class MetalnessInputs extends PbrInputs {
+export class MetalnessSurface extends AbstractPbrSurface {
     constructor() {
         super();
         this.type = PbrWorkflowType.METALNESS;
@@ -61,7 +36,7 @@ export class MetalnessInputs extends PbrInputs {
     }
 }
 import specularGlsl from './glsl/includes/pbr-inputs-specular.glsl';
-export class SpecularInputs extends PbrInputs {
+export class SpecularSurface extends AbstractPbrSurface {
     constructor() {
         super();
         this.type = PbrWorkflowType.SPECULAR;

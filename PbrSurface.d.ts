@@ -7,23 +7,14 @@ export declare enum PbrWorkflowType {
     METALNESS = "METALNESS",
     SPECULAR = "SPECULAR"
 }
-declare type PbrWorkflow = PbrInputs | MetalnessInputs | SpecularInputs;
-export default class PbrSurface<T extends PbrWorkflow = PbrWorkflow> extends Chunk {
-    static MetalnessSurface(): PbrSurface<MetalnessInputs>;
-    static SpecularSurface(): PbrSurface<SpecularInputs>;
-    protected _genCode(slots: ChunksSlots): void;
-    private _inputs;
-    get inputs(): T;
-    constructor(inputs: T);
-    setInputs(inputs: T): void;
-}
-export declare abstract class PbrInputs extends Chunk {
+export declare type PbrSurface = MetalnessSurface | SpecularSurface;
+export declare abstract class AbstractPbrSurface extends Chunk {
     readonly type: PbrWorkflowType;
     protected pbrInputType: Enum<readonly ["SPECULAR", "METALNESS"]>;
     constructor();
     protected _genCode(slots: ChunksSlots): void;
 }
-export declare class MetalnessInputs extends PbrInputs {
+export declare class MetalnessSurface extends AbstractPbrSurface {
     readonly type: PbrWorkflowType.METALNESS;
     readonly baseColor: Input;
     readonly baseColorFactor: Input;
@@ -34,7 +25,7 @@ export declare class MetalnessInputs extends PbrInputs {
     constructor();
     protected _genCode(slots: ChunksSlots): void;
 }
-export declare class SpecularInputs extends PbrInputs {
+export declare class SpecularSurface extends AbstractPbrSurface {
     readonly type: PbrWorkflowType.SPECULAR;
     readonly baseColor: Input;
     readonly baseColorFactor: Input;
@@ -45,4 +36,3 @@ export declare class SpecularInputs extends PbrInputs {
     constructor();
     protected _genCode(slots: ChunksSlots): void;
 }
-export {};
