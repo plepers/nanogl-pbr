@@ -28,7 +28,7 @@ const MAT_ID = 'std';
  * @extends {BaseMaterial}
  */
 
-export abstract class StandardPass<TSurface extends PbrSurface = PbrSurface> extends MaterialPass {
+export class StandardPass<TSurface extends PbrSurface = PbrSurface> extends MaterialPass {
 
 
   version              : ShaderVersion
@@ -54,7 +54,7 @@ export abstract class StandardPass<TSurface extends PbrSurface = PbrSurface> ext
   horizonFading : Flag
   glossNearest  : Flag
   
-  surface: TSurface
+  surface?: TSurface
 
   // private _uvs : Map<number, UVTransform> = new Map()
 
@@ -75,7 +75,6 @@ export abstract class StandardPass<TSurface extends PbrSurface = PbrSurface> ext
     inputs.add( this.precision             = new ShaderPrecision( 'highp' ) );
     inputs.add( this.shaderid              = new Flag ( 'id_'+MAT_ID,  true  ) );
 
-    inputs.add( this.surface               = this.CreateSurface() )
 
     inputs.add( this.alpha                 = new Input( 'alpha'              , 1 ) );
     inputs.add( this.alphaFactor           = new Input( 'alphaFactor'        , 1 ) );
@@ -102,10 +101,17 @@ export abstract class StandardPass<TSurface extends PbrSurface = PbrSurface> ext
     inputs.add( this.glossNearest          = new Flag ( 'glossNearest'  ,  false ) );
     // inputs.add( this.useDerivatives  = new Flag ( 'useDerivatives',  false ) );
 
-
   }
 
-  abstract CreateSurface() : TSurface;
+
+  setSurface( surface:TSurface ) : void {
+    if( this.surface ) {
+      this.inputs.remove( this.surface );
+    }
+    this.surface = surface;
+    this.inputs.add( this.surface );
+  }
+
 
   setLightSetup( setup : LightSetup ){
     this.inputs.addChunks( setup.getChunks( 'std' ) );
@@ -137,16 +143,31 @@ export abstract class StandardPass<TSurface extends PbrSurface = PbrSurface> ext
 };
 
 
-export default class StandardSpecular extends StandardPass<SpecularSurface> {
-  CreateSurface(): SpecularSurface {
-    return new SpecularSurface();
-  }
-}
+export class StandardSpecular extends StandardPass<SpecularSurface> {
 
+  readonly surface: SpecularSurface;
+
+  constructor( name : string = 'gltf-std-pass' ){
+    super( name );
+    var surface = new SpecularSurface()
+    this.setSurface( surface );
+    this.surface = surface;
+  }
+
+
+}
 
 export class StandardMetalness extends StandardPass<MetalnessSurface> {
-  CreateSurface(): MetalnessSurface {
-    return new MetalnessSurface();
+  
+  readonly surface: MetalnessSurface;
+
+  constructor( name : string = 'gltf-std-pass' ){
+    super( name );
+    var surface = new MetalnessSurface()
+    this.setSurface( surface );
+    this.surface = surface;
   }
+
 }
+
 

@@ -10,7 +10,7 @@ import { AlphaModeEnum } from './AlphaModeEnum';
 import ShaderVersion from './ShaderVersion';
 import ShaderPrecision from './ShaderPrecision';
 import { PbrSurface, SpecularSurface, MetalnessSurface } from './PbrSurface';
-export declare abstract class StandardPass<TSurface extends PbrSurface = PbrSurface> extends MaterialPass {
+export declare class StandardPass<TSurface extends PbrSurface = PbrSurface> extends MaterialPass {
     version: ShaderVersion;
     precision: ShaderPrecision;
     shaderid: Flag;
@@ -31,15 +31,17 @@ export declare abstract class StandardPass<TSurface extends PbrSurface = PbrSurf
     perVertexIrrad: Flag;
     horizonFading: Flag;
     glossNearest: Flag;
-    surface: TSurface;
+    surface?: TSurface;
     constructor(name?: string);
-    abstract CreateSurface(): TSurface;
+    setSurface(surface: TSurface): void;
     setLightSetup(setup: LightSetup): void;
     prepare(prg: Program, node: Node, camera: Camera): void;
 }
-export default class StandardSpecular extends StandardPass<SpecularSurface> {
-    CreateSurface(): SpecularSurface;
+export declare class StandardSpecular extends StandardPass<SpecularSurface> {
+    readonly surface: SpecularSurface;
+    constructor(name?: string);
 }
 export declare class StandardMetalness extends StandardPass<MetalnessSurface> {
-    CreateSurface(): MetalnessSurface;
+    readonly surface: MetalnessSurface;
+    constructor(name?: string);
 }

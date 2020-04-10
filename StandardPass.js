@@ -23,7 +23,6 @@ export class StandardPass extends MaterialPass {
         inputs.add(this.version = new ShaderVersion('100'));
         inputs.add(this.precision = new ShaderPrecision('highp'));
         inputs.add(this.shaderid = new Flag('id_' + MAT_ID, true));
-        inputs.add(this.surface = this.CreateSurface());
         inputs.add(this.alpha = new Input('alpha', 1));
         inputs.add(this.alphaFactor = new Input('alphaFactor', 1));
         inputs.add(this.alphaCutoff = new Input('alphaCutoff', 1));
@@ -42,6 +41,13 @@ export class StandardPass extends MaterialPass {
         inputs.add(this.horizonFading = new Flag('horizonFading', false));
         inputs.add(this.glossNearest = new Flag('glossNearest', false));
     }
+    setSurface(surface) {
+        if (this.surface) {
+            this.inputs.remove(this.surface);
+        }
+        this.surface = surface;
+        this.inputs.add(this.surface);
+    }
     setLightSetup(setup) {
         this.inputs.addChunks(setup.getChunks('std'));
     }
@@ -59,13 +65,19 @@ export class StandardPass extends MaterialPass {
     }
 }
 ;
-export default class StandardSpecular extends StandardPass {
-    CreateSurface() {
-        return new SpecularSurface();
+export class StandardSpecular extends StandardPass {
+    constructor(name = 'gltf-std-pass') {
+        super(name);
+        var surface = new SpecularSurface();
+        this.setSurface(surface);
+        this.surface = surface;
     }
 }
 export class StandardMetalness extends StandardPass {
-    CreateSurface() {
-        return new MetalnessSurface();
+    constructor(name = 'gltf-std-pass') {
+        super(name);
+        var surface = new MetalnessSurface();
+        this.setSurface(surface);
+        this.surface = surface;
     }
 }
