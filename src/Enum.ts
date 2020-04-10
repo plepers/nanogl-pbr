@@ -1,7 +1,6 @@
 
 import Chunk from './Chunk'
 import ChunksSlots from './ChunksSlots'
-import hashBuilder, { hashString } from './Hash';
 
 
 function defReducer( res:string, v:string, i:number ){

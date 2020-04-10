@@ -1,7 +1,6 @@
 import Chunk from './Chunk'
 import ChunksSlots from './ChunksSlots'
 import Program from 'nanogl/program';
-import hashBuilder, { Hash, mergeHash } from './Hash';
 
 
 

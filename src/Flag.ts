@@ -1,7 +1,6 @@
 
 import Chunk from './Chunk'
 import ChunksSlots from './ChunksSlots'
-import { hashString } from './Hash';
 
 
 class Flag<T extends string = string> extends Chunk {

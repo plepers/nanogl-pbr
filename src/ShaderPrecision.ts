@@ -3,7 +3,6 @@ import Chunk from './Chunk'
 import ChunksSlots from './ChunksSlots'
 
 import {GlslPrecision} from './interfaces/GlslPrecision'
-import { hashString } from './Hash';
 
 
 /**

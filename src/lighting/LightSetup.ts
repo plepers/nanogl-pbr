@@ -5,7 +5,6 @@ import StandardModel from './StandardModel'
 import Light from './Light'
 import ILightModel from '../interfaces/ILightModel';
 import DepthFormat, { DepthFormatEnum } from '../DepthFormatEnum';
-import IBL from './Ibl';
 import Chunk from '../Chunk';
 
 class LightSetup {
@@ -35,17 +34,6 @@ class LightSetup {
     this._registerModel('std', this.stdModel);
   }
 
-
-  // set ibl( v:IBL|null ){
-  //   this._ibl = v;
-  //   for (var i = 0; i < this._models.length; i++) {
-  //     this._models[i].add(v);
-  //   }
-  // }
-
-  // get ibl() : IBL|null {
-  //   return this._ibl;
-  // }
 
 
   add(l:Light) {

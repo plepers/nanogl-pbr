@@ -1,7 +1,6 @@
 import Program    from 'nanogl/program'
 import ChunksTree from './ChunkCollection' 
 import ChunksSlots from './ChunksSlots'
-import hashBuilder, { Hash } from './Hash';
 
 
 

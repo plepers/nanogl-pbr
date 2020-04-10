@@ -1,8 +1,6 @@
-import Chunk from "../Chunk";
 import { GlslCode } from "../interfaces/GlslCode";
 import IBL from "./Ibl";
 import Program from "nanogl/program";
-import ChunksSlots from "../ChunksSlots";
 import AbstractLightModel from "./AbstractLightModel";
 import LightType from "./LightType";
 import ILightModel from "../interfaces/ILightModel";

@@ -1,8 +1,6 @@
 import Program from 'nanogl/program'
 import { GLContext } from 'nanogl/types'
-import GLConfig from 'nanogl-state/config'
 import ChunksSlots from './ChunksSlots'
-import IMaterial from './interfaces/IMaterial';
 import IProgramSource from './interfaces/IProgramSource';
 import { hashString } from './Hash';
 

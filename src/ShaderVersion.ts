@@ -1,7 +1,6 @@
 
 import Chunk from './Chunk'
 import ChunksSlots from './ChunksSlots'
-import { hashString } from './Hash';
 
 type GlslVersion = '100' | '300 es'
 

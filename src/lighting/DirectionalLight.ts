@@ -1,6 +1,5 @@
-import Light, { ShadowMappedLight } from './Light'
+import { ShadowMappedLight } from './Light'
 import Camera from 'nanogl-camera'
-import { GLContext } from 'nanogl/types';
 import LightType from './LightType'
 import Bounds from '../Bounds'
 import OrthographicLens from 'nanogl-camera/ortho-lens'

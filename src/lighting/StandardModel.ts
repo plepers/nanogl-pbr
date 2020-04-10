@@ -26,14 +26,13 @@ import _iblPreCode from '../glsl/templates/standard/ibl-pre.frag'
 import _iblCode from '../glsl/templates/standard/ibl.frag'
 
 
-import IBL from './Ibl'
 import AbstractLightModel from './AbstractLightModel'
 import DirectionalLightModel from './DirectionalLightModel'
 import SpotLightModel from './SpotLightModel'
 import PointLightModel from './PointLightModel'
 import { IblModel } from './IblModel'
+import { GlslCode } from '../interfaces/GlslCode'
 
-type GlslCode = (o:any)=>string
 
 
 class StandardModelCode implements ILightModelCode {
