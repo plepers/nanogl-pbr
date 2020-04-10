@@ -13,8 +13,6 @@ import MaterialPass from './MaterialPass'
 import Flag from './Flag'
 import Input from './Input'
 import { AlphaModeEnum, AlphaModes } from './AlphaModeEnum'
-import { GammaModeEnum } from './GammaModeEnum'
-import PbrSurface, { PbrInputs } from './PbrInputs'
 import Enum from './Enum'
 import ShaderVersion from './ShaderVersion'
 import ShaderPrecision from './ShaderPrecision'
@@ -63,7 +61,6 @@ export default class UnlitPass extends MaterialPass {
     inputs.add( this.precision             = new ShaderPrecision( 'highp' ) );
     inputs.add( this.shaderid              = new Flag ( 'id_'+MAT_ID,  true  ) );
 
-    
     inputs.add( this.baseColor             = new Input( 'baseColor'           , 3 ) );
     inputs.add( this.baseColorFactor       = new Input( 'baseColorFactor'     , 3 ) );
 

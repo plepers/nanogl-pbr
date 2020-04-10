@@ -6,13 +6,13 @@ import Flag from './Flag';
 import Enum from './Enum';
 import { GammaModes } from './GammaModeEnum';
 import MaterialPass from './MaterialPass';
-import PbrSurface from './PbrInputs';
 import { AlphaModes } from './AlphaModeEnum';
 import ShaderVersion from './ShaderVersion';
 import ShaderPrecision from './ShaderPrecision';
+import { SpecularSurface, MetalnessSurface } from './PbrSurface';
 const M4 = mat4.create();
 const MAT_ID = 'std';
-export default class StandardPass extends MaterialPass {
+export class StandardPass extends MaterialPass {
     constructor(name = 'gltf-std-pass') {
         super({
             uid: MAT_ID,
@@ -23,7 +23,7 @@ export default class StandardPass extends MaterialPass {
         inputs.add(this.version = new ShaderVersion('100'));
         inputs.add(this.precision = new ShaderPrecision('highp'));
         inputs.add(this.shaderid = new Flag('id_' + MAT_ID, true));
-        inputs.add(this.surface = PbrSurface.SpecularSurface());
+        inputs.add(this.surface = this.CreateSurface());
         inputs.add(this.alpha = new Input('alpha', 1));
         inputs.add(this.alphaFactor = new Input('alphaFactor', 1));
         inputs.add(this.alphaCutoff = new Input('alphaCutoff', 1));
@@ -59,3 +59,13 @@ export default class StandardPass extends MaterialPass {
     }
 }
 ;
+export default class StandardSpecular extends StandardPass {
+    CreateSurface() {
+        return new SpecularSurface();
+    }
+}
+export class StandardMetalness extends StandardPass {
+    CreateSurface() {
+        return new MetalnessSurface();
+    }
+}

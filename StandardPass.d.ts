@@ -6,11 +6,11 @@ import Program from 'nanogl/program';
 import Node from 'nanogl-node';
 import Camera from 'nanogl-camera';
 import LightSetup from './lighting/LightSetup';
-import PbrInputs from './PbrInputs';
 import { AlphaModeEnum } from './AlphaModeEnum';
 import ShaderVersion from './ShaderVersion';
 import ShaderPrecision from './ShaderPrecision';
-export default class StandardPass extends MaterialPass {
+import { PbrSurface, SpecularSurface, MetalnessSurface } from './PbrSurface';
+export declare abstract class StandardPass<TSurface extends PbrSurface = PbrSurface> extends MaterialPass {
     version: ShaderVersion;
     precision: ShaderPrecision;
     shaderid: Flag;
@@ -31,8 +31,15 @@ export default class StandardPass extends MaterialPass {
     perVertexIrrad: Flag;
     horizonFading: Flag;
     glossNearest: Flag;
-    surface: PbrInputs;
+    surface: TSurface;
     constructor(name?: string);
+    abstract CreateSurface(): TSurface;
     setLightSetup(setup: LightSetup): void;
     prepare(prg: Program, node: Node, camera: Camera): void;
+}
+export default class StandardSpecular extends StandardPass<SpecularSurface> {
+    CreateSurface(): SpecularSurface;
+}
+export declare class StandardMetalness extends StandardPass<MetalnessSurface> {
+    CreateSurface(): MetalnessSurface;
 }

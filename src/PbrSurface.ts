@@ -11,46 +11,10 @@ export enum PbrWorkflowType {
 }
 
 
-type PbrWorkflow = PbrInputs | MetalnessInputs | SpecularInputs;
-
-export default class PbrSurface<T extends PbrWorkflow = PbrWorkflow > extends Chunk {
-
-  static MetalnessSurface() : PbrSurface<MetalnessInputs>{ 
-    return new PbrSurface( new MetalnessInputs())
-  }
-
-  static SpecularSurface() : PbrSurface<SpecularInputs>{ 
-    return new PbrSurface( new SpecularInputs())
-  }
-  
-
-  protected _genCode(slots: ChunksSlots): void {}
-
-  private _inputs : T;
-
-  get inputs() : T {
-    return this._inputs;
-  }
-
-  constructor( inputs : T ){
-    super(false, false);
-    this.setInputs( inputs );
-    this._inputs = inputs
-  }
-
-  setInputs( inputs : T ):void{
-    if( inputs !== this._inputs ){
-      if( this._inputs ) this.removeChild( this._inputs )
-      this._inputs = inputs
-      this.addChild( this._inputs );
-    }
-  }
+export type PbrSurface = MetalnessSurface | SpecularSurface;
 
 
-}
-
-
-export abstract class PbrInputs extends Chunk {
+export abstract class AbstractPbrSurface extends Chunk {
 
   readonly type : PbrWorkflowType = PbrWorkflowType.NONE;
   
@@ -72,7 +36,7 @@ export abstract class PbrInputs extends Chunk {
 
 import metalnessGlsl from './glsl/includes/pbr-inputs-metalness.glsl'
 
-export class MetalnessInputs extends PbrInputs {
+export class MetalnessSurface extends AbstractPbrSurface {
 
   readonly type : PbrWorkflowType.METALNESS = PbrWorkflowType.METALNESS;
   
@@ -83,6 +47,7 @@ export class MetalnessInputs extends PbrInputs {
   readonly roughness      : Input;
   readonly roughnessFactor: Input;
   
+
   constructor(){
     super();
     this.pbrInputType.set(this.type)
@@ -106,7 +71,7 @@ export class MetalnessInputs extends PbrInputs {
 
 import specularGlsl from './glsl/includes/pbr-inputs-specular.glsl'
 
-export class SpecularInputs extends PbrInputs {
+export class SpecularSurface extends AbstractPbrSurface {
 
   readonly type : PbrWorkflowType.SPECULAR = PbrWorkflowType.SPECULAR;
 
