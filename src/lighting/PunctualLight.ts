@@ -66,17 +66,21 @@ export default abstract class PunctualLight extends Light {
   }
 
 
+  initShadowmap( gl : GLContext ){
+    if( this._fbo === null ) {
+      this._initShadowMapping( gl );
+    }
+  }
+
   /**
    * return fbo color if depth_texture is not supported
    * otherwise return depth texture
    * return null if light don't cast shadows
    */
-  getShadowmap( gl : GLContext ) : Texture2D | null {
+  getShadowmap() : Texture2D | null {
     if (this._castShadows) {
-      if( this._fbo === null ) {
-        this._initShadowMapping( gl );
-      }
-      var att = this._fbo!.getAttachment(gl.DEPTH_ATTACHMENT);
+      
+      var att = this._fbo!.getAttachment(GL_DEPTH_ATTACHMENT);
       if( att !== null ){
         const tgt = att.isTexture() ? att.target : this._fbo!.getAttachment(GL_COLOR_ATTACHMENT0)!.target;
         return tgt as Texture2D
@@ -90,7 +94,7 @@ export default abstract class PunctualLight extends Light {
   }
 
 
-  prepareShadowmap() {
+  bindShadowmap() {
     const  s = this._shadowmapSize;
     const fbo = this._fbo!;
     fbo.resize(s, s);

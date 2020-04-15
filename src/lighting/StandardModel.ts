@@ -32,6 +32,7 @@ import SpotLightModel from './SpotLightModel'
 import PointLightModel from './PointLightModel'
 import { IblModel } from './IblModel'
 import { GlslCode } from '../interfaces/GlslCode'
+import { GLContext } from 'nanogl/types'
 
 
 
@@ -129,11 +130,11 @@ class StandardModel implements ILightModel {
   }
 
 
-  update() {
+  prepare( gl:GLContext ) {
     this.shadowChunk.shadowCount = 0;
 
     for (var i = 0; i < this._dataList.length; i++) {
-      this._dataList[i].update(this);
+      this._dataList[i].prepare(gl,this);
     }
 
     this.shadowChunk.check();

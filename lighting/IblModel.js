@@ -8,7 +8,7 @@ export class IblModel extends AbstractLightModel {
     genCodePerLights(light, index, shadowIndex) {
         return this.codeTemplate(this);
     }
-    update(model) {
+    prepare(gl, model) {
     }
     addLight(l) {
         if (this.lights.length > 0) {

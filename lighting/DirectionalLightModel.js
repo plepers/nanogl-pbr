@@ -20,7 +20,7 @@ export default class DirectionalLightModel extends ShadowMappedLightModel {
             this._colors = new Float32Array(n * 4);
         }
     }
-    update(model) {
+    prepare(gl, model) {
         var lights = this.lights;
         this.allocate(lights.length);
         for (var i = 0; i < lights.length; i++) {
@@ -29,6 +29,7 @@ export default class DirectionalLightModel extends ShadowMappedLightModel {
             this._colors.set(l._color, i * 4);
             this._colors[i * 4 + 3] = l.iblShadowing;
             if (l._castShadows) {
+                l.initShadowmap(gl);
                 var shIndex = model.shadowChunk.addLight(l);
                 if (this.shadowIndices[i] !== shIndex) {
                     this.invalidateCode();

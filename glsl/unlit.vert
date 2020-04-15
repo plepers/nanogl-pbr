@@ -29,11 +29,6 @@ IN vec3 aPosition;
 uniform mat4 uWorldMatrix;
 uniform mat4 uVP;
 
-OUT vec3 vWorldPosition;
-
-
-
-
 
 
 

@@ -34,7 +34,8 @@ export default class DepthPass extends MaterialPass {
     } );
 
     this.depthFormat  = this.inputs.add( new Enum( 'depthFormat', DepthFormat ) );
-    this.precision    = this.inputs.add( new ShaderPrecision( 'highp' ) );  
+    this.precision    = this.inputs.add( new ShaderPrecision( 'highp' ) ); 
+    
 
   }
   
@@ -46,8 +47,16 @@ export default class DepthPass extends MaterialPass {
   // ----------
   prepare( prg : Program, node :Node, camera : Camera<ICameraLens> ){
     
-    camera.modelViewProjectionMatrix( M4, node._wmatrix );
-    prg.uMVP( M4 );
+    if( prg.uMVP ){
+      camera.modelViewProjectionMatrix( M4, node._wmatrix );
+      prg.uMVP(          M4            );
+    }
+    
+    if( prg.uWorldMatrix )
+      prg.uWorldMatrix( node._wmatrix );
+    
+    if( prg.uVP )
+      prg.uVP( camera._viewProj );
 
   }
 

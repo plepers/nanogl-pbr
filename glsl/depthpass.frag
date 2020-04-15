@@ -1,14 +1,16 @@
+#pragma SLOT version
 
 #pragma SLOT definitions
+
 #pragma SLOT precision
 
+{{ require( "./includes/glsl-compat.frag" )() }}
 
 #pragma SLOT pf
 
 
-
 #if depthFormat( D_RGB )
-  varying vec2 fragZW;
+  IN vec2 fragZW;
 
   vec3 encodeDepthRGB(float depth){
     vec4 c = vec4(1.0,255.0,65025.0,16581375.0)*depth;

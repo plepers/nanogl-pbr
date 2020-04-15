@@ -1,7 +1,7 @@
 import Light from "../lighting/Light";
 import Chunk from "../Chunk";
 import LightSetup from "../lighting/LightSetup";
-import IBL from "../lighting/Ibl";
+import { GLContext } from "nanogl/types";
 
 
 export default interface ILightModel{
@@ -12,7 +12,7 @@ export default interface ILightModel{
   add   ( l : Light ) : void;
   remove( l : Light ) : void;
 
-  update() : void;
+  prepare( gl : GLContext ) : void;
   getChunks() : Chunk[];
 
 }

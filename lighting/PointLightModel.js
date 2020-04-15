@@ -21,7 +21,7 @@ export default class PointLightModel extends AbstractLightModel {
             this._positions = new Float32Array(n * 4);
         }
     }
-    update(model) {
+    prepare(gl, model) {
         const lights = this.lights;
         this.allocate(lights.length);
         for (var i = 0; i < lights.length; i++) {
@@ -29,16 +29,7 @@ export default class PointLightModel extends AbstractLightModel {
             this._colors.set(l._color, i * 3);
             this._positions.set(l._wposition, i * 4);
             this._positions[i * 4 + 3] = l.radius;
-            if (l._castShadows) {
-                var shIndex = model.shadowChunk.addLight(l);
-                if (this.shadowIndices[i] !== shIndex) {
-                    this.invalidateCode();
-                }
-                this.shadowIndices[i] = shIndex;
-            }
-            else {
-                this.shadowIndices[i] = -1;
-            }
+            this.shadowIndices[i] = -1;
         }
         this._invalid = true;
     }

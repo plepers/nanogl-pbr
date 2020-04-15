@@ -39,7 +39,7 @@ export class ShadowMappedLightModel extends AbstractLightModel {
         for (var i = 0; i < this.shadowIndices.length; i++) {
             var si = this.shadowIndices[i];
             if (si > -1) {
-                var tex = this.lights[i].getShadowmap(prg.gl);
+                var tex = this.lights[i].getShadowmap();
                 prg['tShadowMap' + si](tex);
             }
         }

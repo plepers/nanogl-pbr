@@ -24,8 +24,9 @@ abstract class Light extends Node {
 
 export interface ShadowMappedLight {
   projectionFromBounds(bounds: Bounds) : void;
-  getShadowmap( gl : GLContext ) : Texture2D | null;
-  prepareShadowmap() : void;
+  initShadowmap(gl:GLContext) : void;
+  getShadowmap() : Texture2D | null;
+  bindShadowmap() : void;
   hasDepthShadowmap() : boolean;
   getTexelBiasVector() : Float32Array;
   _createCamera():Camera;

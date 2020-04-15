@@ -4,6 +4,7 @@ import { GlslCode } from "../interfaces/GlslCode";
 import LightType from "./LightType";
 import StandardModel from "./StandardModel";
 import Program from "nanogl/program";
+import { GLContext } from "nanogl/types";
 
 
 export default class PointLightModel extends AbstractLightModel<PointLight> {
@@ -40,7 +41,7 @@ export default class PointLightModel extends AbstractLightModel<PointLight> {
   }
 
 
-  update(model:StandardModel) {
+  prepare( gl : GLContext, model:StandardModel) {
 
     const lights = this.lights;
     this.allocate(lights.length);
@@ -52,15 +53,16 @@ export default class PointLightModel extends AbstractLightModel<PointLight> {
 
       this._positions![i*4+3] = l.radius;
 
-      if (l._castShadows) {
-        var shIndex = model.shadowChunk.addLight(l);
-        if (this.shadowIndices[i] !== shIndex) {
-          this.invalidateCode();
-        }
-        this.shadowIndices[i] = shIndex;
-      } else {
+      // if (l._castShadows) {
+      //   l.initShadowmap( gl );
+      //   var shIndex = model.shadowChunk.addLight(l);
+      //   if (this.shadowIndices[i] !== shIndex) {
+      //     this.invalidateCode();
+      //   }
+      //   this.shadowIndices[i] = shIndex;
+      // } else {
         this.shadowIndices[i] = -1;
-      }
+      // }
     }
 
     this._invalid = true;

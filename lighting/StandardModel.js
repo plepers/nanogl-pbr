@@ -69,10 +69,10 @@ class StandardModel {
         var data = this._datas[l._type];
         data.removeLight(l);
     }
-    update() {
+    prepare(gl) {
         this.shadowChunk.shadowCount = 0;
         for (var i = 0; i < this._dataList.length; i++) {
-            this._dataList[i].update(this);
+            this._dataList[i].prepare(gl, this);
         }
         this.shadowChunk.check();
     }

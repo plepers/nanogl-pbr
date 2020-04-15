@@ -5,6 +5,7 @@ import ChunksSlots from "../ChunksSlots";
 import ILightModel from "../interfaces/ILightModel";
 import Program from "nanogl/program";
 import { GlslCode } from "../interfaces/GlslCode";
+import { GLContext } from "nanogl/types";
 
 export default abstract class AbstractLightModel<TLight extends Light = Light> extends Chunk {
 
@@ -64,7 +65,7 @@ export default abstract class AbstractLightModel<TLight extends Light = Light> e
 
 
   abstract genCodePerLights(light: TLight, index: number, shadowIndex: number): string;
-  abstract update( model : ILightModel ) : void;
+  abstract prepare( gl : GLContext, model : ILightModel ) : void;
 
 
 }
@@ -78,7 +79,7 @@ export abstract class ShadowMappedLightModel<TLight extends _ShadowMappedLight> 
     for (var i = 0; i < this.shadowIndices.length; i++) {
       var si = this.shadowIndices[i]
       if (si > -1) {
-        var tex = this.lights[i].getShadowmap( prg.gl );
+        var tex = this.lights[i].getShadowmap();
         prg['tShadowMap' + si](tex);
       }
     }
