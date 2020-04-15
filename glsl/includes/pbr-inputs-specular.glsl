@@ -1,37 +1,71 @@
 
 // specular
-PbrSurface surface;
 
 {
-  vec3 _diffuse = vec3(1.0);
+  surface.albedo = vec3(1.0);
   #if HAS_diffuse
-    _diffuse *= diffuse()*diffuse();
+    // surface.albedo *= FastSRGBToLinear( diffuse() );
+    surface.albedo *= diffuse()*diffuse();
   #endif
   #if HAS_diffuseFactor
-    _diffuse *= diffuseFactor();
+    surface.albedo *= diffuseFactor();
   #endif
 
-  vec3 _specular = vec3(1.0);
+
+  surface.alpha = 1.0;
+  #if HAS_alpha
+    surface.alpha *= alpha();
+  #endif
+  #if HAS_alphaFactor
+    surface.alpha *= alphaFactor();
+  #endif
+
+
+  surface.specular = vec3(1.0);
   #if HAS_specular
-    _specular *= specular()*specular();
+    // surface.specular *= FastSRGBToLinear( specular() );
+    surface.specular *= specular()*specular();
   #endif
   #if HAS_specularFactor
-    _specular *= specularFactor();
+    surface.specular *= specularFactor();
   #endif
 
 
-
-  float _glossiness = 1.0;
+  surface.smoothness = 1.0;
   #if HAS_glossiness
-    _glossiness *= glossiness();
+    surface.smoothness *= glossiness();
   #endif
   #if HAS_glossinessFactor
-    _glossiness *= glossinessFactor();
+    surface.smoothness *= glossinessFactor();
   #endif
 
-  float p_roughness = 1.0-_glossiness;
 
-  surface.diffuse    = _diffuse * (1.0 - max(_specular.r, max(_specular.g, _specular.b)));
-  surface.specularF0 = _specular;
-  surface.roughness  = p_roughness;
+  #if HAS_occlusion
+    float _occlusion = occlusion();
+    #if HAS_occlusionStrength
+      _occlusion = 1.0 - occlusionStrength() + _occlusion*occlusionStrength();
+    #endif
+    surface.occlusion = _occlusion;
+  #else
+  surface.occlusion = 1.0;
+  #endif
+
+
+
+  surface.emission = vec3(0.0);
+  #if HAS_emissive 
+    surface.emission += emissive();
+  #endif
+  #if HAS_emissiveFactor
+    surface.emission *= emissiveFactor();
+  #endif
+  
+
+
+  // float p_roughness = 1.0-_glossiness;
+
+  // surface.diffuse    = _diffuse * (1.0 - max(_specular.r, max(_specular.g, _specular.b)));
+  // surface.specularF0 = _specular;
+  // surface.roughness  = p_roughness;
+
 }

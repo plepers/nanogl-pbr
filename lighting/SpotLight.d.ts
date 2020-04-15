@@ -9,7 +9,7 @@ declare class SpotLight extends PunctualLight implements ShadowMappedLight {
     private _innerAngle;
     private _outerAngle;
     private _radius;
-    _coneData: Float32Array;
+    _attenuationData: Float32Array;
     _camera: Camera<PerspectiveLens> | null;
     constructor();
     projectionFromBounds(bounds: Bounds): void;

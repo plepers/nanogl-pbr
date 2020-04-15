@@ -2,15 +2,6 @@
 
 #pragma SLOT definitions
 
-#if hasTangents && !hasNormals 
-  #pragma error tan but no nrm
-  error
-#endif
-
-#if !hasTangents && __VERSION__ != 300
-  #extension GL_OES_standard_derivatives : enable
-#endif 
-
 #pragma SLOT precision
 
 {{ require( "./includes/glsl-compat.frag" )() }}

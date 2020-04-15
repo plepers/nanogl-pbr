@@ -1,6 +1,6 @@
 
 // IBL 
 {
-  LS_DIFFUSE  += ComputeIBLDiffuse( worldNormal );
-  LS_SPECULAR += SpecularIBL( tEnv, worldReflect, surface.roughness );
+  LS_DIFFUSE  += ComputeIBLDiffuse( inputData.worldNrm );
+  LS_SPECULAR += SpecularIBL( tEnv, worldReflect, brdfData.perceptualRoughness );
 }

@@ -10,7 +10,7 @@ class SpotLight extends PunctualLight {
         this._outerAngle = 0;
         this._radius = 0;
         this._camera = null;
-        this._coneData = new Float32Array(2);
+        this._attenuationData = new Float32Array(4);
         this.outerAngle = Math.PI / 4;
         this.radius = 50.0;
     }
@@ -26,7 +26,7 @@ class SpotLight extends PunctualLight {
     }
     getTexelBiasVector() {
         var mtx = this._camera._view;
-        var zMin = -2.0 * Math.tan(this._outerAngle);
+        var zMin = -2.0 * Math.tan(this._outerAngle * 2.0);
         BiasVector[0] = mtx[2] * zMin;
         BiasVector[1] = mtx[6] * zMin;
         BiasVector[2] = mtx[10] * zMin;
@@ -36,7 +36,7 @@ class SpotLight extends PunctualLight {
     _createCamera() {
         var cam = Camera.makePerspectiveCamera();
         cam.lens.aspect = 1;
-        cam.lens.fov = this._outerAngle;
+        cam.lens.fov = this._outerAngle * 2.0;
         cam.lens.near = 15 - 5;
         cam.lens.far = 15 + 5;
         return cam;
@@ -53,16 +53,19 @@ class SpotLight extends PunctualLight {
         this._outerAngle = v;
         this._updateSpotData();
         if (this._castShadows) {
-            this._camera.lens.fov = this._outerAngle;
+            this._camera.lens.fov = this._outerAngle * 2.0;
         }
     }
     get radius() { return this._radius; }
     set radius(v) {
         this._radius = v;
+        this._updateSpotData();
     }
     _updateSpotData() {
-        this._coneData[0] = 1.0 / Math.max(0.001, Math.cos(this._innerAngle) - Math.cos(this._outerAngle));
-        this._coneData[1] = -Math.cos(this._outerAngle) * this._coneData[0];
+        this._attenuationData[0] = 1.0 / (this._radius * this._radius);
+        this._attenuationData[1] = this._radius;
+        this._attenuationData[2] = 1.0 / Math.max(0.001, Math.cos(this._innerAngle) - Math.cos(this._outerAngle));
+        this._attenuationData[3] = -Math.cos(this._outerAngle) * this._attenuationData[2];
     }
 }
 export default SpotLight;

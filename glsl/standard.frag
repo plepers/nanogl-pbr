@@ -52,8 +52,20 @@ IN mediump vec3 vWorldBitangent;
 // INCLUDES
 // =========
 
+
+
+struct InputData
+{
+    vec3  worldPos;
+    mediump vec3   worldNrm;
+    mediump vec3   viewDir;
+};
+
+
+
 {{ require( "./includes/normals.glsl" )() }}
 {{ require( "./includes/tonemap.glsl" )() }}
+{{ require( "./includes/lighting.glsl" )() }}
 
 
 // Schlick approx
@@ -66,6 +78,91 @@ vec3 F_Schlick( float VoH,vec3 spec,float glo )
 }
 
 
+mediump float ReflectivitySpecular(mediump vec3 specular)
+{
+  #ifdef QUALITY_HI
+    return max(max(specular.r, specular.g), specular.b);
+  #else
+    return specular.r;
+  #endif
+}
+
+#define PerceptualSmoothnessToPerceptualRoughness(perceptualSmoothness) (1.0 - perceptualSmoothness)
+#define PerceptualRoughnessToRoughness(perceptualRoughness) (perceptualRoughness * perceptualRoughness)
+
+
+
+void InitializeBRDFData(SurfaceData surface, out BRDFData brdf)
+{
+    mediump float reflectivity = ReflectivitySpecular(surface.specular);
+    mediump float oneMinusReflectivity = 1.0 - reflectivity;
+
+    brdf.diffuse = surface.albedo * (vec3(1.0, 1.0, 1.0) - surface.specular);
+    brdf.specular = surface.specular;
+
+    brdf.grazingTerm = saturate(surface.smoothness + reflectivity);
+    brdf.perceptualRoughness = PerceptualSmoothnessToPerceptualRoughness(surface.smoothness);
+    brdf.roughness = max(PerceptualRoughnessToRoughness(brdf.perceptualRoughness), 0.001);
+    brdf.roughness2 = brdf.roughness * brdf.roughness;
+
+    brdf.normalizationTerm = brdf.roughness * 4.0 + 2.0;
+    brdf.roughness2MinusOne = brdf.roughness2 - 1.0;
+
+// #ifdef _ALPHAPREMULTIPLY_ON
+//     outBRDFData.diffuse *= alpha;
+//     alpha = alpha * oneMinusReflectivity + reflectivity;
+// #endif
+}
+
+mediump vec3 DirectBDRF(BRDFData brdfData, mediump vec3 normalWS, mediump vec3 lightDirectionWS, mediump vec3 viewDirectionWS)
+{
+  vec3 halfDir = normalize(lightDirectionWS + viewDirectionWS);// TODO: safe normalize?
+
+  float NoH = saturate(dot(normalWS, halfDir));
+  mediump float LoH = saturate(dot(lightDirectionWS, halfDir));
+
+  // GGX Distribution multiplied by combined approximation of Visibility and Fresnel
+  // BRDFspec = (D * V * F) / 4.0
+  // D = roughness^2 / ( NoH^2 * (roughness^2 - 1) + 1 )^2
+  // V * F = 1.0 / ( LoH^2 * (roughness + 0.5) )
+  // See "Optimizing PBR for Mobile" from Siggraph 2015 moving mobile graphics course
+  // https://community.arm.com/events/1155
+
+  // Final BRDFspec = roughness^2 / ( NoH^2 * (roughness^2 - 1) + 1 )^2 * (LoH^2 * (roughness + 0.5) * 4.0)
+  // We further optimize a few light invariant terms
+  // brdfData.normalizationTerm = (roughness + 0.5) * 4.0 rewritten as roughness * 4.0 + 2.0 to a fit a MAD.
+  float d = NoH * NoH * brdfData.roughness2MinusOne + 1.00001;
+
+  mediump float LoH2 = LoH * LoH;
+  mediump float specularTerm = brdfData.roughness2 / ((d * d) * max(0.1, LoH2) * brdfData.normalizationTerm);
+
+  // On platforms where half actually means something, the denominator has a risk of overflow
+  // clamp below was added specifically to "fix" that, but dx compiler (we convert bytecode to metal/gles)
+  // sees that specularTerm have only non-negative terms, so it skips max(0,..) in clamp (leaving only min(100,...))
+// #if defined (SHADER_API_MOBILE) || defined (SHADER_API_SWITCH)
+//     specularTerm = specularTerm - HALF_MIN;
+//     specularTerm = clamp(specularTerm, 0.0, 100.0); // Prevent FP16 overflow on mobiles
+// #endif
+
+  mediump vec3 color = specularTerm * brdfData.specular + brdfData.diffuse;
+  return color;
+}
+
+
+
+mediump vec3 LightingPhysicallyBased(BRDFData brdfData, mediump vec3 lightColor, mediump vec3 lightDirectionWS, mediump float lightAttenuation, mediump vec3 normalWS, mediump vec3 viewDirectionWS)
+{
+    mediump float NdotL = saturate(dot(normalWS, lightDirectionWS));
+    mediump vec3 radiance = lightColor * (lightAttenuation * NdotL);
+    return DirectBDRF(brdfData, normalWS, lightDirectionWS, viewDirectionWS) * radiance;
+}
+
+mediump vec3 LightingPhysicallyBased(BRDFData brdfData, Light light, mediump vec3 normalWS, mediump vec3 viewDirectionWS)
+{
+    return LightingPhysicallyBased(brdfData, light.color, light.direction, light.attenuation * light.shadowAttenuation, normalWS, viewDirectionWS);
+}
+
+
 
 //                MAIN
 // ===================
@@ -74,42 +171,49 @@ void main( void ){
 
   #pragma SLOT f
 
-  // struct PbrSurface {
-  //   vec3 diffuse;
-  //   vec3 specularF0;
-  //   float roughness;
-  // }
-  // PbrSurface surface;
+
+  SurfaceData surface;
   #pragma SLOT pbrsurface
+
+  #if alphaMode( MASK )
+    if( surface.alpha < alphaCutoff() ) discard;
+  #endif
 
   //
   #ifdef HAS_vertexColor
   #if HAS_vertexColor
-    surface.diffuse *= vertexColor();
+    surface.albedo *= vertexColor();
   #endif
   #endif
+
+
 
   // -----------
-  vec3 worldNormal = COMPUTE_NORMAL();
 
 
+  InputData inputData;
+  inputData.worldPos = vWorldPosition;
+  inputData.viewDir  = normalize( uCameraPosition - vWorldPosition ); // safe normalize?
+  inputData.worldNrm = COMPUTE_NORMAL();
+  // inputData.vertexLighting = input.fogFactorAndVertexLight.yzw;
 
-  // SH Irradiance diffuse coeff
-  // -------------
 
+  BRDFData brdfData;
+  InitializeBRDFData( surface, brdfData );
 
 
   // used by IBL reflexion
   // --------------
-  vec3 viewDir = normalize( uCameraPosition - vWorldPosition );
-  vec3 worldReflect = reflect( -viewDir, worldNormal );
-  float NoV = sdot( viewDir, worldNormal );
+  vec3 worldReflect = reflect( -inputData.viewDir, inputData.worldNrm );
+  float NoV = sdot( inputData.viewDir, inputData.worldNrm );
 
 
 
 
   vec3 diffuseContrib = vec3(0.0);
   vec3 specularContrib = vec3(0.0);
+
+  vec3 color = vec3(0.0);
 
   #define LS_SPECULAR specularContrib
   #define LS_DIFFUSE  diffuseContrib
@@ -118,56 +222,36 @@ void main( void ){
 
   // todo: apply this only to ibl contrib
   // add proper Fresnel to ponctual lights
-  specularContrib *= F_Schlick( NoV, surface.specularF0, 1.0-surface.roughness );
+  specularContrib *= F_Schlick( NoV, brdfData.specular, surface.smoothness );
+  color += surface.occlusion * (diffuseContrib*brdfData.diffuse + specularContrib);
+
+  color += surface.emission;
 
 
-
- 
-  
-
-  vec3 _emissive = vec3(0.0);
-  #if HAS_emissive 
-    _emissive += emissive();
-  #endif
-  #if HAS_emissiveFactor
-    _emissive *= emissiveFactor();
-  #endif
-  
-
-
-
-  float _alpha = 1.0;
-  #if HAS_alpha
-    _alpha *= alpha();
-  #endif
-  #if HAS_alphaFactor
-    _alpha *= alphaFactor();
-  #endif
 
 
   #if alphaMode( MASK )
-    if( _alpha < alphaCutoff() ) discard;
     FragColor.a = 1.0;
   #elif alphaMode( BLEND )
-    FragColor.a = _alpha;
+    FragColor.a = surface.alpha;
   #else
     FragColor.a = 1.0;
   #endif
 
 
-  vec3 color = diffuseContrib*surface.diffuse + specularContrib;
+//   vec3 color = diffuseContrib*surface.albedo + specularContrib;
 
 
- #if HAS_occlusion
-    float _occlusion = occlusion();
-    #if HAS_occlusionStrength
-      _occlusion = 1.0 - occlusionStrength() + _occlusion*occlusionStrength();
-    #endif
-    color *= _occlusion;
-  #endif
+//  #if HAS_occlusion
+//     float _occlusion = occlusion();
+//     #if HAS_occlusionStrength
+//       _occlusion = 1.0 - occlusionStrength() + _occlusion*occlusionStrength();
+//     #endif
+//     color *= _occlusion;
+//   #endif
 
 
-  FragColor.xyz = _emissive + color;
+  FragColor.rgb = color;
 
   EXPOSURE(FragColor.rgb);
   GAMMA_CORRECTION(FragColor.rgb);
@@ -177,7 +261,7 @@ void main( void ){
 
   // FragColor.a = 1.0;
 
-  // FragColor.rgb = FragColor.rgb*0.0001 + gloss();
+  // FragColor.rgb = FragColor.rgb*0.0001 + surface.albedo;
   // FragColor.rgb = FragColor.rgb*0.0001 + surface.specularF0;
   // FragColor.rgb = FragColor.rgb*0.0001 + specularContrib;
   // FragColor.rgb = FragColor.rgb*0.0001 + albedo();

@@ -25,6 +25,15 @@ uniform highp vec4 uShadowTexelBiasVector[SHADOW_COUNT];
 uniform       vec2 uShadowMapSize[SHADOW_COUNT];
 
 
+struct ShadowMapData {
+  mat4 projection;
+  vec4 texelBiasVector;
+  vec2 size; // size , 1/size
+};
+
+#define GET_SHADOWMAP_DATA(i) ShadowMapData( uShadowMatrices[i], uShadowTexelBiasVector[i], uShadowMapSize[i])
+
+
 // RGB depth decoding
 // ------------------
 highp float decodeDepthRGB(highp vec3 rgb){
@@ -236,3 +245,19 @@ vec3 calcShadowPosition( vec4 texelBiasVector, mat4 shadowProjection, vec3 world
 }
 
 
+
+vec3 calcShadowPosition( ShadowMapData shadowmap, vec3 worldPos, vec3 worldNormal )
+{
+  float WoP = dot( shadowmap.texelBiasVector, vec4( worldPos, 1.0 ) );
+
+  WoP *= .0005+2.0*shadowmap.size.y;
+
+  highp vec4 fragCoord = shadowmap.projection * vec4( worldPos + WoP * worldNormal, 1.0);
+  return fragCoord.xyz / fragCoord.w;
+}
+
+
+mediump float SampleShadowAttenuation( ShadowMapData shadowmap, DepthSampler texture, vec3 worldPos, vec3 worldNormal  ) {
+  highp vec3 coords = calcShadowPosition( shadowmap, worldPos, worldNormal );
+  return calcLightOcclusions( texture, coords, shadowmap.size );
+}

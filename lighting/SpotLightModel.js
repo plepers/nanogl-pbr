@@ -4,10 +4,10 @@ export default class SpotLightModel extends ShadowMappedLightModel {
     constructor(code, preCode) {
         super(code, preCode);
         this.type = LightType.SPOT;
+        this._positions = null;
         this._directions = null;
         this._colors = null;
-        this._positions = null;
-        this._cone = null;
+        this._attenuation = null;
     }
     genCodePerLights(light, index, shadowIndex) {
         var o = {
@@ -19,10 +19,10 @@ export default class SpotLightModel extends ShadowMappedLightModel {
     }
     allocate(n) {
         if (this._colors === null || this._colors.length / 4 !== n) {
-            this._directions = new Float32Array(n * 4);
-            this._colors = new Float32Array(n * 4);
             this._positions = new Float32Array(n * 3);
-            this._cone = new Float32Array(n * 2);
+            this._directions = new Float32Array(n * 3);
+            this._colors = new Float32Array(n * 4);
+            this._attenuation = new Float32Array(n * 4);
         }
     }
     prepare(gl, model) {
@@ -30,11 +30,10 @@ export default class SpotLightModel extends ShadowMappedLightModel {
         this.allocate(lights.length);
         for (var i = 0; i < lights.length; i++) {
             var l = lights[i];
-            this._directions.set(l._wdir, i * 4);
-            this._colors.set(l._color, i * 4);
             this._positions.set(l._wposition, i * 3);
-            this._cone.set(l._coneData, i * 2);
-            this._directions[i * 4 + 3] = l.radius;
+            this._directions.set(l._wdir, i * 3);
+            this._colors.set(l._color, i * 4);
+            this._attenuation.set(l._attenuationData, i * 4);
             this._colors[i * 4 + 3] = l.iblShadowing;
             if (l._castShadows) {
                 l.initShadowmap(gl);
@@ -53,10 +52,10 @@ export default class SpotLightModel extends ShadowMappedLightModel {
     setup(prg) {
         if (this.lights.length > 0) {
             super.setup(prg);
+            prg.uLSpotPositions(this._positions);
             prg.uLSpotDirections(this._directions);
             prg.uLSpotColors(this._colors);
-            prg.uLSpotPositions(this._positions);
-            prg.uLSpotCone(this._cone);
+            prg.uLSpotAttenuation(this._attenuation);
             this._invalid = false;
         }
     }

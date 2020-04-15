@@ -1,9 +1,11 @@
 
 
-struct PbrSurface {
-  vec3 diffuse;
-  vec3 specularF0;
-  float roughness;
+struct SurfaceData
+{
+  vec3 albedo;
+  vec3 specular;
+  vec3 emission;
+  float smoothness;
+  float occlusion;
+  float alpha;
 };
-
-#define DefaultPbrSurface PbrSurface(vec3(0.0), vec3(0.04), 0.0)
