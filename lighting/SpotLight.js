@@ -26,7 +26,7 @@ class SpotLight extends PunctualLight {
     }
     getTexelBiasVector() {
         var mtx = this._camera._view;
-        var zMin = -2.0 * Math.tan(this._outerAngle * 2.0);
+        var zMin = -2.0 * Math.tan(this._outerAngle);
         BiasVector[0] = mtx[2] * zMin;
         BiasVector[1] = mtx[6] * zMin;
         BiasVector[2] = mtx[10] * zMin;
@@ -63,7 +63,7 @@ class SpotLight extends PunctualLight {
     }
     _updateSpotData() {
         this._attenuationData[0] = 1.0 / (this._radius * this._radius);
-        this._attenuationData[1] = this._radius;
+        this._attenuationData[1] = (this._radius * this._radius);
         this._attenuationData[2] = 1.0 / Math.max(0.001, Math.cos(this._innerAngle) - Math.cos(this._outerAngle));
         this._attenuationData[3] = -Math.cos(this._outerAngle) * this._attenuationData[2];
     }

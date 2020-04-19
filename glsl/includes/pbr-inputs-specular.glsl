@@ -4,8 +4,8 @@
 {
   surface.albedo = vec3(1.0);
   #if HAS_diffuse
-    // surface.albedo *= FastSRGBToLinear( diffuse() );
-    surface.albedo *= diffuse()*diffuse();
+    surface.albedo *= FastSRGBToLinear( diffuse() );
+    // surface.albedo *= diffuse()*diffuse();
   #endif
   #if HAS_diffuseFactor
     surface.albedo *= diffuseFactor();
@@ -23,8 +23,9 @@
 
   surface.specular = vec3(1.0);
   #if HAS_specular
-    // surface.specular *= FastSRGBToLinear( specular() );
-    surface.specular *= specular()*specular();
+    surface.specular *= FastSRGBToLinear( specular() );
+    // surface.specular *= specular()*specular();
+    // surface.specular *= specular();
   #endif
   #if HAS_specularFactor
     surface.specular *= specularFactor();
@@ -60,12 +61,4 @@
     surface.emission *= emissiveFactor();
   #endif
   
-
-
-  // float p_roughness = 1.0-_glossiness;
-
-  // surface.diffuse    = _diffuse * (1.0 - max(_specular.r, max(_specular.g, _specular.b)));
-  // surface.specularF0 = _specular;
-  // surface.roughness  = p_roughness;
-
 }
