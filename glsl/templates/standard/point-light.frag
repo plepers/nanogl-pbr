@@ -1,31 +1,26 @@
+
 {
+  vec3 lightPositionWS                    = uLPointPositions [{{@index}}].xyz;
+  mediump vec3 lightColor                 = uLPointColors    [{{@index}}].rgb;
 
-  vec3 lightDir= uLPointPositions[{{@index}}].xyz - vWorldPosition;
-  float lightdist = length(lightDir);
-  lightDir /= lightdist;
+  vec3 lightVector = lightPositionWS - inputData.worldPos;
+  float distanceSqr = dot(lightVector, lightVector);
 
-  // spot effect
+  mediump vec3 lightDirection = vec3(lightVector * inversesqrt(distanceSqr));
 
   {{= if(obj.infinite){ }}
-  float falloff = 1.0 / (lightdist*lightdist);
+    mediump float attenuation = DistanceAttenuation(distanceSqr);
   {{= } else { }}
-  float distFactor = pow( lightdist/uLPointPositions[{{@index}}].w, 4.0 );
-  float falloff = clamp( 1.0 - distFactor, 0.0, 1.0 ) / (lightdist*lightdist);
+    float oneOverRangeSquared = uLPointPositions[{{@index}}].w;
+    mediump float attenuation = DistanceAttenuationRange(distanceSqr, vec2(oneOverRangeSquared, 0.0);
   {{= } }}
 
-  vec3 lightContrib = falloff * uLPointColors[{{@index}}].rgb;
 
+  Light light;
+  light.direction = lightDirection;
+  light.attenuation = attenuation;
+  light.color = lightColor;
+  light.shadowAttenuation = 1.0;
 
-  // --------- SPEC
-  vec3 H = normalize( lightDir + viewDir );
-  float NoH = sdot( H,worldNormal );
-  float sContrib = specularMul * pow( NoH, roughness );
-  // -------- DIFFUSE
-  float dContrib = (1.0/3.141592) * sdot( lightDir, worldNormal );
-
-  LS_DIFFUSE    += dContrib  * lightContrib;
-  LS_SPECULAR   += sContrib  * lightContrib;
-
-  // specularColor *= 0.0;
-
+  color += LightingPhysicallyBased(brdfData, light, inputData.worldNrm, inputData.viewDir);
 }

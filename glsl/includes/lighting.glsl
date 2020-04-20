@@ -94,8 +94,8 @@ mediump vec3 LightingPhysicallyBased(BRDFData brdfData, Light light, mediump vec
 // https://github.com/EpicGames/UnrealEngine/blob/dff3c48be101bb9f84633a733ef79c91c38d9542/Engine/Shaders/BRDF.usf#L168
 vec3 F_Schlick( float VoH,vec3 spec,float glo )
 {
-  float dot = glo*glo * pow( 1.0-VoH, 5.0 );
-  return( 1.0 - dot )*spec + dot;
+  float factor = glo*glo * pow( 1.0-VoH, 5.0 );
+  return( 1.0 - factor )*spec + factor;
 }
 
 

@@ -6,7 +6,7 @@
   "scripts": {
     "build": "node tools/make_templates.js",
     "testxx": "jshint *.js && jshint lib/*.js && karma start",
-    "test": "npm run build && tsc && karma start",
+    "test": "tsc && karma start",
     "gztest": "browserify standard.js -o gztest.js && uglifyjs --screw-ie8 -m -c warnings=false -o gztest.min.js -- gztest.js && gzip -k -9 gztest.min.js && stat -f%z gztest.min.js.gz && rm ./*gztest*"
   },
   "bin": {
@@ -32,7 +32,7 @@
     "nanogl": "^2.3.0",
     "nanogl-camera": "^1.1.2",
     "nanogl-node": "^1.2.0",
-    "nanogl-state": "^1.1.1",
+    "nanogl-state": "^1.1.2",
     "nanogl-pf": "^1.1.1"
   },
   "devDependencies": {

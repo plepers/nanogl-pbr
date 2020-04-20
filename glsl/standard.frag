@@ -184,12 +184,14 @@ void main( void ){
   // nrmnn = nrmnn * .5 + .5;
   // FragColor.rgb = FragColor.rgb*0.0001 + nrmnn ;
 // #endif
+  // FragColor.rgb = FragColor.rgb*0.0001 + specularContrib;
   // FragColor.rgb = FragColor.rgb*0.0001 + surface.smoothness;
   // FragColor.rgb = FragColor.rgb*0.0001 + surface.specular;
   // FragColor.rgb = FragColor.rgb*0.0001 + brdfData.diffuse;
 
 
   GAMMA_CORRECTION(FragColor.rgb);
+  // FragColor.rgb = FragColor.rgb*0.0001 + surface.occlusion;
 
   // FragColor.rgb = FragColor.rgb*0.0001 + inputData.worldNrm ;
 

@@ -51,7 +51,7 @@ export default class PointLightModel extends AbstractLightModel<PointLight> {
       this._colors   !.set(l._color      , i * 3)
       this._positions!.set(l._wposition  , i * 4)
 
-      this._positions![i*4+3] = l.radius;
+      this._positions![i*4+3] = 1.0/(l.radius*l.radius);
 
       // if (l._castShadows) {
       //   l.initShadowmap( gl );
