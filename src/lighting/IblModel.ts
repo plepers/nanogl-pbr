@@ -4,6 +4,7 @@ import Program from "nanogl/program";
 import AbstractLightModel from "./AbstractLightModel";
 import LightType from "./LightType";
 import ILightModel from "../interfaces/ILightModel";
+import { GLContext } from "nanogl/types";
 
 
 
@@ -16,7 +17,7 @@ export class IblModel extends AbstractLightModel<IBL> {
     return this.codeTemplate(this)
   }
 
-  update(model: ILightModel ): void {
+  prepare( gl : GLContext, model: ILightModel ): void {
     
   }
 

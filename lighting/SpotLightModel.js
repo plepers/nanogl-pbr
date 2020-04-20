@@ -25,7 +25,7 @@ export default class SpotLightModel extends ShadowMappedLightModel {
             this._cone = new Float32Array(n * 2);
         }
     }
-    update(model) {
+    prepare(gl, model) {
         const lights = this.lights;
         this.allocate(lights.length);
         for (var i = 0; i < lights.length; i++) {
@@ -37,6 +37,7 @@ export default class SpotLightModel extends ShadowMappedLightModel {
             this._directions[i * 4 + 3] = l.radius;
             this._colors[i * 4 + 3] = l.iblShadowing;
             if (l._castShadows) {
+                l.initShadowmap(gl);
                 var shIndex = model.shadowChunk.addLight(l);
                 if (this.shadowIndices[i] !== shIndex) {
                     this.invalidateCode();

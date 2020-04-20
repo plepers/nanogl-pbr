@@ -7,7 +7,8 @@ import ChunksSlots from '../ChunksSlots';
 import Chunk from '../Chunk';
 import { ShadowFilteringEnum } from '../ShadowFilteringEnum';
 import AbstractLightModel from './AbstractLightModel';
-declare type GlslCode = (o: any) => string;
+import { GlslCode } from '../interfaces/GlslCode';
+import { GLContext } from 'nanogl/types';
 declare class StandardModel implements ILightModel {
     modelCode: ILightModelCode;
     preLightsChunk: PreLightsChunk;
@@ -24,7 +25,7 @@ declare class StandardModel implements ILightModel {
     setLightSetup(ls: LightSetup): void;
     add(l: Light): void;
     remove(l: Light): void;
-    update(): void;
+    prepare(gl: GLContext): void;
     getChunks(): Chunk[];
 }
 declare class PreLightsChunk extends Chunk {

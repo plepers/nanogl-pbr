@@ -4,6 +4,7 @@ import { GlslCode } from "../interfaces/GlslCode";
 import LightType from "./LightType";
 import StandardModel from "./StandardModel";
 import Program from "nanogl/program";
+import { GLContext } from "nanogl/types";
 export default class SpotLightModel extends ShadowMappedLightModel<SpotLight> {
     readonly type = LightType.SPOT;
     _directions: Float32Array | null;
@@ -13,6 +14,6 @@ export default class SpotLightModel extends ShadowMappedLightModel<SpotLight> {
     constructor(code: GlslCode, preCode: GlslCode);
     genCodePerLights(light: SpotLight, index: number, shadowIndex: number): string;
     allocate(n: number): void;
-    update(model: StandardModel): void;
+    prepare(gl: GLContext, model: StandardModel): void;
     setup(prg: Program): void;
 }

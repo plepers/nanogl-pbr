@@ -36,11 +36,12 @@ class SpotLight extends PunctualLight implements ShadowMappedLight{
   projectionFromBounds( bounds: Bounds ) : void{
 
     const oBounds = this.boundsInLocalSpace(bounds);
-    let zMin = -oBounds[2],
-        zMax = -oBounds[5];
+    let zMin = -oBounds[5],
+        zMax = -oBounds[2];
 
-    zMin = Math.max( 0.001, Math.min(zMin, this._radius ) );
-    zMax = Math.max(0.005 + zMin, zMax);
+    const rRadius = (this._radius<=0)?Number.MAX_VALUE:this._radius;
+    zMin = Math.max( 0.001, Math.min(zMin, rRadius ) );
+    zMax = Math.max(0.005 + zMin, Math.min(zMax, rRadius ));
 
     const lens = this._camera!.lens;
     lens.near = zMax;

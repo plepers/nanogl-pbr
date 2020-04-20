@@ -5,6 +5,7 @@ import StandardModel from "./StandardModel";
 import Program from "nanogl/program";
 import { ShadowMappedLightModel } from './AbstractLightModel'
 import { GlslCode } from "../interfaces/GlslCode";
+import { GLContext } from "nanogl/types";
 
 export default class DirectionalLightModel extends ShadowMappedLightModel<DirectionalLight> {
 
@@ -40,7 +41,7 @@ export default class DirectionalLightModel extends ShadowMappedLightModel<Direct
   }
 
 
-  update(model: StandardModel) {
+  prepare( gl : GLContext, model: StandardModel) {
     var lights = this.lights;
     this.allocate(lights.length);
 
@@ -51,6 +52,7 @@ export default class DirectionalLightModel extends ShadowMappedLightModel<Direct
       this._colors![i * 4 + 3] = l.iblShadowing;
 
       if (l._castShadows) {
+        l.initShadowmap(gl);
         var shIndex = model.shadowChunk.addLight(l);
         if (this.shadowIndices[i] !== shIndex) {
           this.invalidateCode();

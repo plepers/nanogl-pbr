@@ -4,6 +4,7 @@ import { GlslCode } from "../interfaces/GlslCode";
 import LightType from "./LightType";
 import StandardModel from "./StandardModel";
 import Program from "nanogl/program";
+import { GLContext } from "nanogl/types";
 
 
 
@@ -50,7 +51,7 @@ export default class SpotLightModel extends ShadowMappedLightModel<SpotLight> {
   }
 
 
-  update(model: StandardModel) {
+  prepare( gl : GLContext, model: StandardModel) {
     const lights = this.lights;
     this.allocate(lights.length);
 
@@ -65,6 +66,7 @@ export default class SpotLightModel extends ShadowMappedLightModel<SpotLight> {
       this._colors![i * 4 + 3] = l.iblShadowing;
 
       if (l._castShadows) {
+        l.initShadowmap( gl );
         var shIndex = model.shadowChunk.addLight(l);
         if (this.shadowIndices[i] !== shIndex) {
           this.invalidateCode();

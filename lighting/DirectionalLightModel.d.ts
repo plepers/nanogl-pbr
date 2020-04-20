@@ -5,6 +5,7 @@ import StandardModel from "./StandardModel";
 import Program from "nanogl/program";
 import { ShadowMappedLightModel } from './AbstractLightModel';
 import { GlslCode } from "../interfaces/GlslCode";
+import { GLContext } from "nanogl/types";
 export default class DirectionalLightModel extends ShadowMappedLightModel<DirectionalLight> {
     readonly type = LightType.DIRECTIONAL;
     _directions: Float32Array | null;
@@ -12,6 +13,6 @@ export default class DirectionalLightModel extends ShadowMappedLightModel<Direct
     constructor(code: GlslCode, preCode: GlslCode);
     genCodePerLights(light: Light, index: number, shadowIndex: number): string;
     allocate(n: number): void;
-    update(model: StandardModel): void;
+    prepare(gl: GLContext, model: StandardModel): void;
     setup(prg: Program): void;
 }

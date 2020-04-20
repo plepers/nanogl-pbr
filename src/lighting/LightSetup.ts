@@ -6,6 +6,7 @@ import Light from './Light'
 import ILightModel from '../interfaces/ILightModel';
 import DepthFormat, { DepthFormatEnum } from '../DepthFormatEnum';
 import Chunk from '../Chunk';
+import { GLContext } from 'nanogl/types';
 
 class LightSetup {
 
@@ -59,9 +60,9 @@ class LightSetup {
   }
 
 
-  update() {
+  prepare( gl :GLContext ) {
     for (var i = 0; i < this._models.length; i++) {
-      this._models[i].update();
+      this._models[i].prepare(gl);
     }
 
   }

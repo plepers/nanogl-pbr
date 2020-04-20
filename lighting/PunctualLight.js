@@ -36,12 +36,14 @@ export default class PunctualLight extends Light {
     hasDepthShadowmap() {
         return this._castShadows && this._fbo.getAttachment(GL_DEPTH_ATTACHMENT).isTexture();
     }
-    getShadowmap(gl) {
+    initShadowmap(gl) {
+        if (this._fbo === null) {
+            this._initShadowMapping(gl);
+        }
+    }
+    getShadowmap() {
         if (this._castShadows) {
-            if (this._fbo === null) {
-                this._initShadowMapping(gl);
-            }
-            var att = this._fbo.getAttachment(gl.DEPTH_ATTACHMENT);
+            var att = this._fbo.getAttachment(GL_DEPTH_ATTACHMENT);
             if (att !== null) {
                 const tgt = att.isTexture() ? att.target : this._fbo.getAttachment(GL_COLOR_ATTACHMENT0).target;
                 return tgt;
@@ -52,7 +54,7 @@ export default class PunctualLight extends Light {
     getShadowmapSize() {
         return this._shadowmapSize;
     }
-    prepareShadowmap() {
+    bindShadowmap() {
         const s = this._shadowmapSize;
         const fbo = this._fbo;
         fbo.resize(s, s);

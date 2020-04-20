@@ -4,6 +4,7 @@ import Light from './Light';
 import ILightModel from '../interfaces/ILightModel';
 import { DepthFormatEnum } from '../DepthFormatEnum';
 import Chunk from '../Chunk';
+import { GLContext } from 'nanogl/types';
 declare class LightSetup {
     _lights: Light[];
     depthFormat: DepthFormatEnum;
@@ -14,7 +15,7 @@ declare class LightSetup {
     constructor();
     add(l: Light): void;
     remove(l: Light): void;
-    update(): void;
+    prepare(gl: GLContext): void;
     getChunks(modelId: string): Chunk[];
     _registerModel(id: string, model: ILightModel): void;
 }
