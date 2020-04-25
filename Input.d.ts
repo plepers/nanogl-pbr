@@ -22,7 +22,7 @@ export interface IInputParam {
     name: string;
     size: InputSize;
     token: string;
-    _input: Input | null;
+    genInputCode(slots: ChunksSlots, shader: ShaderType): void;
 }
 declare type InputParam = Sampler | Uniform | Attribute | Constant;
 export declare class Sampler extends Chunk implements IInputParam {
@@ -30,13 +30,13 @@ export declare class Sampler extends Chunk implements IInputParam {
     name: string;
     size: InputSize;
     token: string;
-    _input: Input | null;
     _tex: Texture2D | null;
     texCoords: TexCoord | string;
     _varying: string;
     constructor(name: string, texCoords: TexCoord | string);
     set(t: Texture2D): void;
-    _genCode(slots: ChunksSlots): void;
+    protected _genCode(slots: ChunksSlots): void;
+    genInputCode(slots: ChunksSlots, shader: ShaderType): void;
     setup(prg: Program): void;
 }
 export declare class Uniform extends Chunk implements IInputParam {
@@ -44,11 +44,11 @@ export declare class Uniform extends Chunk implements IInputParam {
     name: string;
     size: InputSize;
     token: string;
-    _input: Input | null;
     _value: Float32Array;
     constructor(name: string, size: InputSize);
     set(...args: number[]): void;
-    _genCode(slots: ChunksSlots): void;
+    protected _genCode(slots: ChunksSlots): void;
+    genInputCode(slots: ChunksSlots, shader: ShaderType): void;
     setup(prg: Program): void;
 }
 export declare class Attribute extends Chunk implements IInputParam {
@@ -56,20 +56,20 @@ export declare class Attribute extends Chunk implements IInputParam {
     name: string;
     size: InputSize;
     token: string;
-    _input: Input | null;
     constructor(name: string, size: InputSize);
-    _genCode(slots: ChunksSlots): void;
+    protected _genCode(slots: ChunksSlots): void;
+    genInputCode(slots: ChunksSlots, shader: ShaderType): void;
 }
 export declare class Constant extends Chunk implements IInputParam {
     readonly ptype: ParamType.CONSTANT;
     name: string;
     size: InputSize;
     token: string;
-    _input: Input | null;
     value: ArrayLike<number> | number;
     _hash: Hash;
     constructor(value: ArrayLike<number> | number);
-    _genCode(slots: ChunksSlots): void;
+    protected _genCode(slots: ChunksSlots): void;
+    genInputCode(slots: ChunksSlots, shader: ShaderType): void;
     _stringifyValue(): string;
 }
 export default class Input extends Chunk {

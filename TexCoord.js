@@ -154,11 +154,13 @@ export class StaticTexCoord extends TexCoord {
         const thash = stringifyHash(this._transform.getTransformHash());
         if (!noTranslate(this._transform.translation)) {
             const input = new Input(`tct_t_${thash}`, 2, Input.VERTEX);
+            this._translateInput = input;
             this._translateConst = input.attachConstant(this._transform.translation);
             this.addChild(input);
         }
         if (!noScale(this._transform.scale) || !almostZero(this._transform.rotation[0])) {
             const input = new Input(`tct_rs_${thash}`, 4, Input.VERTEX);
+            this._rotateScalesInput = input;
             this._rotateScalesConst = input.attachConstant(this._transform.composeMat2());
             this.addChild(input);
         }
@@ -168,8 +170,8 @@ export class StaticTexCoord extends TexCoord {
         return `vTexCoord_${stringifyHash(hash)}`;
     }
     getTransformCode() {
-        var _a, _b, _c, _d;
-        return GLSL.transformCode(this, (_b = (_a = this._translateConst) === null || _a === void 0 ? void 0 : _a._input) === null || _b === void 0 ? void 0 : _b.name, (_d = (_c = this._rotateScalesConst) === null || _c === void 0 ? void 0 : _c._input) === null || _d === void 0 ? void 0 : _d.name);
+        var _a, _b;
+        return GLSL.transformCode(this, (_a = this._translateInput) === null || _a === void 0 ? void 0 : _a.name, (_b = this._rotateScalesInput) === null || _b === void 0 ? void 0 : _b.name);
     }
 }
 export default TexCoord;

@@ -244,6 +244,10 @@ export class DynamicTexCoord extends TexCoord {
 
 export class StaticTexCoord extends TexCoord {
   
+
+  private _translateInput?: Input;
+  private _rotateScalesInput?: Input;
+
   private _translateConst?: Constant;
   private _rotateScalesConst?: Constant;
   
@@ -256,16 +260,17 @@ export class StaticTexCoord extends TexCoord {
     
     if( !noTranslate(this._transform.translation ) ) {
       const input = new Input(`tct_t_${thash}` , 2, Input.VERTEX )
+      this._translateInput = input;
       this._translateConst = input.attachConstant(this._transform.translation);
       this.addChild( input );
     }
     
     if( !noScale(this._transform.scale) || !almostZero( this._transform.rotation[0]) ){
       const input = new Input(`tct_rs_${thash}`, 4, Input.VERTEX )
+      this._rotateScalesInput = input;
       this._rotateScalesConst = input.attachConstant(this._transform.composeMat2());
       this.addChild( input );
     }
-
 
   }
   
@@ -275,7 +280,7 @@ export class StaticTexCoord extends TexCoord {
   }
 
   getTransformCode() : string {
-    return GLSL.transformCode( this, this._translateConst?._input?.name, this._rotateScalesConst?._input?.name )
+    return GLSL.transformCode( this, this._translateInput?.name, this._rotateScalesInput?.name )
   }
 
 

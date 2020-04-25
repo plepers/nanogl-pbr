@@ -106,8 +106,7 @@ export interface IInputParam {
   size: InputSize;
   token: string;
 
-  _input: Input | null;
-
+  genInputCode(slots: ChunksSlots, shader: ShaderType):void;
 }
 
 type InputParam = Sampler | Uniform | Attribute | Constant;
@@ -122,20 +121,15 @@ type InputParam = Sampler | Uniform | Attribute | Constant;
 //                       |_|
 
 
-function isAttribute(x: string | Attribute): x is Attribute {
-  return x instanceof Attribute;
-}
-
-
 
 export class Sampler extends Chunk implements IInputParam {
+
 
   readonly ptype : ParamType.SAMPLER = ParamType.SAMPLER
 
   name: string;
   size: InputSize;
   token: string;
-  _input: Input | null;
   _tex: Texture2D | null;
 
   texCoords: TexCoord | string;
@@ -146,7 +140,6 @@ export class Sampler extends Chunk implements IInputParam {
 
     super(true, true);
 
-    this._input = null;
     this.name = name;
     this._tex = null;
     this.size = 4;
@@ -168,21 +161,20 @@ export class Sampler extends Chunk implements IInputParam {
     this._tex = t;
   }
 
+  protected _genCode(slots: ChunksSlots): void {}
 
-  _genCode(slots: ChunksSlots) {
-    if (this._input == null) return;
+  genInputCode(slots: ChunksSlots, shader: ShaderType) {
 
-    const name = this.name;
     let c;
 
     // PF
-    c = `uniform sampler2D ${name};\n`;
-    _addPreCode(slots, this._input.shader, c);
+    c = `uniform sampler2D ${this.name};\n`;
+    _addPreCode(slots, shader, c);
     // slots.add( 'pf', c );
 
     // F
-    c = `vec4 ${this.token} = texture2D( ${name}, ${this._varying});\n`;
-    _addCode(slots, this._input.shader, c);
+    c = `vec4 ${this.token} = texture2D( ${this.name}, ${this._varying});\n`;
+    _addCode(slots, shader, c);
     // slots.add( 'f', c );
 
   }
@@ -213,7 +205,6 @@ export class Uniform extends Chunk implements IInputParam {
   name: string;
   size: InputSize;
   token: string;
-  _input: Input | null;
 
   _value: Float32Array;
 
@@ -221,7 +212,6 @@ export class Uniform extends Chunk implements IInputParam {
 
     super(true, true);
 
-    this._input = null;
     this.name = name;
     this.size = size;
     this._value = new Float32Array(size);
@@ -240,13 +230,12 @@ export class Uniform extends Chunk implements IInputParam {
   }
 
 
-  _genCode(slots: ChunksSlots) {
-    if (this._input === null) return;
-    var c;
+  protected _genCode(slots: ChunksSlots): void {}
 
+  genInputCode(slots: ChunksSlots, shader: ShaderType) {
     // PF
-    c = `uniform ${TYPES[this.size]} ${this.token};\n`;
-    _addPreCode(slots, this._input.shader, c);
+    const c = `uniform ${TYPES[this.size]} ${this.token};\n`;
+    _addPreCode(slots, shader, c);
     // slots.add( 'pf', c );
 
   }
@@ -277,12 +266,10 @@ export class Attribute extends Chunk implements IInputParam {
   name: string;
   size: InputSize;
   token: string;
-  _input: Input | null;
 
   constructor(name: string, size: InputSize) {
     super(true, false);
 
-    this._input = null;
     this.name = name;
     this.size = size;
     this.token = `v_${this.name}`;
@@ -291,7 +278,9 @@ export class Attribute extends Chunk implements IInputParam {
 
 
 
-  _genCode(slots: ChunksSlots) {
+  protected _genCode(slots: ChunksSlots): void {}
+
+  genInputCode(slots: ChunksSlots, shader: ShaderType) {
 
     var c;
     const typeId = TYPES[this.size];
@@ -330,15 +319,11 @@ export class Constant extends Chunk implements IInputParam {
   name: string;
   size: InputSize;
   token: string;
-  _input: Input | null;
   value: ArrayLike<number> | number;
   _hash: Hash
 
   constructor(value: ArrayLike<number> | number) {
     super(true, false);
-
-    this._input = null;
-
 
     if ( typeof value === 'number' ) {
       this.size = 1;
@@ -355,15 +340,11 @@ export class Constant extends Chunk implements IInputParam {
 
 
 
-  _genCode(slots: ChunksSlots) {
-    if (this._input === null) return;
-    var c;
+  protected _genCode(slots: ChunksSlots): void {}
 
-    // PF
-    c = `#define ${this.token} ${TYPES[this.size]}(${this._stringifyValue()})\n`;
-    _addPreCode(slots, this._input.shader, c );
-    // slots.add( 'pf', c );
-
+  genInputCode(slots: ChunksSlots, shader: ShaderType) {
+    const c = `#define ${this.token} ${TYPES[this.size]}(${this._stringifyValue()})\n`;
+    _addPreCode(slots, shader, c );
   }
 
 
@@ -420,10 +401,8 @@ export default class Input extends Chunk {
 
   attach(param: InputParam, comps: Swizzle = 'rgba') {
     if (this.param) {
-      this.param._input = null;
       this.removeChild(this.param);
     }
-    param._input = this;
     this.param = param;
     this.comps = _trimComps(comps, this.size);
     this.addChild(param);
@@ -432,7 +411,6 @@ export default class Input extends Chunk {
 
   detach() {
     if (this.param !== null) {
-      this.param._input = null;
       this.removeChild(this.param);
     }
     this.param = null;
@@ -477,6 +455,8 @@ export default class Input extends Chunk {
 
 
   _genCode(slots: ChunksSlots) {
+
+    this.param?.genInputCode(slots, this.shader);
 
     const val = (this.param === null) ? '0' : '1';
     const def = `#define HAS_${this.name} ${val}\n`;

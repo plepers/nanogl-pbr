@@ -53,14 +53,10 @@ var ParamType;
     ParamType[ParamType["ATTRIBUTE"] = 2] = "ATTRIBUTE";
     ParamType[ParamType["CONSTANT"] = 3] = "CONSTANT";
 })(ParamType || (ParamType = {}));
-function isAttribute(x) {
-    return x instanceof Attribute;
-}
 export class Sampler extends Chunk {
     constructor(name, texCoords) {
         super(true, true);
         this.ptype = ParamType.SAMPLER;
-        this._input = null;
         this.name = name;
         this._tex = null;
         this.size = 4;
@@ -78,15 +74,13 @@ export class Sampler extends Chunk {
     set(t) {
         this._tex = t;
     }
-    _genCode(slots) {
-        if (this._input == null)
-            return;
-        const name = this.name;
+    _genCode(slots) { }
+    genInputCode(slots, shader) {
         let c;
-        c = `uniform sampler2D ${name};\n`;
-        _addPreCode(slots, this._input.shader, c);
-        c = `vec4 ${this.token} = texture2D( ${name}, ${this._varying});\n`;
-        _addCode(slots, this._input.shader, c);
+        c = `uniform sampler2D ${this.name};\n`;
+        _addPreCode(slots, shader, c);
+        c = `vec4 ${this.token} = texture2D( ${this.name}, ${this._varying});\n`;
+        _addCode(slots, shader, c);
     }
     setup(prg) {
         prg[this.name](this._tex);
@@ -96,7 +90,6 @@ export class Uniform extends Chunk {
     constructor(name, size) {
         super(true, true);
         this.ptype = ParamType.UNIFORM;
-        this._input = null;
         this.name = name;
         this.size = size;
         this._value = new Float32Array(size);
@@ -108,12 +101,10 @@ export class Uniform extends Chunk {
         }
         this._invalid = true;
     }
-    _genCode(slots) {
-        if (this._input === null)
-            return;
-        var c;
-        c = `uniform ${TYPES[this.size]} ${this.token};\n`;
-        _addPreCode(slots, this._input.shader, c);
+    _genCode(slots) { }
+    genInputCode(slots, shader) {
+        const c = `uniform ${TYPES[this.size]} ${this.token};\n`;
+        _addPreCode(slots, shader, c);
     }
     setup(prg) {
         prg[this.name](this._value);
@@ -124,12 +115,12 @@ export class Attribute extends Chunk {
     constructor(name, size) {
         super(true, false);
         this.ptype = ParamType.ATTRIBUTE;
-        this._input = null;
         this.name = name;
         this.size = size;
         this.token = `v_${this.name}`;
     }
-    _genCode(slots) {
+    _genCode(slots) { }
+    genInputCode(slots, shader) {
         var c;
         const typeId = TYPES[this.size];
         c = `IN ${typeId} ${this.token};\n`;
@@ -145,7 +136,6 @@ export class Constant extends Chunk {
     constructor(value) {
         super(true, false);
         this.ptype = ParamType.CONSTANT;
-        this._input = null;
         if (typeof value === 'number') {
             this.size = 1;
             this.value = value;
@@ -158,12 +148,10 @@ export class Constant extends Chunk {
         this.name = `CONST_${stringifyHash(this._hash)}`;
         this.token = `VAR_${this.name}`;
     }
-    _genCode(slots) {
-        if (this._input === null)
-            return;
-        var c;
-        c = `#define ${this.token} ${TYPES[this.size]}(${this._stringifyValue()})\n`;
-        _addPreCode(slots, this._input.shader, c);
+    _genCode(slots) { }
+    genInputCode(slots, shader) {
+        const c = `#define ${this.token} ${TYPES[this.size]}(${this._stringifyValue()})\n`;
+        _addPreCode(slots, shader, c);
     }
     _stringifyValue() {
         if (this.size === 1) {
@@ -186,17 +174,14 @@ export default class Input extends Chunk {
     }
     attach(param, comps = 'rgba') {
         if (this.param) {
-            this.param._input = null;
             this.removeChild(this.param);
         }
-        param._input = this;
         this.param = param;
         this.comps = _trimComps(comps, this.size);
         this.addChild(param);
     }
     detach() {
         if (this.param !== null) {
-            this.param._input = null;
             this.removeChild(this.param);
         }
         this.param = null;
@@ -222,6 +207,8 @@ export default class Input extends Chunk {
         return p;
     }
     _genCode(slots) {
+        var _a;
+        (_a = this.param) === null || _a === void 0 ? void 0 : _a.genInputCode(slots, this.shader);
         const val = (this.param === null) ? '0' : '1';
         const def = `#define HAS_${this.name} ${val}\n`;
         slots.add('definitions', def);

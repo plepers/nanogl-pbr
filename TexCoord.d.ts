@@ -44,6 +44,8 @@ export declare class DynamicTexCoord extends TexCoord {
     updateTransform(): void;
 }
 export declare class StaticTexCoord extends TexCoord {
+    private _translateInput?;
+    private _rotateScalesInput?;
     private _translateConst?;
     private _rotateScalesConst?;
     constructor(attrib: string | undefined, matrix: mat3);
