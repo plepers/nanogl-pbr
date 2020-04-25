@@ -12,7 +12,7 @@
     mediump float attenuation = DistanceAttenuation(distanceSqr);
   {{= } else { }}
     float oneOverRangeSquared = uLPointPositions[{{@index}}].w;
-    mediump float attenuation = DistanceAttenuationRange(distanceSqr, vec2(oneOverRangeSquared, 0.0);
+    mediump float attenuation = DistanceAttenuationRange(distanceSqr, vec2(oneOverRangeSquared, 0.0));
   {{= } }}
 
 
