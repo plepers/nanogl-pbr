@@ -10,7 +10,7 @@ __p+='\n    mediump float attenuation = DistanceAttenuation(distanceSqr);\n  ';
  } else { 
 __p+='\n    float oneOverRangeSquared = uLPointPositions['+
 (obj.index)+
-'].w;\n    mediump float attenuation = DistanceAttenuationRange(distanceSqr, vec2(oneOverRangeSquared, 0.0);\n  ';
+'].w;\n    mediump float attenuation = DistanceAttenuationRange(distanceSqr, vec2(oneOverRangeSquared, 0.0));\n  ';
  } 
 __p+='\n\n\n  Light light;\n  light.direction = lightDirection;\n  light.attenuation = attenuation;\n  light.color = lightColor;\n  light.shadowAttenuation = 1.0;\n\n  color += LightingPhysicallyBased(brdfData, light, inputData.worldNrm, inputData.viewDir);\n}';
 return __p;

@@ -63,4 +63,7 @@ void main( void ){
   #endif
 
 
+  #pragma SLOT postf_linear
+  #pragma SLOT postf
+
 }

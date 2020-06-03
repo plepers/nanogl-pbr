@@ -173,6 +173,7 @@ void main( void ){
   FragColor.rgb = color;
 
 
+  #pragma SLOT postf_linear
 
 
   EXPOSURE(FragColor.rgb);
@@ -189,10 +190,13 @@ void main( void ){
   // FragColor.rgb = FragColor.rgb*0.0001 + surface.specular;
   // FragColor.rgb = FragColor.rgb*0.0001 + brdfData.diffuse;
 
+  
 
   GAMMA_CORRECTION(FragColor.rgb);
-  // FragColor.rgb = FragColor.rgb*0.0001 + surface.occlusion;
 
+  #pragma SLOT postf
+
+  // FragColor.rgb = FragColor.rgb*0.0001 + surface.occlusion;
   // FragColor.rgb = FragColor.rgb*0.0001 + inputData.worldNrm ;
 
 
