@@ -52,9 +52,11 @@
   surface.emission = vec3(0.0);
   #if HAS_emissive 
     surface.emission += emissive();
-  #endif
-  #if HAS_emissiveFactor
-    surface.emission *= emissiveFactor();
+    #if HAS_emissiveFactor
+        surface.emission *= emissiveFactor();
+    #endif
+  #elif HAS_emissiveFactor
+    surface.emission = emissiveFactor();
   #endif
 
   surface.albedo    = (_baseColor * vec3(1.0-0.04) ) * (1.0-_metalness);
