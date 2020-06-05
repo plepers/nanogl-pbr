@@ -50,6 +50,8 @@ export default abstract class AbstractLightModel<TLight extends Light = Light> e
 
   _genCode(slots: ChunksSlots) {
 
+    if( this.lights.length == 0 ) return;
+    
     let code = this.preCodeTemplate({
       count: this.lights.length
     });
