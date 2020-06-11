@@ -17,6 +17,7 @@ import { AlphaModeEnum, AlphaModes } from './AlphaModeEnum'
 import ShaderVersion from './ShaderVersion'
 import ShaderPrecision from './ShaderPrecision'
 import { PbrSurface, SpecularSurface, MetalnessSurface } from './PbrSurface'
+import { ColorSpace, ColorSpaceEnum } from './ColorspaceEnum'
 
 
 const M4 = mat4.create();
@@ -47,6 +48,7 @@ export class StandardPass<TSurface extends PbrSurface = PbrSurface> extends Mate
 
   alphaMode: AlphaModeEnum
   gammaMode: GammaModeEnum
+  emissiveColorSpace: ColorSpaceEnum
 
   doubleSided   : Flag
   perVertexIrrad: Flag
@@ -80,6 +82,7 @@ export class StandardPass<TSurface extends PbrSurface = PbrSurface> extends Mate
     inputs.add( this.alphaCutoff           = new Input( 'alphaCutoff'        , 1 ) );
 
     inputs.add( this.emissive              = new Input( 'emissive'           , 3 ) );
+    inputs.add( this.emissiveColorSpace    = new Enum(  'emissiveColorSpace' , ColorSpace ));
     inputs.add( this.emissiveFactor        = new Input( 'emissiveFactor'     , 3 ) );
 
     inputs.add( this.normal                = new Input( 'normal'             , 3 ) );

@@ -23,6 +23,8 @@ export default class AbstractLightModel extends Chunk {
         }
     }
     _genCode(slots) {
+        if (this.lights.length == 0)
+            return;
         let code = this.preCodeTemplate({
             count: this.lights.length
         });

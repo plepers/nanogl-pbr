@@ -3,6 +3,7 @@
 #ifndef _H_SPECULAR_IBL_
 #define _H_SPECULAR_IBL_
 
+
 {{ require( "../../includes/octwrap-decode.glsl" )() }}
 {{ require( "../../includes/decode-rgbe.glsl" )() }}
 

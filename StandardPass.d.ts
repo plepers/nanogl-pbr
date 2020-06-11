@@ -10,6 +10,7 @@ import { AlphaModeEnum } from './AlphaModeEnum';
 import ShaderVersion from './ShaderVersion';
 import ShaderPrecision from './ShaderPrecision';
 import { PbrSurface, SpecularSurface, MetalnessSurface } from './PbrSurface';
+import { ColorSpaceEnum } from './ColorspaceEnum';
 export declare class StandardPass<TSurface extends PbrSurface = PbrSurface> extends MaterialPass {
     version: ShaderVersion;
     precision: ShaderPrecision;
@@ -27,6 +28,7 @@ export declare class StandardPass<TSurface extends PbrSurface = PbrSurface> exte
     iExposure: Input;
     alphaMode: AlphaModeEnum;
     gammaMode: GammaModeEnum;
+    emissiveColorSpace: ColorSpaceEnum;
     doubleSided: Flag;
     perVertexIrrad: Flag;
     horizonFading: Flag;

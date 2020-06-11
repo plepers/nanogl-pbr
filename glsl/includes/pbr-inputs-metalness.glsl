@@ -51,7 +51,11 @@
 
   surface.emission = vec3(0.0);
   #if HAS_emissive 
-    surface.emission += emissive();
+    #if emissiveColorSpace( COLORSPACE_LINEAR )
+        surface.emission += emissive();
+    #else
+        surface.emission += emissive() * emissive();
+    #endif
     #if HAS_emissiveFactor
         surface.emission *= emissiveFactor();
     #endif

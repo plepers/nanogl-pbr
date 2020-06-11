@@ -1,6 +1,6 @@
 module.exports = function( obj ){
 var __t,__p='';
-__p+='\n\n#ifndef _H_SPECULAR_IBL_\n#define _H_SPECULAR_IBL_\n\n'+
+__p+='\n\n#ifndef _H_SPECULAR_IBL_\n#define _H_SPECULAR_IBL_\n\n\n'+
 ( require( "../../includes/octwrap-decode.glsl" )() )+
 '\n'+
 ( require( "../../includes/decode-rgbe.glsl" )() )+
