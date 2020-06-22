@@ -26,7 +26,7 @@ void main( void ){
 
  vec3 _baseColor = vec3(1.0);
   #if HAS_baseColor
-    _baseColor *= baseColor()*baseColor();
+    _baseColor *= baseColor();
   #endif
   #if HAS_baseColorFactor
     _baseColor *= baseColorFactor();
