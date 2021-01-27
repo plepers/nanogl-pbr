@@ -103,50 +103,54 @@ class TexCoord extends Chunk {
         slots.add('v', this.getTransformCode());
     }
 }
-export class DynamicTexCoord extends TexCoord {
-    constructor(attrib = _DefaultTexCoord) {
-        super(attrib, true);
-        this._uid = `${DynamicTexCoord._UID++}`;
-        this._translateInput = this.addChild(new Input(`tct_t_${this._uid}`, 2, Input.VERTEX));
-        this._rotateScalesInput = this.addChild(new Input(`tct_rs_${this._uid}`, 4, Input.VERTEX));
-        this._translateUniform = new Uniform(`tct_ut_${this._uid}`, 2);
-        this._rotationScaleUniform = new Uniform(`tct_urs_${this._uid}`, 4);
-        this._translateInput.attach(this._translateUniform);
-        this._rotateScalesInput.attach(this._rotationScaleUniform);
+let DynamicTexCoord = (() => {
+    class DynamicTexCoord extends TexCoord {
+        constructor(attrib = _DefaultTexCoord) {
+            super(attrib, true);
+            this._uid = `${DynamicTexCoord._UID++}`;
+            this._translateInput = this.addChild(new Input(`tct_t_${this._uid}`, 2, Input.VERTEX));
+            this._rotateScalesInput = this.addChild(new Input(`tct_rs_${this._uid}`, 4, Input.VERTEX));
+            this._translateUniform = new Uniform(`tct_ut_${this._uid}`, 2);
+            this._rotationScaleUniform = new Uniform(`tct_urs_${this._uid}`, 4);
+            this._translateInput.attach(this._translateUniform);
+            this._rotateScalesInput.attach(this._rotationScaleUniform);
+        }
+        varying() {
+            return `vTexCoord_dtt${this._uid}`;
+        }
+        getTransformCode() {
+            return GLSL.transformCode(this, this._translateInput.name, this._rotateScalesInput.name);
+        }
+        translate(x, y) {
+            this._transform.translation[0] = x;
+            this._transform.translation[1] = y;
+            this.updateTransform();
+            return this;
+        }
+        rotate(rad) {
+            this._transform.rotation[0] = rad;
+            this.updateTransform();
+            return this;
+        }
+        scale(x, y = x) {
+            this._transform.scale[0] = x;
+            this._transform.scale[1] = y;
+            this.updateTransform();
+            return this;
+        }
+        setMatrix(m) {
+            this._transform.decomposeMatrix(m);
+            this.updateTransform();
+        }
+        updateTransform() {
+            this._translateUniform.set(...this._transform.translation);
+            this._rotationScaleUniform.set(...this._transform.composeMat2());
+        }
     }
-    varying() {
-        return `vTexCoord_dtt${this._uid}`;
-    }
-    getTransformCode() {
-        return GLSL.transformCode(this, this._translateInput.name, this._rotateScalesInput.name);
-    }
-    translate(x, y) {
-        this._transform.translation[0] = x;
-        this._transform.translation[1] = y;
-        this.updateTransform();
-        return this;
-    }
-    rotate(rad) {
-        this._transform.rotation[0] = rad;
-        this.updateTransform();
-        return this;
-    }
-    scale(x, y = x) {
-        this._transform.scale[0] = x;
-        this._transform.scale[1] = y;
-        this.updateTransform();
-        return this;
-    }
-    setMatrix(m) {
-        this._transform.decomposeMatrix(m);
-        this.updateTransform();
-    }
-    updateTransform() {
-        this._translateUniform.set(...this._transform.translation);
-        this._rotationScaleUniform.set(...this._transform.composeMat2());
-    }
-}
-DynamicTexCoord._UID = 0;
+    DynamicTexCoord._UID = 0;
+    return DynamicTexCoord;
+})();
+export { DynamicTexCoord };
 export class StaticTexCoord extends TexCoord {
     constructor(attrib = _DefaultTexCoord, matrix) {
         super(attrib, false);

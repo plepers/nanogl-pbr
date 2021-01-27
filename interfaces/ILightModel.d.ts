@@ -21,5 +21,6 @@ export interface ILightModelCode {
     preLightCode: (o: any) => string;
     postLightCode: (o: any) => string;
     iblPreCode: (o: any) => string;
+    iblPmremPreCode: (o: any) => string;
     iblCode: (o: any) => string;
 }

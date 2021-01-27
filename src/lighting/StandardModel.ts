@@ -23,8 +23,8 @@ import _preLightCode from '../glsl/templates/standard/pre-light-setup.frag'
 import _postLightCode from '../glsl/templates/standard/post-light-setup.frag'
 
 import _iblPreCode from '../glsl/templates/standard/ibl-pre.frag'
+import _iblPmrEmPreCode from '../glsl/templates/standard/ibl-pmrem-pre.frag'
 import _iblCode from '../glsl/templates/standard/ibl.frag'
-
 
 import AbstractLightModel from './AbstractLightModel'
 import DirectionalLightModel from './DirectionalLightModel'
@@ -33,21 +33,23 @@ import PointLightModel from './PointLightModel'
 import { IblModel } from './IblModel'
 import { GlslCode } from '../interfaces/GlslCode'
 import { GLContext } from 'nanogl/types'
+import { IBLPmremModel } from './IblPmremModel'
 
 
 
 class StandardModelCode implements ILightModelCode {
-  dirPreCode     = _dirPreCode
-  spotPreCode    = _spotPreCode
-  pointPreCode   = _pointPreCode
-  dirLightCode   = _dirLightCode
-  spotLightCode  = _spotLightCode
-  pointLightCode = _pointLightCode
-  shadPreCode    = _shadPreCode
-  preLightCode   = _preLightCode
-  postLightCode  = _postLightCode
-  iblPreCode     = _iblPreCode
-  iblCode        = _iblCode
+  dirPreCode      = _dirPreCode
+  spotPreCode     = _spotPreCode
+  pointPreCode    = _pointPreCode
+  dirLightCode    = _dirLightCode
+  spotLightCode   = _spotLightCode
+  pointLightCode  = _pointLightCode
+  shadPreCode     = _shadPreCode
+  preLightCode    = _preLightCode
+  postLightCode   = _postLightCode
+  iblPreCode      = _iblPreCode
+  iblPmremPreCode = _iblPmrEmPreCode
+  iblCode         = _iblCode
 }
 
 
@@ -94,10 +96,11 @@ class StandardModel implements ILightModel {
     // damp renv reflexion for shadowed pixel
     this.iblShadowing = new Flag('iblShadowing', false);
 
-    this.registerLightModel( new PointLightModel      ( modelCode.pointLightCode , modelCode.pointPreCode ) );
-    this.registerLightModel( new SpotLightModel       ( modelCode.spotLightCode  , modelCode.spotPreCode  ) );
-    this.registerLightModel( new DirectionalLightModel( modelCode.dirLightCode   , modelCode.dirPreCode   ) );
-    this.registerLightModel( new IblModel             ( modelCode.iblCode        , modelCode.iblPreCode   ) );
+    this.registerLightModel( new PointLightModel      ( modelCode.pointLightCode , modelCode.pointPreCode      ) );
+    this.registerLightModel( new SpotLightModel       ( modelCode.spotLightCode  , modelCode.spotPreCode       ) );
+    this.registerLightModel( new DirectionalLightModel( modelCode.dirLightCode   , modelCode.dirPreCode        ) );
+    this.registerLightModel( new IblModel             ( modelCode.iblCode        , modelCode.iblPreCode        ) );
+    this.registerLightModel( new IBLPmremModel        ( modelCode.iblCode        , modelCode.iblPmremPreCode   ) );
     
   }
   

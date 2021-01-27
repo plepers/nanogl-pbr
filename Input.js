@@ -163,72 +163,76 @@ export class Constant extends Chunk {
         }
     }
 }
-export default class Input extends Chunk {
-    constructor(name, size, shader = ShaderType.FRAGMENT) {
-        super(true, false);
-        this.name = name;
-        this.size = size;
-        this.param = null;
-        this.comps = _trimComps('rgba', size);
-        this.shader = shader;
-    }
-    attach(param, comps = 'rgba') {
-        if (this.param) {
-            this.removeChild(this.param);
+let Input = (() => {
+    class Input extends Chunk {
+        constructor(name, size, shader = ShaderType.FRAGMENT) {
+            super(true, false);
+            this.name = name;
+            this.size = size;
+            this.param = null;
+            this.comps = _trimComps('rgba', size);
+            this.shader = shader;
         }
-        this.param = param;
-        this.comps = _trimComps(comps, this.size);
-        this.addChild(param);
-    }
-    detach() {
-        if (this.param !== null) {
-            this.removeChild(this.param);
-        }
-        this.param = null;
-    }
-    attachSampler(name, texCoords, comps = 'rgba') {
-        var p = new Sampler(name, texCoords);
-        this.attach(p, comps);
-        return p;
-    }
-    attachUniform(name, size = this.size, comps = 'rgba') {
-        var p = new Uniform(name, size);
-        this.attach(p, comps);
-        return p;
-    }
-    attachAttribute(name, size = this.size, comps = 'rgba') {
-        var p = new Attribute(name, size);
-        this.attach(p, comps);
-        return p;
-    }
-    attachConstant(value, comps = 'rgba') {
-        var p = new Constant(value);
-        this.attach(p, comps);
-        return p;
-    }
-    _genCode(slots) {
-        var _a;
-        (_a = this.param) === null || _a === void 0 ? void 0 : _a.genInputCode(slots, this.shader);
-        const val = (this.param === null) ? '0' : '1';
-        const def = `#define HAS_${this.name} ${val}\n`;
-        slots.add('definitions', def);
-        if (this.param !== null) {
-            var c = `#define ${this.name}(k) ${this.param.token}`;
-            if (this.param.size > 1) {
-                c += `.${this.comps}`;
+        attach(param, comps = 'rgba') {
+            if (this.param) {
+                this.removeChild(this.param);
             }
-            _addPreCode(slots, this.shader, c);
-            if (this.param.ptype === ParamType.SAMPLER) {
-                var c = `#define ${this.name}_texCoord(k) ${this.param._varying}`;
+            this.param = param;
+            this.comps = _trimComps(comps, this.size);
+            this.addChild(param);
+        }
+        detach() {
+            if (this.param !== null) {
+                this.removeChild(this.param);
+            }
+            this.param = null;
+        }
+        attachSampler(name, texCoords, comps = 'rgba') {
+            var p = new Sampler(name, texCoords);
+            this.attach(p, comps);
+            return p;
+        }
+        attachUniform(name, size = this.size, comps = 'rgba') {
+            var p = new Uniform(name, size);
+            this.attach(p, comps);
+            return p;
+        }
+        attachAttribute(name, size = this.size, comps = 'rgba') {
+            var p = new Attribute(name, size);
+            this.attach(p, comps);
+            return p;
+        }
+        attachConstant(value, comps = 'rgba') {
+            var p = new Constant(value);
+            this.attach(p, comps);
+            return p;
+        }
+        _genCode(slots) {
+            var _a;
+            (_a = this.param) === null || _a === void 0 ? void 0 : _a.genInputCode(slots, this.shader);
+            const val = (this.param === null) ? '0' : '1';
+            const def = `#define HAS_${this.name} ${val}\n`;
+            slots.add('definitions', def);
+            if (this.param !== null) {
+                var c = `#define ${this.name}(k) ${this.param.token}`;
+                if (this.param.size > 1) {
+                    c += `.${this.comps}`;
+                }
                 _addPreCode(slots, this.shader, c);
+                if (this.param.ptype === ParamType.SAMPLER) {
+                    var c = `#define ${this.name}_texCoord(k) ${this.param._varying}`;
+                    _addPreCode(slots, this.shader, c);
+                }
             }
         }
     }
-}
-Input.Sampler = Sampler;
-Input.Uniform = Uniform;
-Input.Attribute = Attribute;
-Input.Constant = Constant;
-Input.FRAGMENT = ShaderType.FRAGMENT;
-Input.VERTEX = ShaderType.VERTEX;
-Input.ALL = ShaderType.ALL;
+    Input.Sampler = Sampler;
+    Input.Uniform = Uniform;
+    Input.Attribute = Attribute;
+    Input.Constant = Constant;
+    Input.FRAGMENT = ShaderType.FRAGMENT;
+    Input.VERTEX = ShaderType.VERTEX;
+    Input.ALL = ShaderType.ALL;
+    return Input;
+})();
+export default Input;

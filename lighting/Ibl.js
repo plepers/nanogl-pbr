@@ -4,6 +4,7 @@ export default class IBL extends Light {
     constructor(env, sh) {
         super();
         this._type = LightType.IBL;
+        this.shMode = "SH7";
         this.env = env;
         this.sh = sh;
     }

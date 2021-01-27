@@ -1,17 +1,17 @@
 module.exports = function( obj ){
 var __t,__p='';
-__p+='\n{\n  vec3 lightPositionWS                    = uLPointPositions ['+
+__p+='\r\n{\r\n  vec3 lightPositionWS                    = uLPointPositions ['+
 (obj.index)+
-'].xyz;\n  mediump vec3 lightColor                 = uLPointColors    ['+
+'].xyz;\r\n  mediump vec3 lightColor                 = uLPointColors    ['+
 (obj.index)+
-'].rgb;\n\n  vec3 lightVector = lightPositionWS - inputData.worldPos;\n  float distanceSqr = dot(lightVector, lightVector);\n\n  mediump vec3 lightDirection = vec3(lightVector * inversesqrt(distanceSqr));\n\n  ';
+'].rgb;\r\n\r\n  vec3 lightVector = lightPositionWS - inputData.worldPos;\r\n  float distanceSqr = dot(lightVector, lightVector);\r\n\r\n  mediump vec3 lightDirection = vec3(lightVector * inversesqrt(distanceSqr));\r\n\r\n  ';
  if(obj.infinite){ 
-__p+='\n    mediump float attenuation = DistanceAttenuation(distanceSqr);\n  ';
+__p+='\r\n    mediump float attenuation = DistanceAttenuation(distanceSqr);\r\n  ';
  } else { 
-__p+='\n    float oneOverRangeSquared = uLPointPositions['+
+__p+='\r\n    float oneOverRangeSquared = uLPointPositions['+
 (obj.index)+
-'].w;\n    mediump float attenuation = DistanceAttenuationRange(distanceSqr, vec2(oneOverRangeSquared, 0.0));\n  ';
+'].w;\r\n    mediump float attenuation = DistanceAttenuationRange(distanceSqr, vec2(oneOverRangeSquared, 0.0));\r\n  ';
  } 
-__p+='\n\n\n  Light light;\n  light.direction = lightDirection;\n  light.attenuation = attenuation;\n  light.color = lightColor;\n  light.shadowAttenuation = 1.0;\n\n  color += LightingPhysicallyBased(brdfData, light, inputData.worldNrm, inputData.viewDir);\n}';
+__p+='\r\n\r\n\r\n  Light light;\r\n  light.direction = lightDirection;\r\n  light.attenuation = attenuation;\r\n  light.color = lightColor;\r\n  light.shadowAttenuation = 1.0;\r\n\r\n  color += LightingPhysicallyBased(brdfData, light, inputData.worldNrm, inputData.viewDir);\r\n}';
 return __p;
 }

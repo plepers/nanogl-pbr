@@ -1,6 +1,7 @@
 
 import Program from 'nanogl/program';
 import Texture2D from 'nanogl/texture-2d';
+import { ShMode } from '../interfaces/ShMode';
 import Light from './Light';
 import LightType from './LightType';
 
@@ -11,7 +12,7 @@ export default class IBL extends Light {
 
   env: Texture2D;
   sh: ArrayLike<number>;
-
+  shMode: ShMode = "SH7";
 
   constructor( env : Texture2D, sh : ArrayLike<number> ){
     super();

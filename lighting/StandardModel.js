@@ -12,11 +12,13 @@ import _shadPreCode from '../glsl/templates/standard/shadow-maps-pre.frag';
 import _preLightCode from '../glsl/templates/standard/pre-light-setup.frag';
 import _postLightCode from '../glsl/templates/standard/post-light-setup.frag';
 import _iblPreCode from '../glsl/templates/standard/ibl-pre.frag';
+import _iblPmrEmPreCode from '../glsl/templates/standard/ibl-pmrem-pre.frag';
 import _iblCode from '../glsl/templates/standard/ibl.frag';
 import DirectionalLightModel from './DirectionalLightModel';
 import SpotLightModel from './SpotLightModel';
 import PointLightModel from './PointLightModel';
 import { IblModel } from './IblModel';
+import { IBLPmremModel } from './IblPmremModel';
 class StandardModelCode {
     constructor() {
         this.dirPreCode = _dirPreCode;
@@ -29,6 +31,7 @@ class StandardModelCode {
         this.preLightCode = _preLightCode;
         this.postLightCode = _postLightCode;
         this.iblPreCode = _iblPreCode;
+        this.iblPmremPreCode = _iblPmrEmPreCode;
         this.iblCode = _iblCode;
     }
 }
@@ -50,6 +53,7 @@ class StandardModel {
         this.registerLightModel(new SpotLightModel(modelCode.spotLightCode, modelCode.spotPreCode));
         this.registerLightModel(new DirectionalLightModel(modelCode.dirLightCode, modelCode.dirPreCode));
         this.registerLightModel(new IblModel(modelCode.iblCode, modelCode.iblPreCode));
+        this.registerLightModel(new IBLPmremModel(modelCode.iblCode, modelCode.iblPmremPreCode));
     }
     registerLightModel(model) {
         this._datas[model.type] = model;
