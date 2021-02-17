@@ -33,7 +33,7 @@ import PointLightModel from './PointLightModel'
 import { IblModel } from './IblModel'
 import { GlslCode } from '../interfaces/GlslCode'
 import { GLContext } from 'nanogl/types'
-import { IBLPmremModel } from './IblPmremModel'
+import { IBLPmremModel } from './IBLPmremModel'
 
 
 

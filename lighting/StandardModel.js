@@ -18,7 +18,7 @@ import DirectionalLightModel from './DirectionalLightModel';
 import SpotLightModel from './SpotLightModel';
 import PointLightModel from './PointLightModel';
 import { IblModel } from './IblModel';
-import { IBLPmremModel } from './IblPmremModel';
+import { IBLPmremModel } from './IBLPmremModel';
 class StandardModelCode {
     constructor() {
         this.dirPreCode = _dirPreCode;
