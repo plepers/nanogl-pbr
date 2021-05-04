@@ -12,7 +12,7 @@ export declare class IblModel extends AbstractLightModel<IBL> {
     genCodePerLights(light: IBL, index: number, shadowIndex: number): string;
     prepare(gl: GLContext, model: ILightModel): void;
     addLight(l: IBL): void;
-    getSHChunk(l: IBL): SH7 | SH9;
+    getSHChunk(l: IBL): SH9 | SH7;
     constructor(code: GlslCode, preCode: GlslCode);
     setup(prg: Program): void;
 }
