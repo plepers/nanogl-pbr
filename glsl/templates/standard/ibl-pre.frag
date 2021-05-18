@@ -15,13 +15,6 @@ uniform sampler2D tEnv;
 
 
 
-#if perVertexIrrad
-  IN vec3 vIrradiance;
-#else
-  uniform vec4 uSHCoeffs[7];
-  {{ require( "../../includes/spherical-harmonics.glsl" )() }}
-#endif
-
 
 
 const vec2 _IBL_UVM = vec2(

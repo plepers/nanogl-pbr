@@ -2,10 +2,10 @@ import AbstractLightModel from "./AbstractLightModel";
 import LightType from "./LightType";
 import SH9 from "./SH9";
 import SH7 from "./SH7";
-export class IblModel extends AbstractLightModel {
+export class IBLPmremModel extends AbstractLightModel {
     constructor(code, preCode) {
         super(code, preCode);
-        this.type = LightType.IBL;
+        this.type = LightType.IBL_PMREM;
     }
     genCodePerLights(light, index, shadowIndex) {
         return this.codeTemplate(this);
