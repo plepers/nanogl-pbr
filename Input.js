@@ -1,5 +1,6 @@
 import Chunk from './Chunk';
 import { hashString, stringifyHash } from './Hash';
+import TexCoord from './TexCoord';
 const TYPES = [
     null,
     'float',
@@ -186,23 +187,23 @@ export default class Input extends Chunk {
         }
         this.param = null;
     }
-    attachSampler(name, texCoords, comps = 'rgba') {
-        var p = new Sampler(name, texCoords);
+    attachSampler(name = `_t_${this.name}`, texCoords = TexCoord.create(), comps = 'rgba') {
+        const p = new Sampler(name, texCoords);
         this.attach(p, comps);
         return p;
     }
-    attachUniform(name, size = this.size, comps = 'rgba') {
-        var p = new Uniform(name, size);
+    attachUniform(name = `_u_${this.name}`, size = this.size, comps = 'rgba') {
+        const p = new Uniform(name, size);
         this.attach(p, comps);
         return p;
     }
-    attachAttribute(name, size = this.size, comps = 'rgba') {
-        var p = new Attribute(name, size);
+    attachAttribute(name = `_a_${this.name}`, size = this.size, comps = 'rgba') {
+        const p = new Attribute(name, size);
         this.attach(p, comps);
         return p;
     }
     attachConstant(value, comps = 'rgba') {
-        var p = new Constant(value);
+        const p = new Constant(value);
         this.attach(p, comps);
         return p;
     }
