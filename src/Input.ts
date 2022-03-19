@@ -316,15 +316,19 @@ export class Constant extends Chunk implements IInputParam {
 
   readonly ptype : ParamType.CONSTANT = ParamType.CONSTANT
   
-  name: string;
-  size: InputSize;
-  token: string;
-  value: ArrayLike<number> | number;
-  _hash: Hash
+  name: string = '';
+  size: InputSize = 1;
+  token: string = '';
+  value: ArrayLike<number> | number = 0;
+  _hash: Hash = 0
 
   constructor(value: ArrayLike<number> | number) {
     super(true, false);
+    this.set( value )
+  }
 
+  set( value: ArrayLike<number> | number) {
+    
     if ( typeof value === 'number' ) {
       this.size = 1;
       this.value = value;
@@ -336,9 +340,9 @@ export class Constant extends Chunk implements IInputParam {
     this._hash = hashString( `${this.size}-${this._stringifyValue()}` )
     this.name = `CONST_${stringifyHash( this._hash )}`;
     this.token = `VAR_${this.name}`;
+
+    this.invalidateCode()
   }
-
-
 
   protected _genCode(slots: ChunksSlots): void {}
 
@@ -417,29 +421,29 @@ export default class Input extends Chunk {
   }
 
 
-  attachSampler(name: string, texCoords: string | TexCoord, comps: Swizzle = 'rgba') {
-    var p = new Sampler(name, texCoords);
+  attachSampler(name: string = `_t_${this.name}`, texCoords: string | TexCoord= TexCoord.create(), comps: Swizzle = 'rgba') {
+    const p = new Sampler(name, texCoords);
     this.attach(p, comps);
     return p;
   }
 
 
-  attachUniform(name: string, size: InputSize = this.size, comps: Swizzle = 'rgba') {
-    var p = new Uniform(name, size);
+  attachUniform(name: string = `_u_${this.name}`, size: InputSize = this.size, comps: Swizzle = 'rgba') {
+    const p = new Uniform(name, size);
     this.attach(p, comps);
     return p;
   }
 
 
-  attachAttribute(name: string, size: InputSize = this.size, comps: Swizzle = 'rgba') {
-    var p = new Attribute(name, size);
+  attachAttribute(name: string = `_a_${this.name}`, size: InputSize = this.size, comps: Swizzle = 'rgba') {
+    const p = new Attribute(name, size);
     this.attach(p, comps);
     return p;
   }
 
 
   attachConstant(value: ArrayLike<number> | number, comps: Swizzle = 'rgba') {
-    var p = new Constant(value);
+    const p = new Constant(value);
     this.attach(p, comps);
     return p;
   }

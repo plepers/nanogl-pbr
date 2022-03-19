@@ -18,7 +18,6 @@ import DirectionalLightModel from './DirectionalLightModel';
 import SpotLightModel from './SpotLightModel';
 import PointLightModel from './PointLightModel';
 import { IblModel } from './IblModel';
-import { IBLPmremModel } from './IBLPmremModel';
 class StandardModelCode {
     constructor() {
         this.dirPreCode = _dirPreCode;
@@ -53,7 +52,7 @@ class StandardModel {
         this.registerLightModel(new SpotLightModel(modelCode.spotLightCode, modelCode.spotPreCode));
         this.registerLightModel(new DirectionalLightModel(modelCode.dirLightCode, modelCode.dirPreCode));
         this.registerLightModel(new IblModel(modelCode.iblCode, modelCode.iblPreCode));
-        this.registerLightModel(new IBLPmremModel(modelCode.iblCode, modelCode.iblPmremPreCode));
+        this.registerLightModel(new IblModel(modelCode.iblCode, modelCode.iblPmremPreCode));
     }
     registerLightModel(model) {
         this._datas[model.type] = model;

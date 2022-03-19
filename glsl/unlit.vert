@@ -75,4 +75,6 @@ void main( void ){
   #pragma SLOT vertex_warp_world
 
   gl_Position     = uVP * vec4( vertex.worldPos, 1.0 );
+  
+  #pragma SLOT postv
 }

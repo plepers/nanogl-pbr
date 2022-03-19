@@ -17,6 +17,9 @@ class Flag extends Chunk {
             this.invalidateCode();
         }
     }
+    get value() {
+        return this._val;
+    }
     _genCode(slots) {
         const c = `#define ${this.name} ${~~this._val}`;
         slots.add('definitions', c);

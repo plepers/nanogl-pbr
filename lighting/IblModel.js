@@ -2,15 +2,25 @@ import AbstractLightModel from "./AbstractLightModel";
 import LightType from "./LightType";
 import SH9 from "./SH9";
 import SH7 from "./SH7";
+import Flag from "../Flag";
+import { mat3 } from "gl-matrix";
+const M3 = mat3.create();
 export class IblModel extends AbstractLightModel {
     constructor(code, preCode) {
         super(code, preCode);
         this.type = LightType.IBL;
+        this.enableRotation = new Flag("enableRotation");
+        this.addChild(this.enableRotation);
     }
     genCodePerLights(light, index, shadowIndex) {
+        this.enableRotation.set(light.enableRotation);
         return this.codeTemplate(this);
     }
     prepare(gl, model) {
+        const ibl = this.lights[0];
+        if (ibl) {
+            this.enableRotation.set(ibl.enableRotation);
+        }
     }
     addLight(l) {
         if (this.lights.length > 0) {
@@ -25,10 +35,11 @@ export class IblModel extends AbstractLightModel {
     setup(prg) {
         if (this.lights.length > 0) {
             const ibl = this.lights[0];
-            if (prg.tEnv)
-                prg.tEnv(ibl.env);
-            if (prg.uSHCoeffs)
-                prg.uSHCoeffs(ibl.sh);
+            prg.tEnv(ibl.env);
+            prg.uSHCoeffs(ibl.sh);
+            if (ibl.enableRotation) {
+                prg.uEnvMatrix(mat3.fromMat4(M3, ibl._wmatrix));
+            }
         }
     }
 }

@@ -47,17 +47,6 @@ uniform mat4 uVP;
 OUT vec3 vWorldPosition;
 
 
-
-
-
-#if perVertexIrrad
-  OUT vec3 vIrradiance;
-  uniform vec4 uSHCoeffs[7];
-  {{ require( "./includes/spherical-harmonics.glsl" )() }}
-#endif
-
-
-
 vec3 rotate( mat4 m, vec3 v )
 {
   return m[0].xyz*v.x + m[1].xyz*v.y + m[2].xyz*v.z;
@@ -118,9 +107,8 @@ void main( void ){
     vWorldBitangent = normalize( cross( vWorldNormal, vWorldTangent ) * aTangent.w );
   #endif
 
-  #if perVertexIrrad
-    vIrradiance = SampleSH( vWorldNormal, uSHCoeffs );
-  #endif
+  // IBL lighting may sample SH here if per vertex irrad enabled
 
+  #pragma SLOT postv
   // vDebugColor = vec4( -position, 1.0 );
 }

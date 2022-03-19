@@ -137,6 +137,14 @@ export class Constant extends Chunk {
     constructor(value) {
         super(true, false);
         this.ptype = ParamType.CONSTANT;
+        this.name = '';
+        this.size = 1;
+        this.token = '';
+        this.value = 0;
+        this._hash = 0;
+        this.set(value);
+    }
+    set(value) {
         if (typeof value === 'number') {
             this.size = 1;
             this.value = value;
@@ -148,6 +156,7 @@ export class Constant extends Chunk {
         this._hash = hashString(`${this.size}-${this._stringifyValue()}`);
         this.name = `CONST_${stringifyHash(this._hash)}`;
         this.token = `VAR_${this.name}`;
+        this.invalidateCode();
     }
     _genCode(slots) { }
     genInputCode(slots, shader) {

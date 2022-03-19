@@ -30,9 +30,9 @@ export declare class StandardPass<TSurface extends PbrSurface = PbrSurface> exte
     gammaMode: GammaModeEnum;
     emissiveColorSpace: ColorSpaceEnum;
     doubleSided: Flag;
-    perVertexIrrad: Flag;
     horizonFading: Flag;
     glossNearest: Flag;
+    perVertexIrrad: Flag;
     surface?: TSurface;
     constructor(name?: string);
     setSurface(surface: TSurface): void;

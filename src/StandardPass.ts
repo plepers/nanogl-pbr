@@ -51,9 +51,12 @@ export class StandardPass<TSurface extends PbrSurface = PbrSurface> extends Mate
   emissiveColorSpace: ColorSpaceEnum
 
   doubleSided   : Flag
-  perVertexIrrad: Flag
   horizonFading : Flag
   glossNearest  : Flag
+  /**
+   * @deprecated
+   */
+  perVertexIrrad: Flag
   
   surface?: TSurface
 
@@ -98,6 +101,7 @@ export class StandardPass<TSurface extends PbrSurface = PbrSurface> extends Mate
     inputs.add( this.gammaMode             = new Enum( 'gammaMode', GammaModes )).set( 'GAMMA_2_2' );
 
     inputs.add( this.doubleSided           = new Flag ( 'doubleSided'   ,  false ) );
+    
     inputs.add( this.perVertexIrrad        = new Flag ( 'perVertexIrrad',  false ) );
     inputs.add( this.horizonFading         = new Flag ( 'horizonFading' ,  false ) );
     inputs.add( this.glossNearest          = new Flag ( 'glossNearest'  ,  false ) );

@@ -8,7 +8,8 @@
     "declaration": true,
     "strict": true,
     "moduleResolution": "node",
-    "preserveConstEnums": true
+    "preserveConstEnums": true,
+    "forceConsistentCasingInFileNames": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]

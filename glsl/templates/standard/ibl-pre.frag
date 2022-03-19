@@ -4,6 +4,7 @@
 #define _H_SPECULAR_IBL_
 
 
+{{ require( "../../includes/ibl-rotation.glsl" )() }}
 {{ require( "../../includes/octwrap-decode.glsl" )() }}
 {{ require( "../../includes/decode-rgbe.glsl" )() }}
 
@@ -26,7 +27,7 @@ const vec2 _IBL_UVM = vec2(
 
 vec3 SpecularIBL( sampler2D tEnv, vec3 skyDir, float roughness)
 {
-
+  skyDir = IblRotateDir(skyDir);
   vec2 uvA = octwrapDecode( skyDir );
 
   float r7   = 7.0*roughness;
@@ -55,12 +56,12 @@ vec3 SpecularIBL( sampler2D tEnv, vec3 skyDir, float roughness)
 }
 
 
-
 vec3 ComputeIBLDiffuse( vec3 worldNormal ){
+  // TODO: the model should set this varying in vertex shader
   #if perVertexIrrad
     return vIrradiance;
   #else
-    return SampleSH(worldNormal, uSHCoeffs );
+    return SampleSH(IblRotateDir(worldNormal), uSHCoeffs );
   #endif
 }
 

@@ -136,7 +136,9 @@ void main( void ){
   #define LS_SPECULAR specularContrib
   #define LS_DIFFUSE  diffuseContrib
 
+  #pragma SLOT prelightsf
   #pragma SLOT lightsf
+  #pragma SLOT postlightsf
 
   // todo: apply this only to ibl contrib
   // add proper Fresnel to ponctual lights

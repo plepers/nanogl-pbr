@@ -17,23 +17,23 @@ class Flag<T extends string = string> extends Chunk {
     this._val = !!val;
   }
 
-
-
   enable() {
     this.set(true);
   }
 
-
   disable() {
     this.set(false);
   }
-
 
   set(val : boolean = false) {
     if (this._val !== val) {
       this._val = val;
       this.invalidateCode();
     }
+  }
+
+  get value(): boolean{
+    return this._val
   }
 
 

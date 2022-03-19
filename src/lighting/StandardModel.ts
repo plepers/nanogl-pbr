@@ -33,7 +33,6 @@ import PointLightModel from './PointLightModel'
 import { IblModel } from './IblModel'
 import { GlslCode } from '../interfaces/GlslCode'
 import { GLContext } from 'nanogl/types'
-import { IBLPmremModel } from './IBLPmremModel'
 
 
 
@@ -100,7 +99,7 @@ class StandardModel implements ILightModel {
     this.registerLightModel( new SpotLightModel       ( modelCode.spotLightCode  , modelCode.spotPreCode       ) );
     this.registerLightModel( new DirectionalLightModel( modelCode.dirLightCode   , modelCode.dirPreCode        ) );
     this.registerLightModel( new IblModel             ( modelCode.iblCode        , modelCode.iblPreCode        ) );
-    this.registerLightModel( new IBLPmremModel        ( modelCode.iblCode        , modelCode.iblPmremPreCode   ) );
+    this.registerLightModel( new IblModel             ( modelCode.iblCode        , modelCode.iblPmremPreCode   ) );
     
   }
   
