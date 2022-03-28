@@ -9,12 +9,31 @@
 {{ require( "../../includes/decode-rgbe.glsl" )() }}
 
 
+/* =========================================================
+  OCTA
+========================================================= */
+#if iblType( OCTA )
+
+  uniform sampler2D tEnv;
+
+  #define SpecularIBL( tEnv, skyDir, roughness ) SampleIBL( tEnv, skyDir, roughness )
+
+
+/* =========================================================
+  PMREM
+========================================================= */
+#elif iblType( PMREM ) && __VERSION__ == 300
+
+  uniform samplerCube tEnv;
+
+  #define SpecularIBL( tEnv, skyDir, roughness ) SampleIBLPMRem( tEnv, skyDir, roughness )
+
+
+#endif
+
 
 // IBL
 // ========
-uniform sampler2D tEnv;
-
-
 
 
 
@@ -25,7 +44,7 @@ const vec2 _IBL_UVM = vec2(
 
 
 
-vec3 SpecularIBL( sampler2D tEnv, vec3 skyDir, float roughness)
+vec3 SampleIBL( sampler2D tEnv, vec3 skyDir, float roughness)
 {
   skyDir = IblRotateDir(skyDir);
   vec2 uvA = octwrapDecode( skyDir );
@@ -54,6 +73,44 @@ vec3 SpecularIBL( sampler2D tEnv, vec3 skyDir, float roughness)
   #endif
 
 }
+
+
+const float MaxRangeRGBD = 255.0; 
+
+vec3 decodeRGBD(vec4 rgbd)
+{
+  float a = max(rgbd.a, 0.0);
+  return rgbd.rgb * ((MaxRangeRGBD / 255.0) / a);
+}
+
+
+vec3 SampleIBLPMRem( samplerCube tEnv, vec3 skyDir, float roughness)
+{
+
+  float r7   = 7.0*roughness;
+
+  float mipA = floor(r7);
+  float mipB = ceil(r7);
+  float delta = r7 - mipA;
+
+  #if glossNearest
+
+    return decodeRGBD( textureLod(tEnv,skyDir, mipA) );
+
+  #else
+
+    vec3 color = mix(
+      decodeRGBD( textureLod(tEnv, skyDir, mipA) ),
+      decodeRGBD( textureLod(tEnv, skyDir, mipB) ),
+      delta
+    );
+
+    return color;
+
+  #endif
+
+}
+
 
 
 vec3 ComputeIBLDiffuse( vec3 worldNormal ){

@@ -8,13 +8,18 @@ import { GLContext } from "nanogl/types";
 import SH9 from "./SH9";
 import SH7 from "./SH7";
 import Flag from "../Flag";
-export declare class IblModel extends AbstractLightModel<Ibl> {
+import Enum from "../Enum";
+import IblBase from "./IblBase";
+export declare const IblTypes: readonly ["OCTA", "PMREM"];
+export declare type IblType = typeof IblTypes[number];
+export declare class IblModel extends AbstractLightModel<IblBase> {
     readonly type = LightType.IBL;
     enableRotation: Flag;
+    _iblType: Enum<readonly ["OCTA", "PMREM"]>;
     genCodePerLights(light: Ibl, index: number, shadowIndex: number): string;
     prepare(gl: GLContext, model: ILightModel): void;
-    addLight(l: Ibl): void;
-    getSHChunk(l: Ibl): SH9 | SH7;
+    addLight(l: IblBase): void;
+    getSHChunk(l: IblBase): SH9 | SH7;
     constructor(code: GlslCode, preCode: GlslCode);
     setup(prg: Program): void;
 }

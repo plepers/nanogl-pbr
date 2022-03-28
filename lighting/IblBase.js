@@ -1,14 +1,18 @@
 import Light from './Light';
+import LightType from './LightType';
 export default class IblBase extends Light {
-    constructor(sh) {
+    constructor(env, sh) {
         super();
+        this.env = env;
+        this.sh = sh;
+        this._type = LightType.IBL;
         this.shMode = "SH7";
         this.enableRotation = false;
-        this.sh = sh;
     }
     setupProgram(prg) {
-        if (prg.uSHCoeffs)
-            prg.uSHCoeffs(this.sh);
+        var _a, _b;
+        (_a = prg.uSHCoeffs) === null || _a === void 0 ? void 0 : _a.call(prg, this.sh);
+        (_b = prg.tEnv) === null || _b === void 0 ? void 0 : _b.call(prg, this.env);
     }
     static convert(sh, expo = 1.0) {
         const SqrtPI = Math.sqrt(Math.PI);

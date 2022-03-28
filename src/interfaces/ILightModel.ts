@@ -32,7 +32,6 @@ export interface ILightModelCode{
   postLightCode  : (o:any)=>string;
 
   iblPreCode : (o:any)=>string;
-  iblPmremPreCode: (o:any)=>string;
   iblCode    : (o:any)=>string;
 
 }

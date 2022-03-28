@@ -9,15 +9,26 @@ import SH9 from "./SH9";
 import SH7 from "./SH7";
 import Flag from "../Flag";
 import { mat3 } from "gl-matrix";
+import Enum from "../Enum";
+import IblBase from "./IblBase";
 
 
 const M3 = mat3.create()
 
-export class IblModel extends AbstractLightModel<Ibl> {
+
+export const IblTypes = [
+  "OCTA",
+  "PMREM",
+] as const
+
+export type IblType = typeof IblTypes[number]
+
+export class IblModel extends AbstractLightModel<IblBase> {
 
   readonly type = LightType.IBL;
 
   enableRotation: Flag = new Flag("enableRotation")
+  _iblType = new Enum("iblType", IblTypes)
 
 
   genCodePerLights(light: Ibl, index: number, shadowIndex: number): string {
@@ -33,22 +44,24 @@ export class IblModel extends AbstractLightModel<Ibl> {
   }
 
 
-  addLight(l: Ibl) {
+  addLight(l: IblBase) {
     if (this.lights.length > 0){
       throw new Error("IblModel support only one Ibl Light")
     }
-    super.addLight( l );
     this.addChild(this.getSHChunk(l));
+    this._iblType.set(l.iblType)
+    super.addLight( l );
 
   }
 
-  getSHChunk( l: Ibl ){
+  getSHChunk( l: IblBase ){
     return l.shMode === "SH7" ? new SH7() : new SH9();
   }
 
   constructor( code : GlslCode, preCode : GlslCode ) {
     super( code, preCode );
     this.addChild( this.enableRotation )
+    this.addChild( this._iblType )
   }
 
 

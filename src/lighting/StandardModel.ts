@@ -23,7 +23,6 @@ import _preLightCode from '../glsl/templates/standard/pre-light-setup.frag'
 import _postLightCode from '../glsl/templates/standard/post-light-setup.frag'
 
 import _iblPreCode from '../glsl/templates/standard/ibl-pre.frag'
-import _iblPmrEmPreCode from '../glsl/templates/standard/ibl-pmrem-pre.frag'
 import _iblCode from '../glsl/templates/standard/ibl.frag'
 
 import AbstractLightModel from './AbstractLightModel'
@@ -47,7 +46,6 @@ class StandardModelCode implements ILightModelCode {
   preLightCode    = _preLightCode
   postLightCode   = _postLightCode
   iblPreCode      = _iblPreCode
-  iblPmremPreCode = _iblPmrEmPreCode
   iblCode         = _iblCode
 }
 
@@ -99,7 +97,6 @@ class StandardModel implements ILightModel {
     this.registerLightModel( new SpotLightModel       ( modelCode.spotLightCode  , modelCode.spotPreCode       ) );
     this.registerLightModel( new DirectionalLightModel( modelCode.dirLightCode   , modelCode.dirPreCode        ) );
     this.registerLightModel( new IblModel             ( modelCode.iblCode        , modelCode.iblPreCode        ) );
-    this.registerLightModel( new IblModel             ( modelCode.iblCode        , modelCode.iblPmremPreCode   ) );
     
   }
   
@@ -111,8 +108,10 @@ class StandardModel implements ILightModel {
 
 
   getLightSetup(): LightSetup {
-    // TODO: assert not null
-    return <LightSetup>this._setup;
+    if( this._setup === null ){
+      throw new Error('LightSetup is null');
+    }
+    return this._setup;
   }
 
   setLightSetup(ls: LightSetup): void {

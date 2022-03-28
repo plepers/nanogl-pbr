@@ -3,25 +3,31 @@ import Program from 'nanogl/program';
 import Texture2D from 'nanogl/texture-2d';
 import { Texture } from 'nanogl/texture-base';
 import { ShMode } from '../interfaces/ShMode';
+import { IblType } from './IblModel';
 import Light from './Light';
 import LightType from './LightType';
 
 
 export default abstract class IblBase extends Light {
 
-  sh: ArrayLike<number>;
+  readonly _type = LightType.IBL;
+
+  abstract readonly iblType : IblType
+
   shMode: ShMode = "SH7";
 
   enableRotation = false
 
+  
 
-  constructor( sh : ArrayLike<number> ){
+
+  constructor( public env : Texture, public sh : ArrayLike<number> ){
     super();
-    this.sh    = sh;
   }
 
   setupProgram( prg : Program ){
-    if( prg.uSHCoeffs ) prg.uSHCoeffs(  this.sh  );
+    prg.uSHCoeffs?.(  this.sh  );
+    prg.tEnv?.(       this.env );
   }
 
   
