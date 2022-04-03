@@ -27,34 +27,37 @@ export default abstract class PunctualLight extends Light {
 
   _color: Float32Array;
   _wdir: Float32Array;
-  _castShadows: boolean;
-  _fbo: Fbo|null;
+  _fbo: Fbo|null = null;
   _camera: Camera|null;
-
+  
   iblShadowing: number;
-
-  _shadowmapSize: number;
-
+  shadowmapSize = 512;
+  
+  
   constructor(){
     super();
-
+    
     this._color = new Float32Array([1.0, 1.0, 1.0]);
     this._wdir = new Float32Array(this._wmatrix.buffer, 8 * 4, 3);
-
+    
     this._castShadows = false;
     this._fbo = null;
     this._camera = null;
-
-    this._shadowmapSize = 512;
+    
     this.iblShadowing = .5;
   }
-
-
-  castShadows(flag:boolean) {
+  
+  
+  private _castShadows = false;
+  
+  set castShadows(flag:boolean) {
     if (this._castShadows !== flag) {
       this._castShadows = flag;
       if(!flag) this._releaseShadowMapping();
     }
+  }
+  get castShadows():boolean {
+    return this._castShadows;
   }
 
 
@@ -89,13 +92,10 @@ export default abstract class PunctualLight extends Light {
     return null;
   }
 
-  getShadowmapSize():number{
-    return this._shadowmapSize;
-  }
 
 
   bindShadowmap() {
-    const  s = this._shadowmapSize;
+    const  s = this.shadowmapSize;
     const fbo = this._fbo!;
     fbo.resize(s, s);
     fbo.bind();
@@ -113,7 +113,7 @@ export default abstract class PunctualLight extends Light {
 
   protected _initShadowMapping( gl : GLContext ) {
     // assert this._castShadows == true
-    var s = this._shadowmapSize;
+    var s = this.shadowmapSize;
 
 
     // color attachment
@@ -148,7 +148,7 @@ export default abstract class PunctualLight extends Light {
   }
 
   protected _releaseShadowMapping() {
-    this._fbo!.dispose()
+    this._fbo?.dispose()
     this._fbo = null;
     this.remove(this._camera!);
     this._camera = null;
