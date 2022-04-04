@@ -1,6 +1,6 @@
 import Chunk from "../Chunk";
 import ChunksSlots from "../ChunksSlots";
-import Vert from "../glsl/templates/standard/ibl-sh7.vert"
+import Vert from "../glsl/templates/standard/ibl-sh7-v.vert"
 import Frag from "../glsl/templates/standard/ibl-sh7.frag"
 
 export default class SH7 extends Chunk {
