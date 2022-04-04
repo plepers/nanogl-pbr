@@ -4,7 +4,4 @@ __p+='#ifndef _H_IBL_SH_\n#define _H_IBL_SH_\n\n#if perVertexIrrad\n  IN vec3 vI
 ( require("../../includes/spherical-harmonics-SH7.glsl")() )+
 '\n\n#endif';
 return __p;
-}tion.glsl" )() )+
-'\n#endif\n\n#endif';
-return __p;
 }
