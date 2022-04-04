@@ -51,7 +51,7 @@ export default class DirectionalLightModel extends ShadowMappedLightModel<Direct
       this._colors!.set(l._color, i * 4)
       this._colors![i * 4 + 3] = l.iblShadowing;
 
-      if (l._castShadows) {
+      if (l.castShadows) {
         l.initShadowmap(gl);
         var shIndex = model.shadowChunk.addLight(l);
         if (this.shadowIndices[i] !== shIndex) {

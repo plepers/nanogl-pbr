@@ -85,7 +85,7 @@ class SpotLight extends PunctualLight implements ShadowMappedLight{
   set outerAngle( v :number ) {
     this._outerAngle = v;
     this._updateSpotData();
-    if (this._castShadows) {
+    if (this.castShadows) {
       this._camera!.lens.fov = this._outerAngle*2.0;
     }
   }

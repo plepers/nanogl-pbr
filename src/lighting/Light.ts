@@ -10,7 +10,7 @@ import LightType from './LightType'
 
 
 
-abstract class Light extends Node {
+export default abstract class Light extends Node {
 
   abstract readonly _type: LightType;
 
@@ -21,14 +21,49 @@ abstract class Light extends Node {
 }
 
 
+export function lightIsShadowMappedLight( light : Light ) : light is ShadowMappedLight {
+  return light._type === LightType.DIRECTIONAL || light._type === LightType.SPOT;
+}
 
-export interface ShadowMappedLight {
+export interface ShadowMappedLight extends Light {
+  /**
+   * Enable or disable shadow casting
+   */
+  castShadows : boolean;
+
+  /**
+   * The side size of the shadow map created by the light
+   */
   shadowmapSize : number;
+
+  /**
+   * Adjust the camera's projection of the light's shadowmap
+   * to fit the given bounds
+   * @param bounds 
+   */
   projectionFromBounds(bounds: Bounds) : void;
+
+  /**
+   * Create FBO resource used as target when rendering the shadowmap
+   * @param gl 
+   */
   initShadowmap(gl:GLContext) : void;
+
+  /**
+   * retrun the shadowmap texture. Cn be a RGB texture or a Depthtexture if supported
+   */
   getShadowmap() : Texture2D | null;
+
+  /**
+   * prepare and bind the shadowmap's FBO in order to render shadow casters
+   */
   bindShadowmap() : void;
+
+  /**
+   * return true if the shadowmap is a native Depth texture
+   */
   hasDepthShadowmap() : boolean;
+  
   getTexelBiasVector() : Float32Array;
   _createCamera():Camera;
   getShadowProjection( bounds : Bounds ) : mat4;
@@ -37,5 +72,3 @@ export interface ShadowMappedLight {
 
 
 
-
-export default Light

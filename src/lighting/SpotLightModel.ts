@@ -66,7 +66,7 @@ export default class SpotLightModel extends ShadowMappedLightModel<SpotLight> {
       this._colors![i * 4 + 3] = l.iblShadowing;
 
 
-      if (l._castShadows) {
+      if (l.castShadows) {
         l.initShadowmap( gl );
         var shIndex = model.shadowChunk.addLight(l);
         if (this.shadowIndices[i] !== shIndex) {
