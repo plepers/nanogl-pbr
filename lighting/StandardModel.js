@@ -137,7 +137,7 @@ class ShadowsChunk extends Chunk {
         this.shadowCount++;
         this._matrices.set(light.getShadowProjection(lightSetup.bounds), i * 16);
         this._texelBiasVector.set(light.getTexelBiasVector(), i * 4);
-        const s = light.getShadowmapSize();
+        const s = light.shadowmapSize;
         this._shadowmapSizes[i * 2 + 0] = s;
         this._shadowmapSizes[i * 2 + 1] = 1.0 / s;
         if (i === 0) {

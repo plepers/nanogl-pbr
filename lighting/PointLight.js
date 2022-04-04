@@ -7,8 +7,8 @@ class PointLight extends PunctualLight {
         this._radius = 0.0;
         this.radius = 50.0;
     }
-    castShadows(flag) {
-        return;
+    set castShadows(flag) {
+        flag;
     }
     get radius() { return this._radius; }
     set radius(v) {

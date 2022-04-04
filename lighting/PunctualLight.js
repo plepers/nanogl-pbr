@@ -18,20 +18,25 @@ const GL_COLOR_ATTACHMENT0 = 0x8CE0;
 export default class PunctualLight extends Light {
     constructor() {
         super();
+        this._fbo = null;
+        this.shadowmapSize = 512;
+        this._castShadows = false;
         this._color = new Float32Array([1.0, 1.0, 1.0]);
         this._wdir = new Float32Array(this._wmatrix.buffer, 8 * 4, 3);
         this._castShadows = false;
         this._fbo = null;
         this._camera = null;
-        this._shadowmapSize = 512;
         this.iblShadowing = .5;
     }
-    castShadows(flag) {
+    set castShadows(flag) {
         if (this._castShadows !== flag) {
             this._castShadows = flag;
             if (!flag)
                 this._releaseShadowMapping();
         }
+    }
+    get castShadows() {
+        return this._castShadows;
     }
     hasDepthShadowmap() {
         return this._castShadows && this._fbo.getAttachment(GL_DEPTH_ATTACHMENT).isTexture();
@@ -51,11 +56,8 @@ export default class PunctualLight extends Light {
         }
         return null;
     }
-    getShadowmapSize() {
-        return this._shadowmapSize;
-    }
     bindShadowmap() {
-        const s = this._shadowmapSize;
+        const s = this.shadowmapSize;
         const fbo = this._fbo;
         fbo.resize(s, s);
         fbo.bind();
@@ -68,7 +70,7 @@ export default class PunctualLight extends Light {
         return LightMtx;
     }
     _initShadowMapping(gl) {
-        var s = this._shadowmapSize;
+        var s = this.shadowmapSize;
         this._fbo = new Fbo(gl);
         this._fbo.bind();
         this._fbo.resize(s, s);
@@ -84,11 +86,18 @@ export default class PunctualLight extends Light {
         else {
             smap.setFilter(false, false, false);
         }
-        this._camera = this._createCamera();
-        this.add(this._camera);
+        this.getCamera();
+    }
+    getCamera() {
+        if (this._camera === null) {
+            this._camera = this._createCamera();
+            this.add(this._camera);
+        }
+        return this._camera;
     }
     _releaseShadowMapping() {
-        this._fbo.dispose();
+        var _a;
+        (_a = this._fbo) === null || _a === void 0 ? void 0 : _a.dispose();
         this._fbo = null;
         this.remove(this._camera);
         this._camera = null;

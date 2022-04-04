@@ -52,7 +52,7 @@ class SpotLight extends PunctualLight {
     set outerAngle(v) {
         this._outerAngle = v;
         this._updateSpotData();
-        if (this._castShadows) {
+        if (this.castShadows) {
             this._camera.lens.fov = this._outerAngle * 2.0;
         }
     }

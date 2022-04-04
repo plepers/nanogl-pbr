@@ -65,7 +65,11 @@ export interface ShadowMappedLight extends Light {
   hasDepthShadowmap() : boolean;
   
   getTexelBiasVector() : Float32Array;
-  _createCamera():Camera;
+
+  /**
+   * return the camera suitable to render the shadowmap
+   */
+  getCamera():Camera;
   getShadowProjection( bounds : Bounds ) : mat4;
 }
 

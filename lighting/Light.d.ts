@@ -5,19 +5,20 @@ import { GLContext } from 'nanogl/types';
 import Camera from 'nanogl-camera';
 import Bounds from '../Bounds';
 import LightType from './LightType';
-declare abstract class Light extends Node {
+export default abstract class Light extends Node {
     abstract readonly _type: LightType;
     constructor();
 }
-export interface ShadowMappedLight {
+export declare function lightIsShadowMappedLight(light: Light): light is ShadowMappedLight;
+export interface ShadowMappedLight extends Light {
+    castShadows: boolean;
+    shadowmapSize: number;
     projectionFromBounds(bounds: Bounds): void;
     initShadowmap(gl: GLContext): void;
     getShadowmap(): Texture2D | null;
     bindShadowmap(): void;
     hasDepthShadowmap(): boolean;
     getTexelBiasVector(): Float32Array;
-    _createCamera(): Camera;
+    getCamera(): Camera;
     getShadowProjection(bounds: Bounds): mat4;
-    getShadowmapSize(): number;
 }
-export default Light;

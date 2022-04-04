@@ -1,7 +1,10 @@
 import Node from 'nanogl-node';
-class Light extends Node {
+import LightType from './LightType';
+export default class Light extends Node {
     constructor() {
         super();
     }
 }
-export default Light;
+export function lightIsShadowMappedLight(light) {
+    return light._type === LightType.DIRECTIONAL || light._type === LightType.SPOT;
+}

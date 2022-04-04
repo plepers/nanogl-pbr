@@ -6,6 +6,7 @@ import DirLight   from '../lighting/DirectionalLight'
 import SpotLight   from '../lighting/SpotLight' 
 import LightSetup from '../lighting/LightSetup' 
 import ChunkList from '../ChunkCollection' 
+import {createContext, destroyContext} from './utils/glcontext'
 
 
 
@@ -13,6 +14,18 @@ import ChunkList from '../ChunkCollection'
 describe( "LightSetup", function(){
 
   var setup;
+
+  let gl;
+
+  before(function () {
+    gl = createContext();
+  });
+
+  after( function(){
+    destroyContext( gl );
+  })
+    
+
 
   beforeEach( function(){
     setup = new LightSetup()
@@ -92,7 +105,14 @@ describe( "LightSetup", function(){
       list.getCode()
     });
 
+    it( 'should prepare', function(){
+      l1.castShadows = true; 
+      setup.add( l1 );
+      setup.prepare(gl)
+    });
+
 
   });
+
 
 });

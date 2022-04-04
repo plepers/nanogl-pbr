@@ -112,7 +112,6 @@ export default abstract class PunctualLight extends Light {
 
 
   protected _initShadowMapping( gl : GLContext ) {
-    // assert this._castShadows == true
     var s = this.shadowmapSize;
 
 
@@ -142,9 +141,16 @@ export default abstract class PunctualLight extends Light {
       smap.setFilter(false, false, false);
     }
 
+    this.getCamera()
 
-    this._camera = this._createCamera();
-    this.add(this._camera);
+  }
+  
+  getCamera():Camera{
+    if( this._camera === null ){
+      this._camera = this._createCamera()
+      this.add(this._camera);
+    }
+    return this._camera;
   }
 
   protected _releaseShadowMapping() {
@@ -156,7 +162,8 @@ export default abstract class PunctualLight extends Light {
 
   abstract projectionFromBounds(bounds: Bounds) : void;
   abstract getTexelBiasVector() : Float32Array;
-  abstract _createCamera():Camera;
+
+  protected abstract _createCamera():Camera;
   
 
   // TODO : use Bounds.transform

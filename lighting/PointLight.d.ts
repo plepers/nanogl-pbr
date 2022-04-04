@@ -7,7 +7,7 @@ declare class PointLight extends PunctualLight {
     readonly _type = LightType.POINT;
     private _radius;
     constructor();
-    castShadows(flag: boolean): void;
+    set castShadows(flag: boolean);
     get radius(): number;
     set radius(v: number);
     projectionFromBounds(bounds: Bounds): mat4;
