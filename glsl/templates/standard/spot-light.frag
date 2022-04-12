@@ -5,7 +5,7 @@
   mediump vec3 lightColor                 = uLSpotColors     [{{@index}}].rgb;
   mediump vec4 distanceAndSpotAttenuation = uLSpotAttenuation[{{@index}}]    ;
 
-  vec3 lightVector = lightPositionWS - inputData.worldPos;
+  vec3 lightVector = lightPositionWS - geometryData.worldPos;
   float distanceSqr = dot(lightVector, lightVector);
 
   mediump vec3 lightDirection = vec3(lightVector * inversesqrt(distanceSqr));
@@ -25,7 +25,7 @@
 
   {{= if(obj.shadowIndex>-1){ }}
     ShadowMapData shadowmapData = GET_SHADOWMAP_DATA( {{@shadowIndex}} );
-    light.shadowAttenuation = SampleShadowAttenuation(shadowmapData, tShadowMap{{@shadowIndex}}, inputData.worldPos, inputData.worldNrm );
+    light.shadowAttenuation = SampleShadowAttenuation(shadowmapData, tShadowMap{{@shadowIndex}}, geometryData.worldPos, geometryData.worldNrm );
   {{= } else { }}
     light.shadowAttenuation = 1.0;
   {{= } }}
@@ -38,8 +38,8 @@
 
   
   // mediump vec3 attenuatedLightColor = light.color * (light.attenuation * light.shadowAttenuation);
-  // LS_DIFFUSE  += LightingLambert(attenuatedLightColor, light.direction, inputData.worldNrm);
-  // LS_SPECULAR += LightingSpecular(attenuatedLightColor, light.direction, inputData.worldNrm, inputData.viewDir, specularGloss, smoothness);
+  // LS_DIFFUSE  += LightingLambert(attenuatedLightColor, light.direction, geometryData.worldNrm);
+  // LS_SPECULAR += LightingSpecular(attenuatedLightColor, light.direction, geometryData.worldNrm, geometryData.viewDir, specularGloss, smoothness);
 
-  color += LightingPhysicallyBased(brdfData, light, inputData.worldNrm, inputData.viewDir);
+  LightingPhysicallyBased(brdfData,  geometryData, lightingData, light );
 }

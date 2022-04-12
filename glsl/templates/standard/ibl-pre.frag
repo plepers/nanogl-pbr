@@ -16,7 +16,7 @@
 
   uniform sampler2D tEnv;
 
-  #define SpecularIBL( tEnv, skyDir, roughness ) SampleIBL( tEnv, skyDir, roughness )
+  #define SpecularIBL( skyDir, roughness ) SampleIBL( skyDir, roughness )
 
 
   const vec2 _IBL_UVM = vec2(
@@ -25,8 +25,7 @@
   );
 
 
-
-  vec3 SampleIBL( sampler2D tEnv, vec3 skyDir, float roughness)
+  vec3 SampleIBL( vec3 skyDir, float roughness)
   {
     skyDir = IblRotateDir(skyDir);
     vec2 uvA = octwrapDecode( skyDir );
@@ -35,9 +34,9 @@
     float frac = fract(r7);
 
     uvA = uvA * _IBL_UVM + vec2(
-        0.5,
-        0.125*0.5 + 0.125 * ( r7 - frac )
-      );
+      0.5,
+      0.125*0.5 + 0.125 * ( r7 - frac )
+    );
 
     #if glossNearest
 
@@ -64,7 +63,7 @@
 
   uniform samplerCube tEnv;
 
-  #define SpecularIBL( tEnv, skyDir, roughness ) SampleIBLPMRem( tEnv, skyDir, roughness )
+  #define SpecularIBL( skyDir, roughness ) SampleIBLPMRem( skyDir, roughness )
 
 
   const float MaxRangeRGBD = 255.0; 
@@ -75,7 +74,7 @@
     return rgbd.rgb * ((MaxRangeRGBD / 255.0) / a);
   }
 
-  vec3 SampleIBLPMRem( samplerCube tEnv, vec3 skyDir, float roughness)
+  vec3 SampleIBLPMRem( vec3 skyDir, float roughness)
   {
 
     float r7   = 7.0*roughness;

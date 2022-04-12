@@ -72,7 +72,6 @@ export class StandardSpecular extends StandardPass {
         super(name);
         var surface = new SpecularSurface();
         this.setSurface(surface);
-        this.surface = surface;
     }
 }
 export class StandardMetalness extends StandardPass {
@@ -80,6 +79,5 @@ export class StandardMetalness extends StandardPass {
         super(name);
         var surface = new MetalnessSurface();
         this.setSurface(surface);
-        this.surface = surface;
     }
 }

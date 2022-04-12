@@ -43,11 +43,18 @@ IN mediump vec3 vWorldBitangent;
 
 
 
-struct InputData
+struct GeometryData
 {
     vec3  worldPos;
     mediump vec3   worldNrm;
     mediump vec3   viewDir;
+    mediump vec3   worldReflect;
+};
+
+
+struct LightingData
+{
+  lowp vec3 lightingColor;
 };
 
 
@@ -62,26 +69,29 @@ struct InputData
 
 
 
-void InitializeBRDFData(SurfaceData surface, out BRDFData brdf)
+void InitializeLightingData(out LightingData lightingData)
 {
-    mediump float reflectivity = ReflectivitySpecular(surface.specular);
-    mediump float oneMinusReflectivity = 1.0 - reflectivity;
+  lightingData.lightingColor = vec3(0.0);
+}
 
-    brdf.diffuse = surface.albedo * (vec3(1.0, 1.0, 1.0) - surface.specular);
-    brdf.specular = surface.specular;
 
-    brdf.grazingTerm = saturate(surface.smoothness + reflectivity);
-    brdf.perceptualRoughness = PerceptualSmoothnessToPerceptualRoughness(surface.smoothness);
-    brdf.roughness = max(PerceptualRoughnessToRoughness(brdf.perceptualRoughness), 0.001);
-    brdf.roughness2 = brdf.roughness * brdf.roughness;
 
-    brdf.normalizationTerm = brdf.roughness * 4.0 + 2.0;
-    brdf.roughness2MinusOne = brdf.roughness2 - 1.0;
 
-// #ifdef _ALPHAPREMULTIPLY_ON
-//     outBRDFData.diffuse *= alpha;
-//     alpha = alpha * oneMinusReflectivity + reflectivity;
-// #endif
+void InitializeBRDF(SurfaceData surface, out BRDFData brdf)
+{
+  mediump float reflectivity = ReflectivitySpecular(surface.specular);
+  mediump float oneMinusReflectivity = 1.0 - reflectivity;
+
+  brdf.diffuse = surface.albedo * (vec3(1.0, 1.0, 1.0) - surface.specular);
+  brdf.specular = surface.specular;
+
+  brdf.grazingTerm = saturate(surface.smoothness + reflectivity);
+  brdf.perceptualRoughness = PerceptualSmoothnessToPerceptualRoughness(surface.smoothness);
+  brdf.roughness = max(PerceptualRoughnessToRoughness(brdf.perceptualRoughness), 0.001);
+  brdf.roughness2 = brdf.roughness * brdf.roughness;
+
+  brdf.normalizationTerm = brdf.roughness * 4.0 + 2.0;
+  brdf.roughness2MinusOne = brdf.roughness2 - 1.0;
 }
 
 //                MAIN
@@ -107,48 +117,29 @@ void main( void ){
   #endif
 
 
-
   // -----------
 
-
-  InputData inputData;
-  inputData.worldPos = vWorldPosition;
-  inputData.viewDir  = normalize( uCameraPosition - vWorldPosition ); // safe normalize?
-  inputData.worldNrm = normalize(COMPUTE_NORMAL());
-  // inputData.vertexLighting = input.fogFactorAndVertexLight.yzw;
+  GeometryData geometryData;
+  geometryData.worldPos = vWorldPosition;
+  geometryData.viewDir  = normalize( uCameraPosition - vWorldPosition ); // safe normalize?
+  geometryData.worldNrm = normalize(COMPUTE_NORMAL());
+  geometryData.worldReflect = reflect( -geometryData.viewDir, geometryData.worldNrm );
 
 
   BRDFData brdfData;
-  InitializeBRDFData( surface, brdfData );
+  InitializeBRDF( surface, brdfData );
+
+  LightingData lightingData;
+  InitializeLightingData( lightingData );
 
 
-  // used by IBL reflexion
-  // --------------
-  vec3 worldReflect = reflect( -inputData.viewDir, inputData.worldNrm );
-  float NoV = sdot( inputData.viewDir, inputData.worldNrm );
 
-
-  vec3 diffuseContrib = vec3(0.0);
-  vec3 specularContrib = vec3(0.0);
-
-  vec3 color = vec3(0.0);
-
-  #define LS_SPECULAR specularContrib
-  #define LS_DIFFUSE  diffuseContrib
 
   #pragma SLOT prelightsf
   #pragma SLOT lightsf
   #pragma SLOT postlightsf
 
-  // todo: apply this only to ibl contrib
-  // add proper Fresnel to ponctual lights
-  specularContrib *= F_Schlick( NoV, brdfData.specular, surface.smoothness );
-  color += surface.occlusion * (diffuseContrib*brdfData.diffuse + specularContrib);
-
-
-  color += surface.emission;
-
-
+  lightingData.lightingColor += surface.emission;
 
 
   #if alphaMode( MASK )
@@ -160,89 +151,16 @@ void main( void ){
   #endif
 
 
-//   vec3 color = diffuseContrib*surface.albedo + specularContrib;
 
-
-//  #if HAS_occlusion
-//     float _occlusion = occlusion();
-//     #if HAS_occlusionStrength
-//       _occlusion = 1.0 - occlusionStrength() + _occlusion*occlusionStrength();
-//     #endif
-//     color *= _occlusion;
-//   #endif
-
-
-  FragColor.rgb = color;
-
+  FragColor.rgb = lightingData.lightingColor;
 
   #pragma SLOT postf_linear
 
-
   EXPOSURE(FragColor.rgb);
-
-
-// #if HAS_normal && hasTangents
-  // vec3 nrmnn = inputData.worldNrm;
-  // nrmnn.z *= -1.0;
-  // nrmnn = nrmnn * .5 + .5;
-  // FragColor.rgb = FragColor.rgb*0.0001 + nrmnn ;
-// #endif
-  // FragColor.rgb = FragColor.rgb*0.0001 + specularContrib;
-  // FragColor.rgb = FragColor.rgb*0.0001 + surface.smoothness;
-  // FragColor.rgb = FragColor.rgb*0.0001 + surface.specular;
-  // FragColor.rgb = FragColor.rgb*0.0001 + brdfData.diffuse;
-
-  
-
   GAMMA_CORRECTION(FragColor.rgb);
 
   #pragma SLOT postf
 
-  // FragColor.rgb = FragColor.rgb*0.0001 + surface.occlusion;
-  // FragColor.rgb = FragColor.rgb*0.0001 + inputData.worldNrm ;
-
-
-
-  // FragColor.a = 1.0;
-
-  // FragColor.rgb = FragColor.rgb*0.0001 + color;
-  // #ifdef HAS_specular
-  // #if HAS_specular
-  //   FragColor.rgb = FragColor.rgb*0.0001 + specular();
-  // #endif
-  // #endif
-  // FragColor.rgb = FragColor.rgb*0.0001 + surface.smoothness;
-  // FragColor.rgb = FragColor.rgb*0.0001 + specularContrib;
-  // FragColor.rgb = FragColor.rgb*0.0001 + albedo();
-  // FragColor.rgb = FragColor.rgb*0.0001 + albedoSq;
-  // FragColor.rgb = FragColor.rgb*0.0001 + diffuseContrib;
-  // FragColor.rgb = FragColor.rgb*0.0001 + worldNormal;
-  // FragColor.rgb = FragColor.rgb*0.0001 + vWorldNormal;
-  // FragColor.rgb = FragColor.rgb*0.0001 + vWorldBitangent;
-  // FragColor.rgb = FragColor.rgb*0.0001 + vWorldTangent;
-  // FragColor.rgb = FragColor.rgb*0.0001 + vec3(1.0, 0.0, 0.0);
-  // FragColor.rg = vec2(0.0);
-
-  // pure mirror
-
-  // vec3 _rr = reflect( -viewDir, vWorldNormal );
-  // vec3 purerefl = SpecularIBL( tEnv, _rr, 0.0 );
-  // FragColor.rgb = FragColor.rgb*0.0001 + purerefl;
-
-  #if HAS_normal
-  // FragColor.rgb = FragColor.rgb*0.0001 + normal();
-  #endif
-
-  #if HAS_occlusion
-    // FragColor.rgb = FragColor.rgb*0.0001 + occlusion();
-  #endif
-
-
-  // #ifdef HAS_GI
-  // #if HAS_GI
-  //   FragColor.rgb = FragColor.rgb*0.0001 + gi;
-  // #endif
-  // #endif
 
 
 }

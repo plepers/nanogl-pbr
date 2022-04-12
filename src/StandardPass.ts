@@ -151,13 +151,12 @@ export class StandardPass<TSurface extends PbrSurface = PbrSurface> extends Mate
 
 export class StandardSpecular extends StandardPass<SpecularSurface> {
 
-  readonly surface: SpecularSurface;
+  readonly surface!: SpecularSurface
 
   constructor( name : string = 'gltf-std-pass' ){
     super( name );
     var surface = new SpecularSurface()
     this.setSurface( surface );
-    this.surface = surface;
   }
 
 
@@ -165,13 +164,12 @@ export class StandardSpecular extends StandardPass<SpecularSurface> {
 
 export class StandardMetalness extends StandardPass<MetalnessSurface> {
   
-  readonly surface: MetalnessSurface;
+  readonly surface!: MetalnessSurface;
 
   constructor( name : string = 'gltf-std-pass' ){
     super( name );
     var surface = new MetalnessSurface()
     this.setSurface( surface );
-    this.surface = surface;
   }
 
 }

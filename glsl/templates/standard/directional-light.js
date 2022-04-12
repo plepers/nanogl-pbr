@@ -10,12 +10,10 @@ __p+='\n    ShadowMapData shadowmapData = GET_SHADOWMAP_DATA( '+
 (obj.shadowIndex)+
 ' );\n    light.shadowAttenuation = SampleShadowAttenuation(shadowmapData, tShadowMap'+
 (obj.shadowIndex)+
-', inputData.worldPos, inputData.worldNrm );\n  ';
+', geometryData.worldPos, geometryData.worldNrm );\n  ';
  } else { 
 __p+='\n    light.shadowAttenuation = 1.0;\n  ';
  } 
-__p+='\n  \n  // TODO store ibl contrib in separate struct\n  // #if iblShadowing\n  //   float sDamp = uLDirColors['+
-(obj.index)+
-'].a;\n  //   specularColor *= mix( sDamp, 1.0, shOccl );\n  // #endif\n\n  color += LightingPhysicallyBased(brdfData, light, inputData.worldNrm, inputData.viewDir);\n}';
+__p+='\n\n  LightingPhysicallyBased(brdfData,  geometryData, lightingData, light );\n}';
 return __p;
 }

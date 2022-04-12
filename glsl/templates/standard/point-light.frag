@@ -3,7 +3,7 @@
   vec3 lightPositionWS                    = uLPointPositions [{{@index}}].xyz;
   mediump vec3 lightColor                 = uLPointColors    [{{@index}}].rgb;
 
-  vec3 lightVector = lightPositionWS - inputData.worldPos;
+  vec3 lightVector = lightPositionWS - geometryData.worldPos;
   float distanceSqr = dot(lightVector, lightVector);
 
   mediump vec3 lightDirection = vec3(lightVector * inversesqrt(distanceSqr));
@@ -21,6 +21,6 @@
   light.attenuation = attenuation;
   light.color = lightColor;
   light.shadowAttenuation = 1.0;
-
-  color += LightingPhysicallyBased(brdfData, light, inputData.worldNrm, inputData.viewDir);
+  
+  LightingPhysicallyBased(brdfData,  geometryData, lightingData, light );
 }

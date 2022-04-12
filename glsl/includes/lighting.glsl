@@ -9,6 +9,7 @@ struct Light
 
 
 
+
 struct BRDFData
 {
   mediump vec3 diffuse;
@@ -82,11 +83,26 @@ mediump vec3 GGXZiomaBDRF(BRDFData brdfData, mediump vec3 normalWS, mediump vec3
 
 
 
-mediump vec3 LightingPhysicallyBased(BRDFData brdfData, Light light, mediump vec3 wNormal, mediump vec3 wViewDir)
+void LightingPhysicallyBased(BRDFData brdfData, GeometryData geometryData, inout LightingData lightingData, Light light )
 {
-    mediump float NdotL = sdot(wNormal, light.direction);
-    mediump vec3 inputLight = light.color * (light.attenuation * light.shadowAttenuation * NdotL);
-    return GGXZiomaBDRF(brdfData, wNormal, light.direction, wViewDir) * inputLight;
+  mediump float NdotL = sdot(geometryData.worldNrm, light.direction);
+  mediump vec3 inputLight = light.color * (light.attenuation * light.shadowAttenuation * NdotL);
+  lightingData.lightingColor += GGXZiomaBDRF(brdfData, geometryData.worldNrm, light.direction, geometryData.viewDir) * inputLight;
+}
+
+void EnvironmentBRDF(BRDFData brdfData, GeometryData geometryData, inout LightingData lightingData, float occlusion )
+{
+
+  vec3 indirectDiffuse = ComputeIBLDiffuse( geometryData.worldNrm );
+  vec3 indirectSpecular = SpecularIBL( geometryData.worldReflect, brdfData.perceptualRoughness );
+
+  float NoV = sdot( geometryData.viewDir, geometryData.worldNrm );
+  float fresnelTerm = pow( 1.0-NoV, 5.0 );
+
+  float surfaceReduction = 1.0 / (brdfData.roughness2 + 1.0);
+  vec3 specularTerm = vec3(surfaceReduction * mix(brdfData.specular, vec3(brdfData.grazingTerm), fresnelTerm));
+
+  lightingData.lightingColor += occlusion * (indirectDiffuse * brdfData.diffuse + indirectSpecular*specularTerm );
 }
 
 // Schlick approx

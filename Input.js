@@ -196,17 +196,17 @@ export default class Input extends Chunk {
         }
         this.param = null;
     }
-    attachSampler(name = `_t_${this.name}`, texCoords = TexCoord.create(), comps = 'rgba') {
+    attachSampler(name = `T${this.name}`, texCoords = TexCoord.create(), comps = 'rgba') {
         const p = new Sampler(name, texCoords);
         this.attach(p, comps);
         return p;
     }
-    attachUniform(name = `_u_${this.name}`, size = this.size, comps = 'rgba') {
+    attachUniform(name = `U${this.name}`, size = this.size, comps = 'rgba') {
         const p = new Uniform(name, size);
         this.attach(p, comps);
         return p;
     }
-    attachAttribute(name = `_a_${this.name}`, size = this.size, comps = 'rgba') {
+    attachAttribute(name = `A${this.name}`, size = this.size, comps = 'rgba') {
         const p = new Attribute(name, size);
         this.attach(p, comps);
         return p;
