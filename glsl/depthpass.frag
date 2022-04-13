@@ -24,6 +24,8 @@
 
 void main(void){
 
+  #pragma SLOT f
+  
   #if depthFormat( D_RGB )
     gl_FragColor.xyz = encodeDepthRGB( ( fragZW.x / fragZW.y ) * 0.5 + 0.5 );
     gl_FragColor.w=0.0;

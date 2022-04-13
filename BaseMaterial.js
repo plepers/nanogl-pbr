@@ -45,7 +45,7 @@ export default class BaseMaterial {
             this._passMap.delete(id);
         }
     }
-    getPass(id) {
+    getPass(id = 'color') {
         return this._passMap.get(id);
     }
     hasPass(id) {

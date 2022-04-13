@@ -202,11 +202,27 @@ export class Uniform extends Chunk implements IInputParam {
 
   readonly ptype : ParamType.UNIFORM = ParamType.UNIFORM
   
-  name: string;
-  size: InputSize;
+  readonly name: string;
+  readonly size: InputSize;
   token: string;
 
-  _value: Float32Array;
+
+  private _value: Float32Array
+
+  public get value(): Float32Array {
+    return this._value
+  }
+  
+  public set x(v: number) {this._value[0] = v}
+  public set y(v: number) {this._value[1] = v}
+  public set z(v: number) {this._value[2] = v}
+  public set w(v: number) {this._value[3] = v}
+
+  public get x(): number {return this._value[0]}
+  public get y(): number {return this._value[1]}
+  public get z(): number {return this._value[2]}
+  public get w(): number {return this._value[3]}
+
 
   constructor(name: string, size: InputSize) {
 

@@ -85,4 +85,6 @@ void main( void ){
     fragZW=gl_Position.zw;
   #endif
 
+  #pragma SLOT postv
+
 }

@@ -96,6 +96,17 @@ export class Uniform extends Chunk {
         this._value = new Float32Array(size);
         this.token = this.name;
     }
+    get value() {
+        return this._value;
+    }
+    set x(v) { this._value[0] = v; }
+    set y(v) { this._value[1] = v; }
+    set z(v) { this._value[2] = v; }
+    set w(v) { this._value[3] = v; }
+    get x() { return this._value[0]; }
+    get y() { return this._value[1]; }
+    get z() { return this._value[2]; }
+    get w() { return this._value[3]; }
     set(...args) {
         for (var i = 0; i < args.length; i++) {
             this._value[i] = args[i];

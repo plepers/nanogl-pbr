@@ -26,7 +26,7 @@ export default class BaseMaterial {
     constructor(gl: GLContext, name?: string);
     addPass(pass: MaterialPass, id?: MaterialPassId): PassInstance;
     removePass(id: MaterialPassId): void;
-    getPass(id: MaterialPassId): PassInstance | undefined;
+    getPass(id?: MaterialPassId): PassInstance | undefined;
     hasPass(id: MaterialPassId): boolean;
     getAllPasses(): PassInstance[];
     getProgram(passId: MaterialPassId): Program | undefined;

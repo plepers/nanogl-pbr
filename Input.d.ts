@@ -41,10 +41,19 @@ export declare class Sampler extends Chunk implements IInputParam {
 }
 export declare class Uniform extends Chunk implements IInputParam {
     readonly ptype: ParamType.UNIFORM;
-    name: string;
-    size: InputSize;
+    readonly name: string;
+    readonly size: InputSize;
     token: string;
-    _value: Float32Array;
+    private _value;
+    get value(): Float32Array;
+    set x(v: number);
+    set y(v: number);
+    set z(v: number);
+    set w(v: number);
+    get x(): number;
+    get y(): number;
+    get z(): number;
+    get w(): number;
     constructor(name: string, size: InputSize);
     set(...args: number[]): void;
     protected _genCode(slots: ChunksSlots): void;

@@ -98,7 +98,7 @@ export default class BaseMaterial {
     }
   }
 
-  getPass( id:MaterialPassId ) : PassInstance | undefined{
+  getPass( id:MaterialPassId = 'color' ) : PassInstance | undefined{
     return this._passMap.get( id );
   }
   

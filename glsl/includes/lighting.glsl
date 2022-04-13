@@ -90,6 +90,9 @@ void LightingPhysicallyBased(BRDFData brdfData, GeometryData geometryData, inout
   lightingData.lightingColor += GGXZiomaBDRF(brdfData, geometryData.worldNrm, light.direction, geometryData.viewDir) * inputLight;
 }
 
+
+#ifdef SpecularIBL
+
 void EnvironmentBRDF(BRDFData brdfData, GeometryData geometryData, inout LightingData lightingData, float occlusion )
 {
 
@@ -104,6 +107,8 @@ void EnvironmentBRDF(BRDFData brdfData, GeometryData geometryData, inout Lightin
 
   lightingData.lightingColor += occlusion * (indirectDiffuse * brdfData.diffuse + indirectSpecular*specularTerm );
 }
+
+#endif
 
 // Schlick approx
 // [Schlick 1994, "An Inexpensive BRDF Model for Physically-Based Rendering"]

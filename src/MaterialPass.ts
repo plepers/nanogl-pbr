@@ -6,7 +6,7 @@ import Node from "nanogl-node";
 import Camera from "nanogl-camera";
 
 
-export type MaterialPassId = 'color' | string
+export type MaterialPassId = 'color' | 'depth' | string
 
 export default abstract class MaterialPass {
 
