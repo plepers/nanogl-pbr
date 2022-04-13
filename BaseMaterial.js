@@ -1,4 +1,4 @@
-import GLConfig from 'nanogl-state/config';
+import GLConfig from 'nanogl-state/GLConfig';
 import ChunkCollection from './ChunkCollection';
 import ProgramSource from './ProgramSource';
 export class PassInstance {

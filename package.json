@@ -1,6 +1,6 @@
 {
   "name": "nanogl-pbr",
-  "version": "3.0.0-beta.12",
+  "version": "3.0.0-beta.13",
   "description": "pbr material for nanogl",
   "main": "pbr.js",
   "scripts": {
@@ -32,7 +32,7 @@
     "nanogl-camera": "^1.1.2",
     "nanogl-node": "^1.2.0",
     "nanogl-pf": "^1.1.1",
-    "nanogl-state": "^1.1.2"
+    "nanogl-state": "^2.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",

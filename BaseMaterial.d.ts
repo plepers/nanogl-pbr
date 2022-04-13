@@ -1,4 +1,4 @@
-import GLConfig from 'nanogl-state/config';
+import GLConfig from 'nanogl-state/GLConfig';
 import { GLContext } from 'nanogl/types';
 import Program from 'nanogl/program';
 import ChunkCollection from './ChunkCollection';

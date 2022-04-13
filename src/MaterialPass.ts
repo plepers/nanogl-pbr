@@ -1,4 +1,4 @@
-import GLConfig from "nanogl-state/config";
+import GLConfig from "nanogl-state/GLConfig";
 import ChunkCollection from "./ChunkCollection";
 import { ShaderSource } from "./interfaces/IProgramSource";
 import Program from "nanogl/program";
