@@ -40,7 +40,7 @@ const buffer = new ArrayBuffer(1024 * 16)
 const u8Buffer = new Uint8Array( buffer );
 const u16Buffer = new Uint16Array( buffer );
 
-if( window.TextEncoder !== undefined ){
+if( TextEncoder !== undefined ){
 
   const encoder = new TextEncoder()
 

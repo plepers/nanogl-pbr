@@ -46,7 +46,9 @@ export class IblModel extends AbstractLightModel {
             prg.tEnv(ibl.env);
             prg.uSHCoeffs(ibl.sh);
             if (ibl.enableRotation) {
-                prg.uEnvMatrix(mat3.fromMat4(M3, ibl._wmatrix));
+                mat3.fromMat4(M3, ibl._wmatrix);
+                mat3.invert(M3, M3);
+                prg.uEnvMatrix(M3);
             }
         }
     }
