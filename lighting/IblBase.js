@@ -1,3 +1,4 @@
+import { vec3 } from 'gl-matrix';
 import Light from './Light';
 import LightType from './LightType';
 export default class IblBase extends Light {
@@ -8,6 +9,9 @@ export default class IblBase extends Light {
         this._type = LightType.IBL;
         this.shMode = "SH7";
         this.enableRotation = false;
+        this.enableBoxProjection = false;
+        this.boxProjectionSize = vec3.fromValues(1, 1, 1);
+        this.boxProjectionOffset = vec3.fromValues(0, 0, 0);
     }
     setupProgram(prg) {
         var _a, _b;

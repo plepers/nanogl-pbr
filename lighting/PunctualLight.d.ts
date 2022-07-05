@@ -16,7 +16,7 @@ export default abstract class PunctualLight extends Light {
     private _castShadows;
     set castShadows(flag: boolean);
     get castShadows(): boolean;
-    hasDepthShadowmap(): boolean;
+    hasDepthShadowmap(): any;
     initShadowmap(gl: GLContext): void;
     getShadowmap(): Texture2D | null;
     bindShadowmap(): void;

@@ -15,6 +15,7 @@ export declare type IblType = typeof IblTypes[number];
 export declare class IblModel extends AbstractLightModel<IblBase> {
     readonly type = LightType.IBL;
     enableRotation: Flag;
+    enableBoxProjection: Flag;
     _iblType: Enum<readonly ["OCTA", "PMREM"]>;
     genCodePerLights(light: Ibl, index: number, shadowIndex: number): string;
     prepare(gl: GLContext, model: ILightModel): void;

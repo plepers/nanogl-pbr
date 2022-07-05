@@ -5,6 +5,7 @@
 
 
 {{ require( "../../includes/ibl-rotation.glsl" )() }}
+{{ require( "../../includes/ibl-box-projection.glsl" )() }}
 {{ require( "../../includes/octwrap-decode.glsl" )() }}
 {{ require( "../../includes/decode-rgbe.glsl" )() }}
 
@@ -16,7 +17,7 @@
 
   uniform sampler2D tEnv;
 
-  #define SpecularIBL( skyDir, roughness ) SampleIBL( skyDir, roughness )
+  #define SpecularIBL( skyDir, roughness, wpos ) SampleIBL( skyDir, roughness, wpos )
 
 
   const vec2 _IBL_UVM = vec2(
@@ -25,8 +26,9 @@
   );
 
 
-  vec3 SampleIBL( vec3 skyDir, float roughness)
+  vec3 SampleIBL( vec3 skyDir, float roughness, vec3 worldPos)
   {
+    skyDir = IblBoxProjection(skyDir, worldPos);
     skyDir = IblRotateDir(skyDir);
     vec2 uvA = octwrapDecode( skyDir );
 
@@ -63,7 +65,7 @@
 
   uniform samplerCube tEnv;
 
-  #define SpecularIBL( skyDir, roughness ) SampleIBLPMRem( skyDir, roughness )
+  #define SpecularIBL( skyDir, roughness, wpos ) SampleIBLPMRem( skyDir, roughness, wpos )
 
 
   const float MaxRangeRGBD = 255.0; 
@@ -74,9 +76,10 @@
     return rgbd.rgb * ((MaxRangeRGBD / 255.0) / a);
   }
 
-  vec3 SampleIBLPMRem( vec3 skyDir, float roughness)
+  vec3 SampleIBLPMRem( vec3 skyDir, float roughness, wpos)
   {
-
+    skyDir = IblBoxProjection(skyDir, worldPos);
+    skyDir = IblRotateDir(skyDir);
     float r7   = 7.0*roughness;
 
     float mipA = floor(r7);

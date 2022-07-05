@@ -8,12 +8,13 @@ import { GLContext } from "nanogl/types";
 import SH9 from "./SH9";
 import SH7 from "./SH7";
 import Flag from "../Flag";
-import { mat3 } from "gl-matrix";
+import { mat3, vec3 } from "gl-matrix";
 import Enum from "../Enum";
 import IblBase from "./IblBase";
 
 
 const M3 = mat3.create()
+const V3 = vec3.create()
 
 
 export const IblTypes = [
@@ -27,7 +28,9 @@ export class IblModel extends AbstractLightModel<IblBase> {
 
   readonly type = LightType.IBL;
 
-  enableRotation: Flag = new Flag("enableRotation")
+  enableRotation     : Flag = new Flag("enableRotation"     )
+  enableBoxProjection: Flag = new Flag("enableBoxProjection")
+
   _iblType = new Enum("iblType", IblTypes)
 
 
@@ -40,6 +43,7 @@ export class IblModel extends AbstractLightModel<IblBase> {
     const ibl = this.lights[0]
     if( ibl ){
       this.enableRotation.set(ibl.enableRotation)
+      this.enableBoxProjection.set(ibl.enableBoxProjection)
     } 
   }
 
@@ -61,6 +65,7 @@ export class IblModel extends AbstractLightModel<IblBase> {
   constructor( code : GlslCode, preCode : GlslCode ) {
     super( code, preCode );
     this.addChild( this.enableRotation )
+    this.addChild( this.enableBoxProjection )
     this.addChild( this._iblType )
   }
 
@@ -74,6 +79,17 @@ export class IblModel extends AbstractLightModel<IblBase> {
         mat3.fromMat4( M3, ibl._wmatrix)
         mat3.invert( M3, M3 )
         prg.uEnvMatrix( M3 );
+      }
+      if( ibl.enableBoxProjection ){
+
+        vec3.scaleAndAdd(V3, ibl._wposition as vec3, ibl.boxProjectionSize, -0.5)
+        prg.uBoxProjMin( V3 );
+        
+        vec3.scaleAndAdd(V3, ibl._wposition as vec3, ibl.boxProjectionSize, 0.5)
+        prg.uBoxProjMax( V3 );
+        
+        vec3.add(V3, ibl._wposition as vec3, ibl.boxProjectionOffset)
+        prg.uBoxProjPos( V3 );
       }
     }
   }

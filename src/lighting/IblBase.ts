@@ -1,4 +1,5 @@
 
+import { vec3 } from 'gl-matrix';
 import Program from 'nanogl/program';
 import Texture2D from 'nanogl/texture-2d';
 import { Texture } from 'nanogl/texture-base';
@@ -8,6 +9,12 @@ import Light from './Light';
 import LightType from './LightType';
 
 
+export type IblBoxProjection = {
+  center: vec3;
+  min: vec3;
+  max: vec3;
+}
+
 export default abstract class IblBase extends Light {
 
   readonly _type = LightType.IBL;
@@ -16,7 +23,25 @@ export default abstract class IblBase extends Light {
 
   shMode: ShMode = "SH7";
 
+  /**
+   * enable rotation of the IBL
+   */
   enableRotation = false
+
+  /**
+   * enable box projection for reflection
+   */
+  enableBoxProjection = false
+
+  /**
+   * The size of the box projection
+   */
+  readonly boxProjectionSize = vec3.fromValues(1, 1, 1)
+  
+  /**
+   * offset the center of the projection relative to the world space position of the light's node
+   */
+  readonly boxProjectionOffset = vec3.fromValues(0, 0, 0)
 
   
 

@@ -97,7 +97,7 @@ void EnvironmentBRDF(BRDFData brdfData, GeometryData geometryData, inout Lightin
 {
 
   vec3 indirectDiffuse = ComputeIBLDiffuse( geometryData.worldNrm );
-  vec3 indirectSpecular = SpecularIBL( geometryData.worldReflect, brdfData.perceptualRoughness );
+  vec3 indirectSpecular = SpecularIBL( geometryData.worldReflect, brdfData.perceptualRoughness, geometryData.worldPos );
 
   float NoV = sdot( geometryData.viewDir, geometryData.worldNrm );
   float fresnelTerm = pow( 1.0-NoV, 5.0 );

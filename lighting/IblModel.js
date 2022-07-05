@@ -3,9 +3,10 @@ import LightType from "./LightType";
 import SH9 from "./SH9";
 import SH7 from "./SH7";
 import Flag from "../Flag";
-import { mat3 } from "gl-matrix";
+import { mat3, vec3 } from "gl-matrix";
 import Enum from "../Enum";
 const M3 = mat3.create();
+const V3 = vec3.create();
 export const IblTypes = [
     "OCTA",
     "PMREM",
@@ -15,8 +16,10 @@ export class IblModel extends AbstractLightModel {
         super(code, preCode);
         this.type = LightType.IBL;
         this.enableRotation = new Flag("enableRotation");
+        this.enableBoxProjection = new Flag("enableBoxProjection");
         this._iblType = new Enum("iblType", IblTypes);
         this.addChild(this.enableRotation);
+        this.addChild(this.enableBoxProjection);
         this.addChild(this._iblType);
     }
     genCodePerLights(light, index, shadowIndex) {
@@ -27,6 +30,7 @@ export class IblModel extends AbstractLightModel {
         const ibl = this.lights[0];
         if (ibl) {
             this.enableRotation.set(ibl.enableRotation);
+            this.enableBoxProjection.set(ibl.enableBoxProjection);
         }
     }
     addLight(l) {
@@ -49,6 +53,14 @@ export class IblModel extends AbstractLightModel {
                 mat3.fromMat4(M3, ibl._wmatrix);
                 mat3.invert(M3, M3);
                 prg.uEnvMatrix(M3);
+            }
+            if (ibl.enableBoxProjection) {
+                vec3.scaleAndAdd(V3, ibl._wposition, ibl.boxProjectionSize, -0.5);
+                prg.uBoxProjMin(V3);
+                vec3.scaleAndAdd(V3, ibl._wposition, ibl.boxProjectionSize, 0.5);
+                prg.uBoxProjMax(V3);
+                vec3.add(V3, ibl._wposition, ibl.boxProjectionOffset);
+                prg.uBoxProjPos(V3);
             }
         }
     }
