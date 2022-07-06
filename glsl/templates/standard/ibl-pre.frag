@@ -1,14 +1,10 @@
-
-
 #ifndef _H_SPECULAR_IBL_
 #define _H_SPECULAR_IBL_
-
 
 {{ require( "../../includes/ibl-rotation.glsl" )() }}
 {{ require( "../../includes/ibl-box-projection.glsl" )() }}
 {{ require( "../../includes/octwrap-decode.glsl" )() }}
 {{ require( "../../includes/decode-rgbe.glsl" )() }}
-
 
 /* =========================================================
   OCTA
@@ -19,12 +15,10 @@
 
   #define SpecularIBL( skyDir, roughness, wpos ) SampleIBL( skyDir, roughness, wpos )
 
-
   const vec2 _IBL_UVM = vec2(
     0.25*(254.0/256.0),
     0.125*0.5*(254.0/256.0)
   );
-
 
   vec3 SampleIBL( vec3 skyDir, float roughness, vec3 worldPos)
   {

@@ -5,9 +5,7 @@
 
 OUT vec3 vIrradiance;
 uniform vec3 uSHCoeffs[9];
-
 {{ require("../../includes/spherical-harmonics-SH9.glsl")() }}
-
 {{ require( "../../includes/ibl-rotation.glsl" )() }}
 #endif
 

@@ -96,7 +96,7 @@ void LightingPhysicallyBased(BRDFData brdfData, GeometryData geometryData, inout
 void EnvironmentBRDF(BRDFData brdfData, GeometryData geometryData, inout LightingData lightingData, float occlusion )
 {
 
-  vec3 indirectDiffuse = ComputeIBLDiffuse( geometryData.worldNrm );
+  vec3 indirectDiffuse  = ComputeIBLDiffuse( geometryData.worldNrm );
   vec3 indirectSpecular = SpecularIBL( geometryData.worldReflect, brdfData.perceptualRoughness, geometryData.worldPos );
 
   float NoV = sdot( geometryData.viewDir, geometryData.worldNrm );
