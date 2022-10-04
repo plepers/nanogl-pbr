@@ -8,7 +8,7 @@
 // 5.3.4.1
 // Diffuse BRDF integration
 // https://google.github.io/filament/Filament.md.html#lighting/imagebasedlights/distantlightprobes
-vec3 SampleSH( vec3 Normal, vec3 shCoeffs[9] )
+vec3 SampleSH9( vec3 Normal, vec3 shCoeffs[9] )
 {
 
   vec3 n = Normal;

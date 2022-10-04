@@ -5,33 +5,47 @@ import AbstractLightModel from "./AbstractLightModel";
 import LightType from "./LightType";
 import ILightModel from "../interfaces/ILightModel";
 import { GLContext } from "nanogl/types";
-import SH9 from "./SH9";
-import SH7 from "./SH7";
 import Flag from "../Flag";
 import { mat3, vec3 } from "gl-matrix";
 import Enum from "../Enum";
-import IblBase from "./IblBase";
 
 
 const M3 = mat3.create()
 const V3 = vec3.create()
 
 
-export const IblTypes = [
+export const IblFormats = [
   "OCTA",
   "PMREM",
 ] as const
 
-export type IblType = typeof IblTypes[number]
 
-export class IblModel extends AbstractLightModel<IblBase> {
+export const ShFormats = [
+  "SH9",
+  "SH7",
+] as const
+
+export const HdrEncodings = [
+  "RGBM",
+  "RGBD",
+  "RGBE",
+] as const
+
+
+export type IblFormat = typeof IblFormats[number]
+export type ShFormat = typeof ShFormats[number]
+export type HdrEncoding = typeof HdrEncodings[number]
+
+export class IblModel extends AbstractLightModel<Ibl> {
 
   readonly type = LightType.IBL;
 
-  enableRotation     : Flag = new Flag("enableRotation"     )
-  enableBoxProjection: Flag = new Flag("enableBoxProjection")
+  private readonly enableRotation      = new Flag("enableRotation"     )
+  private readonly enableBoxProjection = new Flag("enableBoxProjection")
 
-  _iblType = new Enum("iblType", IblTypes)
+  private readonly iblFormat   = new Enum("iblFormat"     , IblFormats  )
+  private readonly shFormat    = new Enum("shFormat"      , ShFormats   )
+  private readonly hdrEncoding = new Enum("iblHdrEncoding", HdrEncodings)
 
 
   genCodePerLights(light: Ibl, index: number, shadowIndex: number): string {
@@ -44,29 +58,29 @@ export class IblModel extends AbstractLightModel<IblBase> {
     if( ibl ){
       this.enableRotation.set(ibl.enableRotation)
       this.enableBoxProjection.set(ibl.enableBoxProjection)
+      this.iblFormat.set(ibl.iblFormat)
+      this.shFormat.set(ibl.shFormat)
+      this.hdrEncoding.set(ibl.hdrEncoding)
     } 
   }
 
 
-  addLight(l: IblBase) {
+  addLight(l: Ibl) {
     if (this.lights.length > 0){
       throw new Error("IblModel support only one Ibl Light")
     }
-    this.addChild(this.getSHChunk(l));
-    this._iblType.set(l.iblType)
     super.addLight( l );
 
   }
 
-  getSHChunk( l: IblBase ){
-    return l.shMode === "SH7" ? new SH7() : new SH9();
-  }
 
   constructor( code : GlslCode, preCode : GlslCode ) {
     super( code, preCode );
     this.addChild( this.enableRotation )
     this.addChild( this.enableBoxProjection )
-    this.addChild( this._iblType )
+    this.addChild( this.iblFormat )
+    this.addChild( this.shFormat )
+    this.addChild( this.hdrEncoding )
   }
 
 

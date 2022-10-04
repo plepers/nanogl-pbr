@@ -1,4 +1,5 @@
 import Chunk from './Chunk';
+import { isWebgl2 } from "nanogl/types";
 class ShaderVersion extends Chunk {
     constructor(v = '100') {
         super(true, false);
@@ -16,6 +17,9 @@ class ShaderVersion extends Chunk {
     _genCode(slots) {
         var s = `#version ${this.version}`;
         slots.add('version', s);
+    }
+    guessFromContext(gl) {
+        this.set(isWebgl2(gl) ? '300 es' : '100');
     }
 }
 export default ShaderVersion;

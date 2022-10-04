@@ -5,22 +5,22 @@ import AbstractLightModel from "./AbstractLightModel";
 import LightType from "./LightType";
 import ILightModel from "../interfaces/ILightModel";
 import { GLContext } from "nanogl/types";
-import SH9 from "./SH9";
-import SH7 from "./SH7";
-import Flag from "../Flag";
-import Enum from "../Enum";
-import IblBase from "./IblBase";
-export declare const IblTypes: readonly ["OCTA", "PMREM"];
-export declare type IblType = typeof IblTypes[number];
-export declare class IblModel extends AbstractLightModel<IblBase> {
+export declare const IblFormats: readonly ["OCTA", "PMREM"];
+export declare const ShFormats: readonly ["SH9", "SH7"];
+export declare const HdrEncodings: readonly ["RGBM", "RGBD", "RGBE"];
+export declare type IblFormat = typeof IblFormats[number];
+export declare type ShFormat = typeof ShFormats[number];
+export declare type HdrEncoding = typeof HdrEncodings[number];
+export declare class IblModel extends AbstractLightModel<Ibl> {
     readonly type = LightType.IBL;
-    enableRotation: Flag;
-    enableBoxProjection: Flag;
-    _iblType: Enum<readonly ["OCTA", "PMREM"]>;
+    private readonly enableRotation;
+    private readonly enableBoxProjection;
+    private readonly iblFormat;
+    private readonly shFormat;
+    private readonly hdrEncoding;
     genCodePerLights(light: Ibl, index: number, shadowIndex: number): string;
     prepare(gl: GLContext, model: ILightModel): void;
-    addLight(l: IblBase): void;
-    getSHChunk(l: IblBase): SH9 | SH7;
+    addLight(l: Ibl): void;
     constructor(code: GlslCode, preCode: GlslCode);
     setup(prg: Program): void;
 }

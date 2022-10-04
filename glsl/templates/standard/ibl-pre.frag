@@ -3,105 +3,20 @@
 
 {{ require( "../../includes/ibl-rotation.glsl" )() }}
 {{ require( "../../includes/ibl-box-projection.glsl" )() }}
-{{ require( "../../includes/octwrap-decode.glsl" )() }}
-{{ require( "../../includes/decode-rgbe.glsl" )() }}
-
-/* =========================================================
-  OCTA
-========================================================= */
-#if iblType( OCTA )
-
-  uniform sampler2D tEnv;
-
-  #define SpecularIBL( skyDir, roughness, wpos ) SampleIBL( skyDir, roughness, wpos )
-
-  const vec2 _IBL_UVM = vec2(
-    0.25*(254.0/256.0),
-    0.125*0.5*(254.0/256.0)
-  );
-
-  vec3 SampleIBL( vec3 skyDir, float roughness, vec3 worldPos)
-  {
-    skyDir = IblBoxProjection(skyDir, worldPos);
-    skyDir = IblRotateDir(skyDir);
-    vec2 uvA = octwrapDecode( skyDir );
-
-    float r7   = 7.0*roughness;
-    float frac = fract(r7);
-
-    uvA = uvA * _IBL_UVM + vec2(
-      0.5,
-      0.125*0.5 + 0.125 * ( r7 - frac )
-    );
-
-    #if glossNearest
-
-      return decodeRGBE( texture2D(tEnv,uvA) );
-
-    #else
-
-      vec2 uvB=uvA+vec2(0.0,0.125);
-      return  mix(
-        decodeRGBE( texture2D(tEnv,uvA) ),
-        decodeRGBE( texture2D(tEnv,uvB) ),
-        frac
-      );
-
-    #endif
-
-  }
 
 
-/* =========================================================
-  PMREM
-========================================================= */
-#elif iblType( PMREM ) && __VERSION__ == 300
-
-  uniform samplerCube tEnv;
-
-  #define SpecularIBL( skyDir, roughness, wpos ) SampleIBLPMRem( skyDir, roughness, wpos )
-
-
-  const float MaxRangeRGBD = 255.0; 
-
-  vec3 decodeRGBD(vec4 rgbd)
-  {
-    float a = max(rgbd.a, 0.0);
-    return rgbd.rgb * ((MaxRangeRGBD / 255.0) / a);
-  }
-
-  vec3 SampleIBLPMRem( vec3 skyDir, float roughness, wpos)
-  {
-    skyDir = IblBoxProjection(skyDir, worldPos);
-    skyDir = IblRotateDir(skyDir);
-    float r7   = 7.0*roughness;
-
-    float mipA = floor(r7);
-    float mipB = ceil(r7);
-    float delta = r7 - mipA;
-
-    #if glossNearest
-
-      return decodeRGBD( textureLod(tEnv,skyDir, mipA) );
-
-    #else
-
-      vec3 color = mix(
-        decodeRGBD( textureLod(tEnv, skyDir, mipA) ),
-        decodeRGBD( textureLod(tEnv, skyDir, mipB) ),
-        delta
-      );
-
-      return color;
-
-    #endif
-
-  }
-
-
+#if iblHdrEncoding( RGBM )
+  {{ require( "../../includes/decode-rgbm.glsl" )() }}
+  #define DECODE_HDR( x ) decodeRGBM16( x )
+#elif iblHdrEncoding( RGBE )
+  {{ require( "../../includes/decode-rgbe.glsl" )() }}
+  #define DECODE_HDR( x ) decodeRGBE( x )
+#elif iblHdrEncoding( RGBD )
+  {{ require( "../../includes/decode-rgbd.glsl" )() }}
+  #define DECODE_HDR( x ) decodeRGBD( x )
 #endif
 
-
+{{ require( "./ibl-pre-sh.frag" )() }}
 
 
 
@@ -113,5 +28,84 @@ vec3 ComputeIBLDiffuse( vec3 worldNormal ){
     return SampleSH(IblRotateDir(worldNormal), uSHCoeffs );
   #endif
 }
+#endif
+
+/* =========================================================
+  OCTA
+========================================================= */
+#if iblFormat( OCTA )
+  
+
+  #define OCTA_LEVELS 8
+  #define OCTA_MAXLOD float(OCTA_LEVELS-1)
+
+  {{ require( "../../includes/octwrap-decode.glsl" )() }}
+
+  uniform sampler2D tEnv;
+
+  #define SpecularIBL( skyDir, roughness, wpos ) SampleIBL( skyDir, roughness, wpos )
+
+  const vec2 _IBL_UVM = vec2(
+    0.25*(254.0/256.0),
+    0.125*0.5*(254.0/256.0)
+  );
+
+  vec3 SampleIBL( vec3 skyDir, float roughness, vec3 wpos)
+  {
+    skyDir = IblBoxProjection(skyDir, wpos);
+    skyDir = IblRotateDir(skyDir);
+    vec2 uvA = octwrapDecode( skyDir );
+    
+    float lodLevel   = OCTA_MAXLOD*roughness * (2.0 - roughness);
+    float frac = fract(lodLevel);
+
+    uvA = uvA * _IBL_UVM + vec2(
+      0.5,
+      0.125*0.5 + 0.125 * ( lodLevel - frac )
+    );
+
+    #if glossNearest
+
+      return DECODE_HDR( texture2D(tEnv,uvA) );
+
+    #else
+
+      vec2 uvB=uvA+vec2(0.0,0.125);
+      return  mix(
+        DECODE_HDR( texture2D(tEnv,uvA) ),
+        DECODE_HDR( texture2D(tEnv,uvB) ),
+        frac
+      );
+
+    #endif
+
+  }
+
+
+/* =========================================================
+  PMREM
+========================================================= */
+#elif iblFormat( PMREM ) && __VERSION__ == 300
+
+  // assume 256 to 16 mip levels
+  #define PMREM_LEVELS 5
+  #define PMREM_MAXLOD float(PMREM_LEVELS-1)
+  
+  uniform samplerCube tEnv;
+
+  #define SpecularIBL( skyDir, roughness, wpos ) SampleIBLPMRem( skyDir, roughness, wpos )
+
+  vec3 SampleIBLPMRem( vec3 skyDir, float roughness, vec3 wpos)
+  {
+    skyDir = IblBoxProjection(skyDir, wpos);
+    skyDir = IblRotateDir(skyDir);
+
+    float lodLevel   = PMREM_MAXLOD*roughness * (2.0 - roughness);
+    return DECODE_HDR( textureLod( tEnv, skyDir, lodLevel) );
+  }
+
 
 #endif
+
+
+

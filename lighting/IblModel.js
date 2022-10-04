@@ -1,15 +1,22 @@
 import AbstractLightModel from "./AbstractLightModel";
 import LightType from "./LightType";
-import SH9 from "./SH9";
-import SH7 from "./SH7";
 import Flag from "../Flag";
 import { mat3, vec3 } from "gl-matrix";
 import Enum from "../Enum";
 const M3 = mat3.create();
 const V3 = vec3.create();
-export const IblTypes = [
+export const IblFormats = [
     "OCTA",
     "PMREM",
+];
+export const ShFormats = [
+    "SH9",
+    "SH7",
+];
+export const HdrEncodings = [
+    "RGBM",
+    "RGBD",
+    "RGBE",
 ];
 export class IblModel extends AbstractLightModel {
     constructor(code, preCode) {
@@ -17,10 +24,14 @@ export class IblModel extends AbstractLightModel {
         this.type = LightType.IBL;
         this.enableRotation = new Flag("enableRotation");
         this.enableBoxProjection = new Flag("enableBoxProjection");
-        this._iblType = new Enum("iblType", IblTypes);
+        this.iblFormat = new Enum("iblFormat", IblFormats);
+        this.shFormat = new Enum("shFormat", ShFormats);
+        this.hdrEncoding = new Enum("iblHdrEncoding", HdrEncodings);
         this.addChild(this.enableRotation);
         this.addChild(this.enableBoxProjection);
-        this.addChild(this._iblType);
+        this.addChild(this.iblFormat);
+        this.addChild(this.shFormat);
+        this.addChild(this.hdrEncoding);
     }
     genCodePerLights(light, index, shadowIndex) {
         this.enableRotation.set(light.enableRotation);
@@ -31,18 +42,16 @@ export class IblModel extends AbstractLightModel {
         if (ibl) {
             this.enableRotation.set(ibl.enableRotation);
             this.enableBoxProjection.set(ibl.enableBoxProjection);
+            this.iblFormat.set(ibl.iblFormat);
+            this.shFormat.set(ibl.shFormat);
+            this.hdrEncoding.set(ibl.hdrEncoding);
         }
     }
     addLight(l) {
         if (this.lights.length > 0) {
             throw new Error("IblModel support only one Ibl Light");
         }
-        this.addChild(this.getSHChunk(l));
-        this._iblType.set(l.iblType);
         super.addLight(l);
-    }
-    getSHChunk(l) {
-        return l.shMode === "SH7" ? new SH7() : new SH9();
     }
     setup(prg) {
         if (this.lights.length > 0) {

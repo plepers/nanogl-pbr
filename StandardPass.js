@@ -21,7 +21,7 @@ export class StandardPass extends MaterialPass {
             frag: fShader(),
         });
         const inputs = this.inputs;
-        inputs.add(this.version = new ShaderVersion('100'));
+        inputs.add(this.version = new ShaderVersion());
         inputs.add(this.precision = new ShaderPrecision('highp'));
         inputs.add(this.shaderid = new Flag('id_' + MAT_ID, true));
         inputs.add(this.alpha = new Input('alpha', 1));

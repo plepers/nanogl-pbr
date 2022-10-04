@@ -9,7 +9,7 @@
 // http://www.ppsloan.org/publications/StupidSH36.pdf
 //
 //
-vec3 SampleSH( vec3 Normal, vec4 shCoefs[7] )
+vec3 SampleSH7( vec3 Normal, vec4 shCoefs[7] )
 {
   Normal.xz = Normal.zx;
   vec4 NormalVector = vec4(Normal, 1.0);

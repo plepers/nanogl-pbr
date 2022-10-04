@@ -75,7 +75,7 @@ export class StandardPass<TSurface extends PbrSurface = PbrSurface> extends Mate
     const inputs = this.inputs;
 
 
-    inputs.add( this.version               = new ShaderVersion( '100' ) );
+    inputs.add( this.version               = new ShaderVersion( ) );
     inputs.add( this.precision             = new ShaderPrecision( 'highp' ) );
     inputs.add( this.shaderid              = new Flag ( 'id_'+MAT_ID,  true  ) );
 
