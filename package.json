@@ -4,7 +4,7 @@
   "description": "pbr material for nanogl",
   "main": "pbr.js",
   "scripts": {
-    "build": "node tools/make_templates.js && tsc",
+    "build": "tsc",
     "test": "npm run build && karma start",
     "gztest": "browserify standard.js -o gztest.js && uglifyjs --screw-ie8 -m -c warnings=false -o gztest.min.js -- gztest.js && gzip -k -9 gztest.min.js && stat -f%z gztest.min.js.gz && rm ./*gztest*"
   },

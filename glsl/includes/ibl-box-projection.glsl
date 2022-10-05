@@ -10,9 +10,9 @@
   vec3 _iblBoxProj( vec3 reflectionWS, vec3 positionWS ) {
 
     vec3 boxMinMax = vec3(
-      (reflectionWS.x > 0.0f) ? uBoxProjMax.x : uBoxProjMin.x,
-      (reflectionWS.y > 0.0f) ? uBoxProjMax.y : uBoxProjMin.y,
-      (reflectionWS.z > 0.0f) ? uBoxProjMax.z : uBoxProjMin.z
+      (reflectionWS.x > 0.0) ? uBoxProjMax.x : uBoxProjMin.x,
+      (reflectionWS.y > 0.0) ? uBoxProjMax.y : uBoxProjMin.y,
+      (reflectionWS.z > 0.0) ? uBoxProjMax.z : uBoxProjMin.z
     );
 
     vec3 rbMinMax = (boxMinMax - positionWS) / reflectionWS;
