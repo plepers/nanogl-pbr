@@ -49,7 +49,8 @@
   #define COMPUTE_NORMAL(k) ComputeWorldNormal( NormalMap(), normal_texCoord() )
   vec3 ComputeWorldNormal( vec3 nrmTex, vec2 nrmTexCoords ){
     mat3 tbn = computeTangentSpaceMatrix( nrmTexCoords );
-    return tbn*nrmTex;
+    vec3 nrm = tbn*nrmTex;
+    return gl_FrontFacing ? nrm : -nrm;
   }
 
 #else
