@@ -17,14 +17,24 @@ export default class Ibl extends Light {
 
   readonly _type = LightType.IBL;
 
-
+  /**
+   * The type of Mapping of the env map
+   */
   iblFormat : IblFormat = 'OCTA';
 
-  textureFormat: HdrEncoding = "RGBM";
-
+  /**
+   * Encoding used to storee HDR values in the env map
+   */
   hdrEncoding: HdrEncoding = "RGBM";
 
+
   shFormat: ShFormat = "SH9";
+
+  /**
+   * number of available mip levels in the env map
+   * In pmrem, the lower mip levels can be left unused (black) to keep definition in high roughness values
+   */
+  mipLevels = 5;
 
   /**
    * enable rotation of the IBL

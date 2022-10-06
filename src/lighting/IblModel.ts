@@ -8,6 +8,7 @@ import { GLContext } from "nanogl/types";
 import Flag from "../Flag";
 import { mat3, vec3 } from "gl-matrix";
 import Enum from "../Enum";
+import Input, { Constant } from "../Input";
 
 
 const M3 = mat3.create()
@@ -46,6 +47,8 @@ export class IblModel extends AbstractLightModel<Ibl> {
   private readonly iblFormat   = new Enum("iblFormat"     , IblFormats  )
   private readonly shFormat    = new Enum("shFormat"      , ShFormats   )
   private readonly hdrEncoding = new Enum("iblHdrEncoding", HdrEncodings)
+  private readonly mipLevels   = new Input("iblNumMipLevel", 1)
+  private readonly mipLevelsValue: Constant;
 
 
   genCodePerLights(light: Ibl, index: number, shadowIndex: number): string {
@@ -56,11 +59,12 @@ export class IblModel extends AbstractLightModel<Ibl> {
   prepare( gl : GLContext, model: ILightModel ): void {
     const ibl = this.lights[0]
     if( ibl ){
-      this.enableRotation.set(ibl.enableRotation)
+      this.enableRotation     .set(ibl.enableRotation     )
       this.enableBoxProjection.set(ibl.enableBoxProjection)
-      this.iblFormat.set(ibl.iblFormat)
-      this.shFormat.set(ibl.shFormat)
-      this.hdrEncoding.set(ibl.hdrEncoding)
+      this.iblFormat          .set(ibl.iblFormat          )
+      this.shFormat           .set(ibl.shFormat           )
+      this.hdrEncoding        .set(ibl.hdrEncoding        )
+      this.mipLevelsValue     .set(ibl.mipLevels          )
     } 
   }
 
@@ -76,11 +80,14 @@ export class IblModel extends AbstractLightModel<Ibl> {
 
   constructor( code : GlslCode, preCode : GlslCode ) {
     super( code, preCode );
-    this.addChild( this.enableRotation )
+    this.mipLevelsValue = this.mipLevels.attachConstant(5)
+    
+    this.addChild( this.enableRotation      )
     this.addChild( this.enableBoxProjection )
-    this.addChild( this.iblFormat )
-    this.addChild( this.shFormat )
-    this.addChild( this.hdrEncoding )
+    this.addChild( this.iblFormat           )
+    this.addChild( this.shFormat            )
+    this.addChild( this.hdrEncoding         )
+    this.addChild( this.mipLevels           )
   }
 
 

@@ -13,9 +13,9 @@ export default class Ibl extends Light {
     sh?: ArrayLike<number> | undefined;
     readonly _type = LightType.IBL;
     iblFormat: IblFormat;
-    textureFormat: HdrEncoding;
     hdrEncoding: HdrEncoding;
     shFormat: ShFormat;
+    mipLevels: number;
     enableRotation: boolean;
     enableBoxProjection: boolean;
     readonly boxProjectionSize: vec3;

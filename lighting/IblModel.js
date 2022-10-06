@@ -3,6 +3,7 @@ import LightType from "./LightType";
 import Flag from "../Flag";
 import { mat3, vec3 } from "gl-matrix";
 import Enum from "../Enum";
+import Input from "../Input";
 const M3 = mat3.create();
 const V3 = vec3.create();
 export const IblFormats = [
@@ -27,11 +28,14 @@ export class IblModel extends AbstractLightModel {
         this.iblFormat = new Enum("iblFormat", IblFormats);
         this.shFormat = new Enum("shFormat", ShFormats);
         this.hdrEncoding = new Enum("iblHdrEncoding", HdrEncodings);
+        this.mipLevels = new Input("iblNumMipLevel", 1);
+        this.mipLevelsValue = this.mipLevels.attachConstant(5);
         this.addChild(this.enableRotation);
         this.addChild(this.enableBoxProjection);
         this.addChild(this.iblFormat);
         this.addChild(this.shFormat);
         this.addChild(this.hdrEncoding);
+        this.addChild(this.mipLevels);
     }
     genCodePerLights(light, index, shadowIndex) {
         this.enableRotation.set(light.enableRotation);
@@ -45,6 +49,7 @@ export class IblModel extends AbstractLightModel {
             this.iblFormat.set(ibl.iblFormat);
             this.shFormat.set(ibl.shFormat);
             this.hdrEncoding.set(ibl.hdrEncoding);
+            this.mipLevelsValue.set(ibl.mipLevels);
         }
     }
     addLight(l) {

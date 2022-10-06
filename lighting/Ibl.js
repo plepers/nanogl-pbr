@@ -8,9 +8,9 @@ export default class Ibl extends Light {
         this.sh = sh;
         this._type = LightType.IBL;
         this.iblFormat = 'OCTA';
-        this.textureFormat = "RGBM";
         this.hdrEncoding = "RGBM";
         this.shFormat = "SH9";
+        this.mipLevels = 5;
         this.enableRotation = false;
         this.enableBoxProjection = false;
         this.boxProjectionSize = vec3.fromValues(1, 1, 1);

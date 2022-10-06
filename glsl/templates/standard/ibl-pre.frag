@@ -36,8 +36,8 @@ vec3 ComputeIBLDiffuse( vec3 worldNormal ){
 #if iblFormat( OCTA )
   
 
-  #define OCTA_LEVELS 8
-  #define OCTA_MAXLOD float(OCTA_LEVELS-1)
+  #define OCTA_LEVELS iblNumMipLevel()
+  #define OCTA_MAXLOD (OCTA_LEVELS-1.0)
 
   {{ require( "../../includes/octwrap-decode.glsl" )() }}
 
@@ -88,8 +88,8 @@ vec3 ComputeIBLDiffuse( vec3 worldNormal ){
 #elif iblFormat( PMREM ) && __VERSION__ == 300
 
   // assume 256 to 16 mip levels
-  #define PMREM_LEVELS 5
-  #define PMREM_MAXLOD float(PMREM_LEVELS-1)
+  #define PMREM_LEVELS iblNumMipLevel()
+  #define PMREM_MAXLOD (PMREM_LEVELS-1.0)
   
   uniform samplerCube tEnv;
 
