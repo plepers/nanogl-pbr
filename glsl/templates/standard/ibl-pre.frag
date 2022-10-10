@@ -25,7 +25,7 @@ vec3 ComputeIBLDiffuse( vec3 worldNormal ){
   #if perVertexIrrad
     return vIrradiance;
   #else
-    return SampleSH(IblRotateDir(worldNormal), uSHCoeffs );
+    return SampleSH(IblRotateDir(worldNormal), uSHCoeffs )*iblIntensities().x;
   #endif
 }
 #endif
@@ -43,7 +43,7 @@ vec3 ComputeIBLDiffuse( vec3 worldNormal ){
 
   uniform sampler2D tEnv;
 
-  #define SpecularIBL( skyDir, perceptualRoughness, wpos ) SampleIBL( skyDir, perceptualRoughness, wpos )
+  #define SpecularIBL( skyDir, perceptualRoughness, wpos ) SampleIBL( skyDir, perceptualRoughness, wpos )*iblIntensities().y
 
   const vec2 _IBL_UVM = vec2(
     0.25*(254.0/256.0),
@@ -93,7 +93,7 @@ vec3 ComputeIBLDiffuse( vec3 worldNormal ){
   
   uniform samplerCube tEnv;
 
-  #define SpecularIBL( skyDir, perceptualRoughness, wpos ) SampleIBLPMRem( skyDir, perceptualRoughness, wpos )
+  #define SpecularIBL( skyDir, perceptualRoughness, wpos ) SampleIBLPMRem( skyDir, perceptualRoughness, wpos )*iblIntensities().y
 
   vec3 SampleIBLPMRem( vec3 skyDir, float perceptualRoughness, vec3 wpos)
   {

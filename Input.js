@@ -109,7 +109,7 @@ export class Sampler extends BaseParams {
             return `${v} = sqrt(${v});`;
         }
         if (from === ColorSpace.SRGB && to === ColorSpace.LINEAR) {
-            return `${v} = ${v}*${v} ;`;
+            return `${v} = ${v}*${v};`;
         }
         return '';
     }
@@ -201,10 +201,13 @@ export class Constant extends BaseParams {
             this.size = value.length;
             this.value = Array.from(value);
         }
-        this._hash = hashString(`${this.size}-${this._stringifyValue()}`);
+        const hash = this._hash;
+        this._hash = hashString(`${this.size}-${this.name}-${this._stringifyValue()}`);
         this.name = `CONST_${stringifyHash(this._hash)}`;
         this.token = `VAR_${this.name}`;
-        this.invalidateCode();
+        if (hash !== this._hash) {
+            this.invalidateCode();
+        }
     }
     _genCode(slots) { }
     genInputCode(slots, input) {

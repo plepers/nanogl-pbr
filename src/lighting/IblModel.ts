@@ -47,12 +47,14 @@ export class IblModel extends AbstractLightModel<Ibl> {
   private readonly iblFormat   = new Enum("iblFormat"     , IblFormats  )
   private readonly shFormat    = new Enum("shFormat"      , ShFormats   )
   private readonly hdrEncoding = new Enum("iblHdrEncoding", HdrEncodings)
+  private readonly intensities = new Input("iblIntensities", 2)
   private readonly mipLevels   = new Input("iblNumMipLevel", 1)
+
+  private readonly intensitiesValue: Constant;
   private readonly mipLevelsValue: Constant;
 
 
   genCodePerLights(light: Ibl, index: number, shadowIndex: number): string {
-    this.enableRotation.set( light.enableRotation )
     return this.codeTemplate(this)
   }
 
@@ -65,6 +67,10 @@ export class IblModel extends AbstractLightModel<Ibl> {
       this.shFormat           .set(ibl.shFormat           )
       this.hdrEncoding        .set(ibl.hdrEncoding        )
       this.mipLevelsValue     .set(ibl.mipLevels          )
+      this.intensitiesValue   .set([
+        ibl.intensity * ibl.ambiantIntensity, 
+        ibl.intensity * ibl.specularIntensity
+      ])
     } 
   }
 
@@ -80,7 +86,8 @@ export class IblModel extends AbstractLightModel<Ibl> {
 
   constructor( code : GlslCode, preCode : GlslCode ) {
     super( code, preCode );
-    this.mipLevelsValue = this.mipLevels.attachConstant(5)
+    this.mipLevelsValue   = this.mipLevels.attachConstant(5)
+    this.intensitiesValue = this.intensities.attachConstant([1,1])
     
     this.addChild( this.enableRotation      )
     this.addChild( this.enableBoxProjection )
@@ -88,6 +95,7 @@ export class IblModel extends AbstractLightModel<Ibl> {
     this.addChild( this.shFormat            )
     this.addChild( this.hdrEncoding         )
     this.addChild( this.mipLevels           )
+    this.addChild( this.intensities         )
   }
 
 

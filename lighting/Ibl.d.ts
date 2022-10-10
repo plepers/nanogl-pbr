@@ -1,5 +1,4 @@
 import { vec3 } from 'gl-matrix';
-import Program from 'nanogl/program';
 import { HdrEncoding, IblFormat, ShFormat } from './IblModel';
 import Light from './Light';
 import LightType from './LightType';
@@ -18,9 +17,10 @@ export default class Ibl extends Light {
     mipLevels: number;
     enableRotation: boolean;
     enableBoxProjection: boolean;
+    intensity: number;
+    ambiantIntensity: number;
+    specularIntensity: number;
     readonly boxProjectionSize: vec3;
     readonly boxProjectionOffset: vec3;
     constructor(env?: import("nanogl/texture-cube").default | import("nanogl/texture-2d").default | undefined, sh?: ArrayLike<number> | undefined);
-    setupProgram(prg: Program): void;
-    static convert(sh: ArrayLike<number>, expo?: number): Float32Array;
 }

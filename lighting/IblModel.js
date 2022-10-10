@@ -28,17 +28,19 @@ export class IblModel extends AbstractLightModel {
         this.iblFormat = new Enum("iblFormat", IblFormats);
         this.shFormat = new Enum("shFormat", ShFormats);
         this.hdrEncoding = new Enum("iblHdrEncoding", HdrEncodings);
+        this.intensities = new Input("iblIntensities", 2);
         this.mipLevels = new Input("iblNumMipLevel", 1);
         this.mipLevelsValue = this.mipLevels.attachConstant(5);
+        this.intensitiesValue = this.intensities.attachConstant([1, 1]);
         this.addChild(this.enableRotation);
         this.addChild(this.enableBoxProjection);
         this.addChild(this.iblFormat);
         this.addChild(this.shFormat);
         this.addChild(this.hdrEncoding);
         this.addChild(this.mipLevels);
+        this.addChild(this.intensities);
     }
     genCodePerLights(light, index, shadowIndex) {
-        this.enableRotation.set(light.enableRotation);
         return this.codeTemplate(this);
     }
     prepare(gl, model) {
@@ -50,6 +52,10 @@ export class IblModel extends AbstractLightModel {
             this.shFormat.set(ibl.shFormat);
             this.hdrEncoding.set(ibl.hdrEncoding);
             this.mipLevelsValue.set(ibl.mipLevels);
+            this.intensitiesValue.set([
+                ibl.intensity * ibl.ambiantIntensity,
+                ibl.intensity * ibl.specularIntensity
+            ]);
         }
     }
     addLight(l) {

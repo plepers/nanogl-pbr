@@ -18,7 +18,9 @@ export declare class IblModel extends AbstractLightModel<Ibl> {
     private readonly iblFormat;
     private readonly shFormat;
     private readonly hdrEncoding;
+    private readonly intensities;
     private readonly mipLevels;
+    private readonly intensitiesValue;
     private readonly mipLevelsValue;
     genCodePerLights(light: Ibl, index: number, shadowIndex: number): string;
     prepare(gl: GLContext, model: ILightModel): void;
