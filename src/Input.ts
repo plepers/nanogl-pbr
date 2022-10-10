@@ -7,6 +7,7 @@ import ChunksSlots from './ChunksSlots'
 import Program from 'nanogl/program'
 import { hashString, Hash, stringifyHash } from './Hash'
 import TexCoord from './TexCoord'
+import { ColorSpace } from './ColorSpace'
 
 
 
@@ -106,10 +107,39 @@ export interface IInputParam {
   size: InputSize;
   token: string;
 
-  genInputCode(slots: ChunksSlots, shader: ShaderType):void;
+  genInputCode(slots: ChunksSlots, input: Input):void;
+
 }
 
 type InputParam = Sampler | Uniform | Attribute | Constant;
+
+
+
+
+export abstract class BaseParams extends Chunk {
+    
+  protected _colorspace: ColorSpace = ColorSpace.AUTO;
+
+  constructor(hasCode: boolean = false, hasSetup: boolean = false) {
+    super(hasCode, hasSetup);
+  }
+  
+
+  set colorspace( c : ColorSpace ) {
+    if( this._colorspace !== c ) {
+      this._colorspace = c;
+      this.invalidateCode();
+    }
+  }
+
+  get colorspace() {
+    return this._colorspace;
+  }
+
+
+}
+
+
 
 //                              _
 //                             | |
@@ -122,8 +152,8 @@ type InputParam = Sampler | Uniform | Attribute | Constant;
 
 
 
-export class Sampler extends Chunk implements IInputParam {
 
+export class Sampler extends BaseParams implements IInputParam {
 
   readonly ptype : ParamType.SAMPLER = ParamType.SAMPLER
 
@@ -136,13 +166,14 @@ export class Sampler extends Chunk implements IInputParam {
   _varying : string;
 
 
-  constructor(name: string, texCoords: TexCoord | string) {
+  constructor(name: string, texCoords: TexCoord | string = TexCoord.create(), colorspace : ColorSpace = ColorSpace.AUTO) {
 
     super(true, true);
 
     this.name = name;
     this._tex = null;
     this.size = 4;
+    this._colorspace = colorspace;
     
     if( typeof texCoords === 'string' ){
       this.texCoords = texCoords;
@@ -163,19 +194,18 @@ export class Sampler extends Chunk implements IInputParam {
 
   protected _genCode(slots: ChunksSlots): void {}
 
-  genInputCode(slots: ChunksSlots, shader: ShaderType) {
+  genInputCode(slots: ChunksSlots, input:Input) {
 
     let c;
 
     // PF
     c = `uniform sampler2D ${this.name};\n`;
-    _addPreCode(slots, shader, c);
-    // slots.add( 'pf', c );
+    _addPreCode(slots, input.shader, c);
 
     // F
     c = `vec4 ${this.token} = texture2D( ${this.name}, ${this._varying});\n`;
-    _addCode(slots, shader, c);
-    // slots.add( 'f', c );
+    c += Sampler.colorSpaceTransformCode( this._colorspace, input.colorspace, `${this.token}.rgb`);
+    _addCode(slots, input.shader, c);
 
   }
 
@@ -185,6 +215,17 @@ export class Sampler extends Chunk implements IInputParam {
     prg[this.name](this._tex);
   }
 
+  private static colorSpaceTransformCode( from : ColorSpace, to : ColorSpace, v : string ) : string {
+    if( from === ColorSpace.LINEAR && to === ColorSpace.SRGB ){
+      return `${v} = sqrt(${v});`;
+    }
+    if( from === ColorSpace.SRGB && to === ColorSpace.LINEAR ){
+      return `${v} = ${v}*${v};`;
+    }
+    return '';
+  }
+  
+  
 
 }
 
@@ -198,7 +239,7 @@ export class Sampler extends Chunk implements IInputParam {
 //
 //
 
-export class Uniform extends Chunk implements IInputParam {
+export class Uniform extends BaseParams implements IInputParam {
 
   readonly ptype : ParamType.UNIFORM = ParamType.UNIFORM
   
@@ -231,7 +272,7 @@ export class Uniform extends Chunk implements IInputParam {
     this.name = name;
     this.size = size;
     this._value = new Float32Array(size);
-    this.token = this.name;
+    this.token = 'VAL_'+this.name;
   }
 
 
@@ -248,10 +289,11 @@ export class Uniform extends Chunk implements IInputParam {
 
   protected _genCode(slots: ChunksSlots): void {}
 
-  genInputCode(slots: ChunksSlots, shader: ShaderType) {
+  genInputCode(slots: ChunksSlots, input: Input) {
     // PF
-    const c = `uniform ${TYPES[this.size]} ${this.token};\n`;
-    _addPreCode(slots, shader, c);
+    let c = `uniform ${TYPES[this.size]} ${this.name};\n`;
+    c += Uniform.colorSpaceTransformCode(this._colorspace, input.colorspace, this.token, this.name)
+    _addPreCode(slots, input.shader, c);
     // slots.add( 'pf', c );
 
   }
@@ -260,6 +302,17 @@ export class Uniform extends Chunk implements IInputParam {
   setup(prg: Program) {
     prg[this.name](this._value);
     this._invalid = false;
+  }
+
+
+  static colorSpaceTransformCode( from : ColorSpace, to : ColorSpace, d : string, v : string ) : string {
+    if( from === ColorSpace.LINEAR && to === ColorSpace.SRGB ){
+      return `#define ${d} sqrt(${v})`;
+    }
+    if( from === ColorSpace.SRGB && to === ColorSpace.LINEAR ){
+      return `#define ${d} (${v}*${v})`;
+    }
+    return `#define ${d} ${v}`;
   }
 
 }
@@ -275,7 +328,7 @@ export class Uniform extends Chunk implements IInputParam {
 //
 
 
-export class Attribute extends Chunk implements IInputParam {
+export class Attribute extends BaseParams implements IInputParam {
 
   readonly ptype : ParamType.ATTRIBUTE = ParamType.ATTRIBUTE
   
@@ -296,8 +349,8 @@ export class Attribute extends Chunk implements IInputParam {
 
   protected _genCode(slots: ChunksSlots): void {}
 
-  genInputCode(slots: ChunksSlots, shader: ShaderType) {
-
+  genInputCode(slots: ChunksSlots, input: Input) {
+    
     var c;
     const typeId = TYPES[this.size];
 
@@ -328,7 +381,7 @@ export class Attribute extends Chunk implements IInputParam {
 
 
 
-export class Constant extends Chunk implements IInputParam {
+export class Constant extends BaseParams implements IInputParam {
 
   readonly ptype : ParamType.CONSTANT = ParamType.CONSTANT
   
@@ -362,9 +415,10 @@ export class Constant extends Chunk implements IInputParam {
 
   protected _genCode(slots: ChunksSlots): void {}
 
-  genInputCode(slots: ChunksSlots, shader: ShaderType) {
-    const c = `#define ${this.token} ${TYPES[this.size]}(${this._stringifyValue()})\n`;
-    _addPreCode(slots, shader, c );
+  genInputCode(slots: ChunksSlots, input: Input) {
+    let c = `#define RAW_${this.token} ${TYPES[this.size]}(${this._stringifyValue()})\n`;
+    c += Uniform.colorSpaceTransformCode(this._colorspace, input.colorspace, this.token, 'RAW_'+this.token)
+    _addPreCode(slots, input.shader, c );
   }
 
 
@@ -399,10 +453,14 @@ export default class Input extends Chunk {
   readonly size : InputSize;
   readonly shader: ShaderType;
 
+  private _colorspace: ColorSpace = ColorSpace.LINEAR;
+
   comps: Swizzle;
   param: InputParam | null;
+  
 
-  constructor(name: string, size: InputSize, shader: ShaderType = ShaderType.FRAGMENT) {
+
+  constructor(name: string, size: InputSize, shader: ShaderType = ShaderType.FRAGMENT, colorspace: ColorSpace = ColorSpace.LINEAR) {
 
     super(true, false);
 
@@ -411,11 +469,24 @@ export default class Input extends Chunk {
     this.param = null;
     this.comps = _trimComps('rgba', size);
     this.shader = shader;
+    this.colorspace = colorspace;
+
   }
 
+  /**
+   * The colorspace of the input's value as is should be decoded.
+   * To set the actual value in textures, set the colorspace property of the attached sampler
+   */
+  set colorspace( c : ColorSpace ) {
+    if( this._colorspace !== c ) {
+      this._colorspace = c;
+      this.invalidateCode();
+    }
+  }
 
-
-
+  get colorspace() {
+    return this._colorspace;
+  }
 
 
 
@@ -476,7 +547,7 @@ export default class Input extends Chunk {
 
   _genCode(slots: ChunksSlots) {
 
-    this.param?.genInputCode(slots, this.shader);
+    this.param?.genInputCode(slots, this);
 
     const val = (this.param === null) ? '0' : '1';
     const def = `#define HAS_${this.name} ${val}\n`;

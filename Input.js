@@ -1,6 +1,7 @@
 import Chunk from './Chunk';
 import { hashString, stringifyHash } from './Hash';
 import TexCoord from './TexCoord';
+import { ColorSpace } from './ColorSpace';
 const TYPES = [
     null,
     'float',
@@ -54,13 +55,29 @@ var ParamType;
     ParamType[ParamType["ATTRIBUTE"] = 2] = "ATTRIBUTE";
     ParamType[ParamType["CONSTANT"] = 3] = "CONSTANT";
 })(ParamType || (ParamType = {}));
-export class Sampler extends Chunk {
-    constructor(name, texCoords) {
+export class BaseParams extends Chunk {
+    constructor(hasCode = false, hasSetup = false) {
+        super(hasCode, hasSetup);
+        this._colorspace = ColorSpace.AUTO;
+    }
+    set colorspace(c) {
+        if (this._colorspace !== c) {
+            this._colorspace = c;
+            this.invalidateCode();
+        }
+    }
+    get colorspace() {
+        return this._colorspace;
+    }
+}
+export class Sampler extends BaseParams {
+    constructor(name, texCoords = TexCoord.create(), colorspace = ColorSpace.AUTO) {
         super(true, true);
         this.ptype = ParamType.SAMPLER;
         this.name = name;
         this._tex = null;
         this.size = 4;
+        this._colorspace = colorspace;
         if (typeof texCoords === 'string') {
             this.texCoords = texCoords;
             this._varying = texCoords;
@@ -76,25 +93,35 @@ export class Sampler extends Chunk {
         this._tex = t;
     }
     _genCode(slots) { }
-    genInputCode(slots, shader) {
+    genInputCode(slots, input) {
         let c;
         c = `uniform sampler2D ${this.name};\n`;
-        _addPreCode(slots, shader, c);
+        _addPreCode(slots, input.shader, c);
         c = `vec4 ${this.token} = texture2D( ${this.name}, ${this._varying});\n`;
-        _addCode(slots, shader, c);
+        c += Sampler.colorSpaceTransformCode(this._colorspace, input.colorspace, `${this.token}.rgb`);
+        _addCode(slots, input.shader, c);
     }
     setup(prg) {
         prg[this.name](this._tex);
     }
+    static colorSpaceTransformCode(from, to, v) {
+        if (from === ColorSpace.LINEAR && to === ColorSpace.SRGB) {
+            return `${v} = sqrt(${v});`;
+        }
+        if (from === ColorSpace.SRGB && to === ColorSpace.LINEAR) {
+            return `${v} = ${v}*${v} ;`;
+        }
+        return '';
+    }
 }
-export class Uniform extends Chunk {
+export class Uniform extends BaseParams {
     constructor(name, size) {
         super(true, true);
         this.ptype = ParamType.UNIFORM;
         this.name = name;
         this.size = size;
         this._value = new Float32Array(size);
-        this.token = this.name;
+        this.token = 'VAL_' + this.name;
     }
     get value() {
         return this._value;
@@ -114,16 +141,26 @@ export class Uniform extends Chunk {
         this._invalid = true;
     }
     _genCode(slots) { }
-    genInputCode(slots, shader) {
-        const c = `uniform ${TYPES[this.size]} ${this.token};\n`;
-        _addPreCode(slots, shader, c);
+    genInputCode(slots, input) {
+        let c = `uniform ${TYPES[this.size]} ${this.name};\n`;
+        c += Uniform.colorSpaceTransformCode(this._colorspace, input.colorspace, this.token, this.name);
+        _addPreCode(slots, input.shader, c);
     }
     setup(prg) {
         prg[this.name](this._value);
         this._invalid = false;
     }
+    static colorSpaceTransformCode(from, to, d, v) {
+        if (from === ColorSpace.LINEAR && to === ColorSpace.SRGB) {
+            return `#define ${d} sqrt(${v})`;
+        }
+        if (from === ColorSpace.SRGB && to === ColorSpace.LINEAR) {
+            return `#define ${d} (${v}*${v})`;
+        }
+        return `#define ${d} ${v}`;
+    }
 }
-export class Attribute extends Chunk {
+export class Attribute extends BaseParams {
     constructor(name, size) {
         super(true, false);
         this.ptype = ParamType.ATTRIBUTE;
@@ -132,7 +169,7 @@ export class Attribute extends Chunk {
         this.token = `v_${this.name}`;
     }
     _genCode(slots) { }
-    genInputCode(slots, shader) {
+    genInputCode(slots, input) {
         var c;
         const typeId = TYPES[this.size];
         c = `IN ${typeId} ${this.token};\n`;
@@ -144,7 +181,7 @@ export class Attribute extends Chunk {
         slots.add('v', c);
     }
 }
-export class Constant extends Chunk {
+export class Constant extends BaseParams {
     constructor(value) {
         super(true, false);
         this.ptype = ParamType.CONSTANT;
@@ -170,9 +207,10 @@ export class Constant extends Chunk {
         this.invalidateCode();
     }
     _genCode(slots) { }
-    genInputCode(slots, shader) {
-        const c = `#define ${this.token} ${TYPES[this.size]}(${this._stringifyValue()})\n`;
-        _addPreCode(slots, shader, c);
+    genInputCode(slots, input) {
+        let c = `#define RAW_${this.token} ${TYPES[this.size]}(${this._stringifyValue()})\n`;
+        c += Uniform.colorSpaceTransformCode(this._colorspace, input.colorspace, this.token, 'RAW_' + this.token);
+        _addPreCode(slots, input.shader, c);
     }
     _stringifyValue() {
         if (this.size === 1) {
@@ -185,13 +223,24 @@ export class Constant extends Chunk {
     }
 }
 export default class Input extends Chunk {
-    constructor(name, size, shader = ShaderType.FRAGMENT) {
+    constructor(name, size, shader = ShaderType.FRAGMENT, colorspace = ColorSpace.LINEAR) {
         super(true, false);
+        this._colorspace = ColorSpace.LINEAR;
         this.name = name;
         this.size = size;
         this.param = null;
         this.comps = _trimComps('rgba', size);
         this.shader = shader;
+        this.colorspace = colorspace;
+    }
+    set colorspace(c) {
+        if (this._colorspace !== c) {
+            this._colorspace = c;
+            this.invalidateCode();
+        }
+    }
+    get colorspace() {
+        return this._colorspace;
     }
     attach(param, comps = 'rgba') {
         if (this.param) {
@@ -229,7 +278,7 @@ export default class Input extends Chunk {
     }
     _genCode(slots) {
         var _a;
-        (_a = this.param) === null || _a === void 0 ? void 0 : _a.genInputCode(slots, this.shader);
+        (_a = this.param) === null || _a === void 0 ? void 0 : _a.genInputCode(slots, this);
         const val = (this.param === null) ? '0' : '1';
         const def = `#define HAS_${this.name} ${val}\n`;
         slots.add('definitions', def);

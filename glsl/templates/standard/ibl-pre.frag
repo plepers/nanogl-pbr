@@ -43,20 +43,20 @@ vec3 ComputeIBLDiffuse( vec3 worldNormal ){
 
   uniform sampler2D tEnv;
 
-  #define SpecularIBL( skyDir, roughness, wpos ) SampleIBL( skyDir, roughness, wpos )
+  #define SpecularIBL( skyDir, perceptualRoughness, wpos ) SampleIBL( skyDir, perceptualRoughness, wpos )
 
   const vec2 _IBL_UVM = vec2(
     0.25*(254.0/256.0),
     0.125*0.5*(254.0/256.0)
   );
 
-  vec3 SampleIBL( vec3 skyDir, float roughness, vec3 wpos)
+  vec3 SampleIBL( vec3 skyDir, float perceptualRoughness, vec3 wpos)
   {
     skyDir = IblBoxProjection(skyDir, wpos);
     skyDir = IblRotateDir(skyDir);
     vec2 uvA = octwrapDecode( skyDir );
     
-    float lodLevel   = OCTA_MAXLOD*roughness * (2.0 - roughness);
+    float lodLevel   = OCTA_MAXLOD*perceptualRoughness * (2.0 - perceptualRoughness);
     float frac = fract(lodLevel);
 
     uvA = uvA * _IBL_UVM + vec2(
@@ -93,14 +93,15 @@ vec3 ComputeIBLDiffuse( vec3 worldNormal ){
   
   uniform samplerCube tEnv;
 
-  #define SpecularIBL( skyDir, roughness, wpos ) SampleIBLPMRem( skyDir, roughness, wpos )
+  #define SpecularIBL( skyDir, perceptualRoughness, wpos ) SampleIBLPMRem( skyDir, perceptualRoughness, wpos )
 
-  vec3 SampleIBLPMRem( vec3 skyDir, float roughness, vec3 wpos)
+  vec3 SampleIBLPMRem( vec3 skyDir, float perceptualRoughness, vec3 wpos)
   {
     skyDir = IblBoxProjection(skyDir, wpos);
     skyDir = IblRotateDir(skyDir);
 
-    float lodLevel   = PMREM_MAXLOD*roughness * (2.0 - roughness);
+    float lodLevel   = PMREM_MAXLOD*perceptualRoughness * (2.0 - perceptualRoughness);
+    // float lodLevel   = PMREM_MAXLOD*perceptualRoughness;
     return DECODE_HDR( textureLod( tEnv, skyDir, lodLevel) );
   }
 

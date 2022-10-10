@@ -1,5 +1,5 @@
 import Chunk from "./Chunk";
-import Input from "./Input";
+import Input, { ShaderType } from "./Input";
 import Enum from "./Enum";
 import ChunksSlots from "./ChunksSlots";
 
@@ -57,6 +57,7 @@ export class MetalnessSurface extends AbstractPbrSurface {
     this.addChild( this.metalnessFactor  = new Input( 'metalnessFactor'     , 1 ) );
     this.addChild( this.roughness        = new Input( 'roughness'           , 1 ) );
     this.addChild( this.roughnessFactor  = new Input( 'roughnessFactor'     , 1 ) );
+
   }
 
   protected _genCode(slots: ChunksSlots): void {
@@ -70,6 +71,7 @@ export class MetalnessSurface extends AbstractPbrSurface {
 
 
 import specularGlsl from './glsl/includes/pbr-inputs-specular.glsl'
+import { ColorSpace } from "./ColorSpace";
 
 export class SpecularSurface extends AbstractPbrSurface {
 

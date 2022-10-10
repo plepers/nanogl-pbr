@@ -14,12 +14,12 @@ import ProgramSource from './ProgramSource';
 export class PassInstance {
 
   readonly pass : MaterialPass;
-  readonly material: BaseMaterial;
+  readonly material: Material;
   readonly programSource : ProgramSource
 
   _program: Program | null = null
 
-  constructor( material : BaseMaterial, pass : MaterialPass ){
+  constructor( material : Material, pass : MaterialPass ){
     this.programSource = new ProgramSource(material.gl, pass._shaderSource );
     this.programSource.addChunkCollection( material.inputs)
     this.programSource.addChunkCollection( pass.inputs)
@@ -46,7 +46,7 @@ export class PassInstance {
 
 
 
-export default class BaseMaterial {
+export default class Material {
   
   name: string;
   

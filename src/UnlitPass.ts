@@ -11,12 +11,13 @@ import  Node           from 'nanogl-node'
 import  Camera         from 'nanogl-camera'
 import MaterialPass from './MaterialPass'
 import Flag from './Flag'
-import Input from './Input'
+import Input, { ShaderType } from './Input'
 import { AlphaModeEnum, AlphaModes } from './AlphaModeEnum'
 import Enum from './Enum'
 import ShaderVersion from './ShaderVersion'
 import ShaderPrecision from './ShaderPrecision'
 import LightSetup from './lighting/LightSetup'
+import { ColorSpace } from './ColorSpace'
 
 
 const M4 = mat4.create();
@@ -61,8 +62,8 @@ export default class UnlitPass extends MaterialPass {
     inputs.add( this.precision             = new ShaderPrecision( 'highp' ) );
     inputs.add( this.shaderid              = new Flag ( 'id_'+MAT_ID,  true  ) );
 
-    inputs.add( this.baseColor             = new Input( 'baseColor'           , 3 ) );
-    inputs.add( this.baseColorFactor       = new Input( 'baseColorFactor'     , 3 ) );
+    inputs.add( this.baseColor             = new Input( 'baseColor'           , 3, ShaderType.FRAGMENT, ColorSpace.SRGB ) );
+    inputs.add( this.baseColorFactor       = new Input( 'baseColorFactor'     , 3, ShaderType.FRAGMENT, ColorSpace.SRGB ) );
 
     inputs.add( this.alpha                 = new Input( 'alpha'              , 1 ) );
     inputs.add( this.alphaFactor           = new Input( 'alphaFactor'        , 1 ) );

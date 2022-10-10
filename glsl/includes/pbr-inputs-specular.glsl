@@ -4,7 +4,7 @@
 {
   surface.albedo = vec3(1.0);
   #if HAS_diffuse
-    surface.albedo *= FastSRGBToLinear( diffuse() );
+    surface.albedo *= diffuse();
     // surface.albedo *= diffuse()*diffuse();
   #endif
   #if HAS_diffuseFactor
@@ -23,7 +23,7 @@
 
   surface.specular = vec3(1.0);
   #if HAS_specular
-    surface.specular *= FastSRGBToLinear( specular() );
+    surface.specular *= specular();
     // surface.specular *= specular()*specular();
     // surface.specular *= specular();
   #endif
@@ -55,11 +55,7 @@
 
   surface.emission = vec3(0.0);
   #if HAS_emissive 
-    #if emissiveColorSpace( COLORSPACE_LINEAR )
-        surface.emission += emissive();
-    #else
-        surface.emission += emissive() * emissive();
-    #endif
+    surface.emission += emissive();
     #if HAS_emissiveFactor
         surface.emission *= emissiveFactor();
     #endif

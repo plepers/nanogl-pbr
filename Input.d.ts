@@ -5,6 +5,7 @@ import ChunksSlots from './ChunksSlots';
 import Program from 'nanogl/program';
 import { Hash } from './Hash';
 import TexCoord from './TexCoord';
+import { ColorSpace } from './ColorSpace';
 export declare enum ShaderType {
     FRAGMENT = 1,
     VERTEX = 2,
@@ -22,10 +23,16 @@ export interface IInputParam {
     name: string;
     size: InputSize;
     token: string;
-    genInputCode(slots: ChunksSlots, shader: ShaderType): void;
+    genInputCode(slots: ChunksSlots, input: Input): void;
 }
 declare type InputParam = Sampler | Uniform | Attribute | Constant;
-export declare class Sampler extends Chunk implements IInputParam {
+export declare abstract class BaseParams extends Chunk {
+    protected _colorspace: ColorSpace;
+    constructor(hasCode?: boolean, hasSetup?: boolean);
+    set colorspace(c: ColorSpace);
+    get colorspace(): ColorSpace;
+}
+export declare class Sampler extends BaseParams implements IInputParam {
     readonly ptype: ParamType.SAMPLER;
     name: string;
     size: InputSize;
@@ -33,13 +40,14 @@ export declare class Sampler extends Chunk implements IInputParam {
     _tex: Texture2D | null;
     texCoords: TexCoord | string;
     _varying: string;
-    constructor(name: string, texCoords: TexCoord | string);
+    constructor(name: string, texCoords?: TexCoord | string, colorspace?: ColorSpace);
     set(t: Texture2D): void;
     protected _genCode(slots: ChunksSlots): void;
-    genInputCode(slots: ChunksSlots, shader: ShaderType): void;
+    genInputCode(slots: ChunksSlots, input: Input): void;
     setup(prg: Program): void;
+    private static colorSpaceTransformCode;
 }
-export declare class Uniform extends Chunk implements IInputParam {
+export declare class Uniform extends BaseParams implements IInputParam {
     readonly ptype: ParamType.UNIFORM;
     readonly name: string;
     readonly size: InputSize;
@@ -57,19 +65,20 @@ export declare class Uniform extends Chunk implements IInputParam {
     constructor(name: string, size: InputSize);
     set(...args: number[]): void;
     protected _genCode(slots: ChunksSlots): void;
-    genInputCode(slots: ChunksSlots, shader: ShaderType): void;
+    genInputCode(slots: ChunksSlots, input: Input): void;
     setup(prg: Program): void;
+    static colorSpaceTransformCode(from: ColorSpace, to: ColorSpace, d: string, v: string): string;
 }
-export declare class Attribute extends Chunk implements IInputParam {
+export declare class Attribute extends BaseParams implements IInputParam {
     readonly ptype: ParamType.ATTRIBUTE;
     name: string;
     size: InputSize;
     token: string;
     constructor(name: string, size: InputSize);
     protected _genCode(slots: ChunksSlots): void;
-    genInputCode(slots: ChunksSlots, shader: ShaderType): void;
+    genInputCode(slots: ChunksSlots, input: Input): void;
 }
-export declare class Constant extends Chunk implements IInputParam {
+export declare class Constant extends BaseParams implements IInputParam {
     readonly ptype: ParamType.CONSTANT;
     name: string;
     size: InputSize;
@@ -79,7 +88,7 @@ export declare class Constant extends Chunk implements IInputParam {
     constructor(value: ArrayLike<number> | number);
     set(value: ArrayLike<number> | number): void;
     protected _genCode(slots: ChunksSlots): void;
-    genInputCode(slots: ChunksSlots, shader: ShaderType): void;
+    genInputCode(slots: ChunksSlots, input: Input): void;
     _stringifyValue(): string;
 }
 export default class Input extends Chunk {
@@ -93,9 +102,12 @@ export default class Input extends Chunk {
     readonly name: string;
     readonly size: InputSize;
     readonly shader: ShaderType;
+    private _colorspace;
     comps: Swizzle;
     param: InputParam | null;
-    constructor(name: string, size: InputSize, shader?: ShaderType);
+    constructor(name: string, size: InputSize, shader?: ShaderType, colorspace?: ColorSpace);
+    set colorspace(c: ColorSpace);
+    get colorspace(): ColorSpace;
     attach(param: InputParam, comps?: Swizzle): void;
     detach(): void;
     attachSampler(name?: string, texCoords?: string | TexCoord, comps?: Swizzle): Sampler;

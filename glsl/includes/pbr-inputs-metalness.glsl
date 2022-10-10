@@ -3,7 +3,7 @@
   
   vec3 _baseColor = vec3(1.0);
   #if HAS_baseColor
-    _baseColor *= FastSRGBToLinear( baseColor() );
+    _baseColor *= baseColor();
     // _baseColor *= baseColor()*baseColor();
   #endif
   #if HAS_baseColorFactor
@@ -51,11 +51,7 @@
 
   surface.emission = vec3(0.0);
   #if HAS_emissive 
-    #if emissiveColorSpace( COLORSPACE_LINEAR )
-        surface.emission += emissive();
-    #else
-        surface.emission += emissive() * emissive();
-    #endif
+    surface.emission += emissive();
     #if HAS_emissiveFactor
         surface.emission *= emissiveFactor();
     #endif

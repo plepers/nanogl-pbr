@@ -10,7 +10,6 @@ import { AlphaModes } from './AlphaModeEnum';
 import ShaderVersion from './ShaderVersion';
 import ShaderPrecision from './ShaderPrecision';
 import { SpecularSurface, MetalnessSurface } from './PbrSurface';
-import { ColorSpace } from './ColorspaceEnum';
 const M4 = mat4.create();
 const MAT_ID = 'std';
 export class StandardPass extends MaterialPass {
@@ -28,7 +27,6 @@ export class StandardPass extends MaterialPass {
         inputs.add(this.alphaFactor = new Input('alphaFactor', 1));
         inputs.add(this.alphaCutoff = new Input('alphaCutoff', 1));
         inputs.add(this.emissive = new Input('emissive', 3));
-        inputs.add(this.emissiveColorSpace = new Enum('emissiveColorSpace', ColorSpace));
         inputs.add(this.emissiveFactor = new Input('emissiveFactor', 3));
         inputs.add(this.normal = new Input('normal', 3));
         inputs.add(this.normalScale = new Input('normalScale', 1));

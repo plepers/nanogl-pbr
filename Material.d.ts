@@ -8,14 +8,14 @@ import Camera from 'nanogl-camera';
 import ProgramSource from './ProgramSource';
 export declare class PassInstance {
     readonly pass: MaterialPass;
-    readonly material: BaseMaterial;
+    readonly material: Material;
     readonly programSource: ProgramSource;
     _program: Program | null;
-    constructor(material: BaseMaterial, pass: MaterialPass);
+    constructor(material: Material, pass: MaterialPass);
     prepare(node: Node, camera: Camera): Program;
     getProgram(): Program;
 }
-export default class BaseMaterial {
+export default class Material {
     name: string;
     mask: number;
     glconfig: GLConfig;

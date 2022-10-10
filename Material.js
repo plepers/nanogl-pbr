@@ -19,7 +19,7 @@ export class PassInstance {
         return this.programSource.getProgram();
     }
 }
-export default class BaseMaterial {
+export default class Material {
     constructor(gl, name = '') {
         this.mask = ~0;
         this.gl = gl;
