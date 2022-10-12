@@ -1,6 +1,5 @@
 
 import { vec3 } from 'gl-matrix';
-import Program from 'nanogl/program';
 import { Texture } from 'nanogl/texture-base';
 import { HdrEncoding, IblFormat, ShFormat } from './IblModel';
 import Light from './Light';

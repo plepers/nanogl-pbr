@@ -202,7 +202,7 @@ export class Constant extends BaseParams {
             this.value = Array.from(value);
         }
         const hash = this._hash;
-        this._hash = hashString(`${this.size}-${this.name}-${this._stringifyValue()}`);
+        this._hash = hashString(`${this.size}-${this._stringifyValue()}`);
         this.name = `CONST_${stringifyHash(this._hash)}`;
         this.token = `VAR_${this.name}`;
         if (hash !== this._hash) {
