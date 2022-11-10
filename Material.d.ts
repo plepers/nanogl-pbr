@@ -16,13 +16,13 @@ export declare class PassInstance {
     getProgram(): Program;
 }
 export default class Material {
+    readonly gl: GLContext;
     name: string;
     mask: number;
-    glconfig: GLConfig;
-    inputs: ChunkCollection;
-    _passMap: Map<MaterialPassId, PassInstance>;
+    readonly glconfig: GLConfig;
+    readonly inputs: ChunkCollection;
+    _passMap: Map<string, PassInstance>;
     _passes: PassInstance[];
-    gl: GLContext;
     constructor(gl: GLContext, name?: string);
     addPass(pass: MaterialPass, id?: MaterialPassId): PassInstance;
     removePass(id: MaterialPassId): void;

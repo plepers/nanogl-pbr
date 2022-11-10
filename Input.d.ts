@@ -108,7 +108,7 @@ export default class Input extends Chunk {
     constructor(name: string, size: InputSize, shader?: ShaderType, colorspace?: ColorSpace);
     set colorspace(c: ColorSpace);
     get colorspace(): ColorSpace;
-    attach(param: InputParam, comps?: Swizzle): void;
+    attach(param: InputParam | null, comps?: Swizzle): void;
     detach(): void;
     attachSampler(name?: string, texCoords?: string | TexCoord, comps?: Swizzle): Sampler;
     attachUniform(name?: string, size?: InputSize, comps?: Swizzle): Uniform;

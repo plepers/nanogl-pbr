@@ -6,11 +6,11 @@ import Node from "nanogl-node";
 import Camera from "nanogl-camera";
 export declare type MaterialPassId = 'color' | 'depth' | string;
 export default abstract class MaterialPass {
+    _shaderSource: ShaderSource;
     name: string;
     mask: number;
     readonly glconfig: GLConfig;
     inputs: ChunkCollection;
-    _shaderSource: ShaderSource;
-    constructor(shaderSource: ShaderSource);
+    constructor(_shaderSource: ShaderSource);
     abstract prepare(prg: Program, node: Node, camera: Camera): void;
 }

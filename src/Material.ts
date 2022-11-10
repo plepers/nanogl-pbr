@@ -48,33 +48,17 @@ export class PassInstance {
 
 export default class Material {
   
-  name: string;
-  
   mask: number = ~0;
   
-  glconfig : GLConfig;
-  
-  inputs: ChunkCollection;
+  readonly glconfig = new GLConfig();
+  readonly inputs   = new ChunkCollection();
   
 
-  _passMap : Map<MaterialPassId, PassInstance>;
-  _passes  : PassInstance[];
-  gl: GLContext;
+  _passMap = new Map<MaterialPassId, PassInstance>();
+  _passes  : PassInstance[] = [];
 
   
-  constructor(gl : GLContext, name: string = '') {
-
-    this.gl = gl;
-    
-    this.name = name;
-    
-    this.glconfig = new GLConfig();
-    
-    this.inputs   = new ChunkCollection();
-    
-    this._passMap = new Map()
-    this._passes  = []
-
+  constructor( readonly gl : GLContext, public name: string = '') {
   }
 
 

@@ -15,13 +15,10 @@ export default abstract class MaterialPass {
     
     readonly glconfig : GLConfig = new GLConfig();
     inputs: ChunkCollection = new ChunkCollection();
-    _shaderSource: ShaderSource;
     
-    constructor( shaderSource : ShaderSource ){
-      this._shaderSource = shaderSource;
-    }
+    constructor( public _shaderSource : ShaderSource ){}
 
     abstract prepare( prg: Program, node: Node, camera: Camera ) : void;
-  
+
   }
   

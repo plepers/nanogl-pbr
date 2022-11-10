@@ -25,6 +25,11 @@ export default class ChunkCollection {
             this.invalidateList();
         }
     }
+    dispose() {
+        for (const chunk of this._all) {
+            chunk.removeList(this);
+        }
+    }
     addChunks(chunks) {
         for (const c of chunks) {
             this.add(c);

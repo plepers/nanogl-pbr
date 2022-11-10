@@ -33,7 +33,7 @@ describe( "Input", function(){
     //   inputs.compile()
       var codes = inputs.getCode();
       expect( codes.slotsMap.definitions.code ).to.be( '#define HAS__input 1\n\n' );
-      expect( codes.slotsMap.pf.code ).to.be( 'uniform float uInput;\n\n#define _input(k) uInput\n' );
+      expect( codes.slotsMap.pf.code ).to.be( 'uniform float uInput;\n#define VAL_uInput uInput\n#define _input(k) VAL_uInput\n' );
       expect( codes.slotsMap.v  ).to.be( undefined );
       expect( codes.slotsMap.f  ).to.be( undefined );
     });

@@ -250,8 +250,10 @@ export default class Input extends Chunk {
             this.removeChild(this.param);
         }
         this.param = param;
-        this.comps = _trimComps(comps, this.size);
-        this.addChild(param);
+        if (param !== null) {
+            this.comps = _trimComps(comps, this.size);
+            this.addChild(param);
+        }
     }
     detach() {
         if (this.param !== null) {

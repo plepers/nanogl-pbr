@@ -38,6 +38,12 @@ export default class ChunkCollection {
     }
   }
 
+  dispose(){
+    for( const chunk of this._all ){
+      chunk.removeList( this );
+    }
+  }
+
 
   addChunks( chunks : Chunk[] ){
     for ( const c of chunks ) {

@@ -103,7 +103,6 @@ export class StandardPass<TSurface extends PbrSurface = PbrSurface> extends Mate
     inputs.add( this.perVertexIrrad        = new Flag ( 'perVertexIrrad',  false ) );
     inputs.add( this.horizonFading         = new Flag ( 'horizonFading' ,  false ) );
     inputs.add( this.glossNearest          = new Flag ( 'glossNearest'  ,  false ) );
-    // inputs.add( this.useDerivatives  = new Flag ( 'useDerivatives',  false ) );
 
   }
 

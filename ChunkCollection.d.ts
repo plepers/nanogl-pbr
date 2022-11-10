@@ -13,6 +13,7 @@ export default class ChunkCollection {
     _cachedSlots: ChunksSlots | null;
     add<T extends Chunk>(chunk: T): T;
     remove(chunk: Chunk): void;
+    dispose(): void;
     addChunks(chunks: Chunk[]): void;
     invalidateList(): void;
     invalidateCode(): void;

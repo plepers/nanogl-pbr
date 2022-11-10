@@ -64,7 +64,6 @@ class LightSetup {
     for (var i = 0; i < this._models.length; i++) {
       this._models[i].prepare(gl);
     }
-
   }
 
 

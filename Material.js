@@ -21,9 +21,9 @@ export class PassInstance {
 }
 export default class Material {
     constructor(gl, name = '') {
-        this.mask = ~0;
         this.gl = gl;
         this.name = name;
+        this.mask = ~0;
         this.glconfig = new GLConfig();
         this.inputs = new ChunkCollection();
         this._passMap = new Map();

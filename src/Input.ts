@@ -493,13 +493,15 @@ export default class Input extends Chunk {
 
 
 
-  attach(param: InputParam, comps: Swizzle = 'rgba') {
+  attach(param: InputParam|null, comps: Swizzle = 'rgba') {
     if (this.param) {
       this.removeChild(this.param);
     }
     this.param = param;
-    this.comps = _trimComps(comps, this.size);
-    this.addChild(param);
+    if( param !== null ){
+      this.comps = _trimComps(comps, this.size);
+      this.addChild(param);
+    }
   }
 
 
