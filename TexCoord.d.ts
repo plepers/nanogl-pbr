@@ -1,7 +1,7 @@
 import { mat3, vec2 } from "gl-matrix";
 import Chunk from "./Chunk";
 import ChunksSlots from "./ChunksSlots";
-declare type TRSOpts = {
+type TRSOpts = {
     translation?: [number, number];
     rotation?: number;
     scale?: number;

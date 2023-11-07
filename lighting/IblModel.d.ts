@@ -8,9 +8,9 @@ import { GLContext } from "nanogl/types";
 export declare const IblFormats: readonly ["OCTA", "PMREM"];
 export declare const ShFormats: readonly ["SH9", "SH7"];
 export declare const HdrEncodings: readonly ["RGBM", "RGBD", "RGBE"];
-export declare type IblFormat = typeof IblFormats[number];
-export declare type ShFormat = typeof ShFormats[number];
-export declare type HdrEncoding = typeof HdrEncodings[number];
+export type IblFormat = typeof IblFormats[number];
+export type ShFormat = typeof ShFormats[number];
+export type HdrEncoding = typeof HdrEncodings[number];
 export declare class IblModel extends AbstractLightModel<Ibl> {
     readonly type = LightType.IBL;
     private readonly enableRotation;

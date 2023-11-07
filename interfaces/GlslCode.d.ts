@@ -1,1 +1,1 @@
-export declare type GlslCode = (o: any) => string;
+export type GlslCode = (o: any) => string;

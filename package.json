@@ -6,7 +6,8 @@
   "scripts": {
     "build": "tsc",
     "test": "npm run build && karma start",
-    "gztest": "browserify standard.js -o gztest.js && uglifyjs --screw-ie8 -m -c warnings=false -o gztest.min.js -- gztest.js && gzip -k -9 gztest.min.js && stat -f%z gztest.min.js.gz && rm ./*gztest*"
+    "gztest": "browserify standard.js -o gztest.js && uglifyjs --screw-ie8 -m -c warnings=false -o gztest.min.js -- gztest.js && gzip -k -9 gztest.min.js && stat -f%z gztest.min.js.gz && rm ./*gztest*",
+    "docs": "typedoc && del docs/** '!docs/data.json'"
   },
   "bin": {
     "nanoglibl": "./bin/nanoglibl"
@@ -39,6 +40,7 @@
     "@babel/preset-env": "^7.9.5",
     "babelify": "^10.0.0",
     "browserify": "^16.5.1",
+    "del-cli": "^5.0.0",
     "expect.js": "^0.3.1",
     "karma": "^4.4.1",
     "karma-browserify": "^6.1.0",
@@ -53,7 +55,9 @@
     "sinon": "^7.5.0",
     "string-template": "1.0.0",
     "stringify": "^5.2.0",
-    "typescript": "^3.7.2",
+    "typedoc": "^0.23.24",
+    "typedoc-plugin-rename-defaults": "^0.6.4",
+    "typescript": "^4.9.5",
     "watchify": "^3.11.1"
   },
   "browserify": {

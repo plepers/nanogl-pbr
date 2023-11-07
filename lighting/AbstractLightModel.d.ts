@@ -19,7 +19,7 @@ export default abstract class AbstractLightModel<TLight extends Light = Light> e
     abstract genCodePerLights(light: TLight, index: number, shadowIndex: number): string;
     abstract prepare(gl: GLContext, model: ILightModel): void;
 }
-declare type _ShadowMappedLight = ShadowMappedLight & Light;
+type _ShadowMappedLight = ShadowMappedLight & Light;
 export declare abstract class ShadowMappedLightModel<TLight extends _ShadowMappedLight> extends AbstractLightModel<TLight> {
     setup(prg: Program): void;
 }

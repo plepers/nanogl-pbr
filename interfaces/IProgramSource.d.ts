@@ -1,5 +1,5 @@
 import ChunksSlots from "../ChunksSlots";
-export declare type ShaderSource = {
+export type ShaderSource = {
     vert: string;
     frag: string;
     uid: string;

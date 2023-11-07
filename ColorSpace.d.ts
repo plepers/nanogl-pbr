@@ -5,4 +5,4 @@ export declare enum ColorSpace {
     LINEAR = "linear"
 }
 export declare const ColorSpaceList: readonly [ColorSpace.SRGB, ColorSpace.LINEAR];
-export declare type ColorSpaceEnum = Enum<typeof ColorSpaceList>;
+export type ColorSpaceEnum = Enum<typeof ColorSpaceList>;

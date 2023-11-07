@@ -1,7 +1,7 @@
 import Chunk from './Chunk';
 import ChunksSlots from './ChunksSlots';
 import { GLContext } from "nanogl/types";
-declare type GlslVersion = '100' | '300 es';
+type GlslVersion = '100' | '300 es';
 declare class ShaderVersion extends Chunk {
     private version;
     constructor(v?: GlslVersion);
