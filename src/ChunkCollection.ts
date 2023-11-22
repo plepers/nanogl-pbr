@@ -1,6 +1,7 @@
 import Chunk from './Chunk'
 import ChunksSlots from './ChunksSlots'
 import Program from 'nanogl/program';
+import { hashNumber, mergeHash } from './Hash';
 
 
 
@@ -38,12 +39,6 @@ export default class ChunkCollection {
     }
   }
 
-  dispose(){
-    for( const chunk of this._all ){
-      chunk.removeList( this );
-    }
-  }
-
 
   addChunks( chunks : Chunk[] ){
     for ( const c of chunks ) {
@@ -75,6 +70,14 @@ export default class ChunkCollection {
     return this._invalidList || this._invalidCode;
   }
 
+
+  getListRevision(){
+    const hash = hashNumber(0)
+    for( const chunk of this._all ){
+      mergeHash( hash, hashNumber( chunk.listRevision ) );
+    }
+  }
+
   getRevision(){
     return this._revision;
   }
@@ -86,10 +89,6 @@ export default class ChunkCollection {
           codes   = this._codes,
           actives = this._actives;
 
-
-    for( const chunk of all ){
-      chunk.removeList( this );
-    }
 
     all     .clear();
     actives .clear();
@@ -105,10 +104,6 @@ export default class ChunkCollection {
     for( const chunk of actives ){
       chunk.hasSetup && setups.push( chunk );
       chunk.hasCode  && codes .push( chunk );
-    }
-
-    for( const chunk of all ){
-      chunk.addList( this );
     }
 
     this._invalidList = false;

@@ -6,8 +6,6 @@ import ChunksSlots from './ChunksSlots'
 
 export default abstract class Chunk {
 
-  private   _lists: Set<ChunksTree>;
-
   // is generate glsl code
   protected _hasCode : boolean;
 
@@ -22,11 +20,21 @@ export default abstract class Chunk {
 
   protected _children: Chunk[];
 
+  private _listRevision = 128;
+  public get listRevision() {
+    return this._listRevision;
+  }
+  
+  private _codeRevision = 128;
+  public get codeRevision() {
+    return this._codeRevision;
+  }
+  
+
   constructor(hasCode: boolean = false, hasSetup: boolean = false) {
 
     this._ref = null;
 
-    this._lists    = new Set();
     this._hasCode  = hasCode;
     this._hasSetup = hasSetup;
     this._invalid  = true;
@@ -122,24 +130,12 @@ export default abstract class Chunk {
   }
 
 
-  addList(list: ChunksTree ) {
-    this._lists.add( list );
-  }
-
-  removeList(list: ChunksTree ) {
-    this._lists.delete( list );
-  }
-
   invalidateList() {
-    for( const l of this._lists.values() ){
-      l.invalidateList();
-    }
+    this._listRevision++;
   }
 
   invalidateCode() {
-    for( const l of this._lists.values() ){
-      l.invalidateCode();
-    }
+    this._codeRevision++;
   }
 
 
