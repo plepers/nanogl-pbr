@@ -19,6 +19,6 @@
 	  "out": "docs",
 	  "json": "docs/data.json",
 	  "githubPages": false,
-    "modifierTags": ["@resolveTypeof"]
+    "modifierTags": ["@hidden", "@resolveTypeof"]
   }
 }
