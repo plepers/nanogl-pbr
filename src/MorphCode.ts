@@ -10,6 +10,7 @@ export type MorphAttributeName = 'position' | 'normal' | 'tangent';
 /**
  * The definition of a morph attribute.
  * @example
+ * ```js
  * {
  *    type:  'vec3'
  *    name : 'position'
@@ -19,6 +20,7 @@ export type MorphAttributeName = 'position' | 'normal' | 'tangent';
  *      'aPosition_morph2'
  *    ]
  * }
+ * ```
  */
 export type MorphAttribInfos = {
   /** The type of the attribute to morph */

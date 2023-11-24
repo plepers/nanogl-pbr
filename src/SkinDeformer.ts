@@ -8,11 +8,13 @@ import SkinCode, { JOINTS_UNIFORM } from "./SkinCode";
 /**
  * The definition of a skin attribute.
  * @example
+ * ```js
  * {
  *    weightsAttrib:  'aSkinWeights'
  *    jointsAttrib : 'aSkinJoints'
  *    numComponents : 3
  * }
+ * ```
  */
 export type SkinAttributeSet = {
   /** The name of the attribute for weights data */
