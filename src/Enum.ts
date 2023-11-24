@@ -95,7 +95,7 @@ class Enum<T extends readonly string[]> extends Chunk {
    *
    * @example
    * For an Enum defined as :
-   * ```ts
+   * ```js
    * new Enum('MyEnum', ['A', 'B', 'C'])
    * ```
    *

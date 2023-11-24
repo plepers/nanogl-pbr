@@ -74,7 +74,7 @@ class Flag<T extends string = string> extends Chunk {
    *
    * @example
    * For an Flag defined as :
-   * ```ts
+   * ```js
    * new Flag('MyFlag', true)
    * ```
    *

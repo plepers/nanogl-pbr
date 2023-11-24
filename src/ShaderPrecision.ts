@@ -42,7 +42,7 @@ class ShaderPrecision extends Chunk {
    *
    * @example
    * For an ShaderPrecision defined as :
-   * ```ts
+   * ```js
    * new ShaderPrecision('highp')
    * ```
    *

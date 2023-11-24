@@ -53,7 +53,7 @@ class ShaderVersion extends Chunk {
    *
    * @example
    * For an ShaderVersion defined as :
-   * ```ts
+   * ```js
    * new ShaderVersion('300 es')
    * ```
    *
