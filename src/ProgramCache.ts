@@ -25,19 +25,31 @@ function processSlots( source : string, slots : ChunksSlots ) : string {
 }
 
 
-
+/**
+ * This class manages the cache of shader programs.
+ *
+ * It allows to compile programs from a program source
+ * and cache them to avoid recompiling them if they haven't changed.
+ */
 class ProgramCache {
-
+  /** The webgl context this ProgramCache belongs to */
   gl: GLContext;
-  
+
+  /** The list of hash/program pairs used to keep track of cached programs */
   private _cache: Record<string,Program>;
 
+  /**
+   * @param {GLContext} gl The webgl context this ProgramCache belongs to
+   */
   constructor(gl: GLContext) {
     this.gl = gl;
     this._cache = {};
   }
 
-
+  /**
+   * Create a ProgramCache instance or return the existing one for given webgl context.
+   * @param gl The webgl context
+   */
   static getCache(gl: GLContext) : ProgramCache {
     const agl = gl as any;
     if (agl._prgcache === undefined) {
@@ -46,7 +58,13 @@ class ProgramCache {
     return agl._prgcache;
   }
 
-
+  /**
+   * Compile a program from a program source.
+   * If the program source has already been compiled and has not changed,
+   * the cached program is returned.
+   *
+   * @param {IProgramSource} source The program source to use
+   */
   compile(source : IProgramSource) : Program {
 
     const hash = hashString( source.shaderSource.uid, source.slots.getHash() );
@@ -68,14 +86,17 @@ class ProgramCache {
   }
 
 
-  // called by materials when prg is not used anymore
+  /**
+   * Release the given program.
+   * @param prg The program to release
+   */
   release( prg : Program ) {
     // TODO: implement PrgCache.release
   }
 
 
 
-  
+
 };
 
 

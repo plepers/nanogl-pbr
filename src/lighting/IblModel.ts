@@ -14,27 +14,46 @@ import Input, { Constant } from "../Input";
 const M3 = mat3.create()
 const V3 = vec3.create()
 
-
+/**
+ * The IBL (Image Based Lighting) formats.
+ * @enum
+ */
 export const IblFormats = [
+  /** Octahedron format */
   "OCTA",
+  /** PMREM (Prefiltered Mipmaped Radiance Environment Map) format */
   "PMREM",
 ] as const
 
-
+/**
+ * The SH (Spherical Harmonics) formats.
+ * @enum
+ */
 export const ShFormats = [
+  /** 9 SH coefficients */
   "SH9",
+  /** 7 SH coefficients */
   "SH7",
 ] as const
 
+/**
+ * The HDR (High Dynamic Range) encoding modes.
+ * @enum
+ */
 export const HdrEncodings = [
+  /** RGB + Multiplier */
   "RGBM",
+  /** RGB + Divider */
   "RGBD",
+  /** RGB + Exponent */
   "RGBE",
 ] as const
 
-
+/** An IBL (Image Based Lighting) format. */
 export type IblFormat = typeof IblFormats[number]
+/** A SH (Spherical Harmonics) format. */
 export type ShFormat = typeof ShFormats[number]
+/** An HDR (High Dynamic Range) encoding mode. */
 export type HdrEncoding = typeof HdrEncodings[number]
 
 export class IblModel extends AbstractLightModel<Ibl> {
@@ -68,10 +87,10 @@ export class IblModel extends AbstractLightModel<Ibl> {
       this.hdrEncoding        .set(ibl.hdrEncoding        )
       this.mipLevelsValue     .set(ibl.mipLevels          )
       this.intensitiesValue   .set([
-        ibl.intensity * ibl.ambiantIntensity, 
+        ibl.intensity * ibl.ambiantIntensity,
         ibl.intensity * ibl.specularIntensity
       ])
-    } 
+    }
   }
 
 
@@ -88,7 +107,7 @@ export class IblModel extends AbstractLightModel<Ibl> {
     super( code, preCode );
     this.mipLevelsValue   = this.mipLevels.attachConstant(5)
     this.intensitiesValue = this.intensities.attachConstant([1,1])
-    
+
     this.addChild( this.enableRotation      )
     this.addChild( this.enableBoxProjection )
     this.addChild( this.iblFormat           )
@@ -113,10 +132,10 @@ export class IblModel extends AbstractLightModel<Ibl> {
 
         vec3.scaleAndAdd(V3, ibl._wposition as vec3, ibl.boxProjectionSize, -0.5)
         prg.uBoxProjMin( V3 );
-        
+
         vec3.scaleAndAdd(V3, ibl._wposition as vec3, ibl.boxProjectionSize, 0.5)
         prg.uBoxProjMax( V3 );
-        
+
         vec3.add(V3, ibl._wposition as vec3, ibl.boxProjectionOffset)
         prg.uBoxProjPos( V3 );
       }

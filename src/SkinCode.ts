@@ -23,7 +23,7 @@ function createAttributeDeclarations( sets : SkinAttributeSet[] ){
   for (const set of sets) {
     const type = getAttribTypeForSize( set.numComponents );
     res += `
-IN ${type} ${set.jointsAttrib}; 
+IN ${type} ${set.jointsAttrib};
 IN ${type} ${set.weightsAttrib};`
   }
   return res;
@@ -46,17 +46,26 @@ function makeComputeMatrixSum( sets : SkinAttributeSet[] ) {
   return joints.join('+ \n  ');
 }
 
+/**
+ * The code for a SkinDeformer.
+ */
 const SkinCode = {
-
+  /**
+   * Generate the pre-vertex code for a SkinDeformer.
+   * @param skin The SkinDeformer to generate the code for
+   */
   preVertexCode( skin : SkinDeformer ) : string {
-    return glsl({ 
-      pv: true, 
+    return glsl({
+      pv: true,
       numJoints : skin._numJoints,
       attribDecl : createAttributeDeclarations( skin._attributeSets ),
       matrixSum : makeComputeMatrixSum( skin._attributeSets ),
     });
   },
-  
+  /**
+   * Generate the vertex code for a SkinDeformer.
+   * @param morph The SkinDeformer to generate the code for
+   */
   vertexCode() : string {
     return glsl({ vertex_warp: true });
   }

@@ -10,15 +10,31 @@ import ProgramSource from './ProgramSource';
 
 
 
-
+/**
+ * This class manages the creation and management of a program
+ * for a material pass.
+ *
+ * The program is created from the shader source of the pass,
+ * the inputs from both the material and the pass.
+ */
 export class PassInstance {
-
+  /** The material pass */
   readonly pass : MaterialPass;
+  /** The material this pass instance belongs to */
   readonly material: Material;
+  /**
+   * The program source managing the program
+   * computed from the pass shader source
+   */
   readonly programSource : ProgramSource
 
+  /** @hidden */
   _program: Program | null = null
 
+  /**
+   * @param {Material} material The material this pass instance belongs to
+   * @param {MaterialPass} pass The material pass to manage
+   */
   constructor( material : Material, pass : MaterialPass ){
     this.programSource = new ProgramSource(material.gl, pass._shaderSource );
     this.programSource.addChunkCollection( material.inputs)
@@ -28,14 +44,20 @@ export class PassInstance {
     this.material = material;
   }
 
-
+  /**
+   * Prepare the program for the material pass.
+   * @param {Node} node The node to use for transforms
+   * @param {Camera} camera The camera to use for projection
+   */
   prepare( node : Node, camera : Camera ) : Program {
     const prg = this.programSource.setupProgram();
     this.pass.prepare( prg, node, camera );
     return prg;
   }
 
-
+  /**
+   * Get the program for the material pass instance.
+   */
   getProgram( ) : Program {
     return this.programSource.getProgram();
   }
@@ -45,23 +67,35 @@ export class PassInstance {
 
 
 
-
+/**
+ * This class manages materials.
+ */
 export default class Material {
-  
+  /** The render mask of the material */
   mask: number = ~0;
-  
-  readonly glconfig = new GLConfig();
-  readonly inputs   = new ChunkCollection();
-  
 
+  /** The glconfig of the material */
+  readonly glconfig = new GLConfig();
+  /** The collection of shader chunks */
+  readonly inputs   = new ChunkCollection();
+
+  /** The map of material pass instances to their id */
   _passMap = new Map<MaterialPassId, PassInstance>();
+  /** The list of material pass instances */
   _passes  : PassInstance[] = [];
 
-  
+  /**
+   * @param {GLContext} gl The webgl context this Material belongs to
+   * @param {string} [name] The name of the material
+   */
   constructor( readonly gl : GLContext, public name: string = '') {
   }
 
-
+  /**
+   * Add a pass to the material.
+   * @param pass The material pass to add
+   * @param id The id of the pass to add
+   */
   addPass( pass:MaterialPass, id:MaterialPassId = 'color' ) : PassInstance {
     if( this._passMap.has( id ) ){
       this.removePass( id );
@@ -72,7 +106,10 @@ export default class Material {
     return pInst;
   }
 
-
+  /**
+   * Remove a pass from the material.
+   * @param id The id of the pass to remove
+   */
   removePass( id : MaterialPassId ){
     //TODO: release program?
     if( this._passMap.has( id ) ){
@@ -82,18 +119,33 @@ export default class Material {
     }
   }
 
+  /**
+   * Get a pass with its id.
+   * @param id The id of the pass to get
+   */
   getPass( id:MaterialPassId = 'color' ) : PassInstance | undefined{
     return this._passMap.get( id );
   }
-  
+
+  /**
+   * Know whether the material has a pass with the given id or not.
+   * @param id The id of the pass to check
+   */
   hasPass( id:MaterialPassId ):boolean{
     return this._passMap.has( id );
   }
 
+  /**
+   * Get all the passes of the material.
+   */
   getAllPasses():PassInstance[]{
     return this._passes;
   }
 
+  /**
+   * Get the program for a pass with the pass id, if it exists.
+   * @param passId The id of the pass to get the program from
+   */
   getProgram( passId : MaterialPassId ) : Program | undefined {
     const pass = this.getPass( passId );
     return pass?.getProgram();

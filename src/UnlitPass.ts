@@ -25,26 +25,39 @@ const M4 = mat4.create();
 const MAT_ID = 'unlit';
 
 /**
- * @extends {BaseMaterial}
+ * This class manages the unlit pass of a material.
+ * @extends {MaterialPass}
  */
 export default class UnlitPass extends MaterialPass {
 
-
+  /** The glsl version */
   version              : ShaderVersion
+  /** The shader float precision */
   precision            : ShaderPrecision
+  /** The id for the shader */
   shaderid             : Flag
+  /** The base color */
   baseColor            : Input
+  /** The base color factor */
   baseColorFactor      : Input
+  /** The alpha value */
   alpha                : Input
+  /** The alpha factor */
   alphaFactor          : Input
+  /** The alpha cutoff */
   alphaCutoff          : Input
 
+  /** The alpha rendering mode */
   alphaMode: AlphaModeEnum
 
+  /** Whether the backface of the geometry should be rendered or not */
   doubleSided   : Flag
-  
+
   // private _uvs : Map<number, UVTransform> = new Map()
 
+  /**
+   * @param name The name of the pass
+   */
   constructor( name : string = 'unlit-pass' ){
 
     super( {
@@ -76,28 +89,30 @@ export default class UnlitPass extends MaterialPass {
 
   }
 
-  
+  /**
+   * Set the light setup to use for this pass.
+   * Does nothing for an unlit pass.
+   * @param {LightSetup} setup The light setup to use for this pass
+   */
   setLightSetup( setup : LightSetup ){}
 
 
   prepare( prg:Program, node : Node, camera : Camera ){
-    
+
     // matrices
-    
+
     if( prg.uMVP ){
       camera.modelViewProjectionMatrix( M4, node._wmatrix );
       prg.uMVP(          M4            );
     }
-    
+
     if( prg.uWorldMatrix )
       prg.uWorldMatrix( node._wmatrix );
-    
+
     if( prg.uVP )
       prg.uVP( camera._viewProj );
-    
+
   }
 
 
 };
-
-
