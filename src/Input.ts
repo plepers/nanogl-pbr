@@ -257,6 +257,9 @@ export class Sampler extends BaseParams implements IInputParam {
     this._tex = t;
   }
 
+  /**
+   * This method is not used for input params.
+   */
   protected _genCode(slots: ChunksSlots): void {}
 
   /**
@@ -418,7 +421,9 @@ export class Uniform extends BaseParams implements IInputParam {
     this._invalid = true;
   }
 
-
+  /**
+   * This method is not used for input params.
+   */
   protected _genCode(slots: ChunksSlots): void {}
 
   /**
@@ -510,7 +515,9 @@ export class Attribute extends BaseParams implements IInputParam {
 
 
 
-
+  /**
+   * This method is not used for input params.
+   */
   protected _genCode(slots: ChunksSlots): void {}
 
   /**
@@ -609,6 +616,9 @@ export class Constant extends BaseParams implements IInputParam {
     }
   }
 
+  /**
+   * This method is not used for input params.
+   */
   protected _genCode(slots: ChunksSlots): void {}
 
   /**
@@ -818,7 +828,7 @@ export default class Input extends Chunk {
   /**
    * Generate the shader code for this input.
    *
-   * For more details, see the `_genCode` method of the
+   * For more details, see the `genInputCode` method of the
    * chosen input param type.
    *
    * @param {ChunksSlots} slots The slots to add the code to
