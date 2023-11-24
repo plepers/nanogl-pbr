@@ -88,7 +88,7 @@ export class ChunkSlot {
 export default class ChunksSlots {
   /** The list of chunk slots */
   slots   : ChunkSlot[];
-  /** The list of id / chunk slots pair */
+  /** The list of id / chunk slots pairs */
   slotsMap: Record<string, ChunkSlot>;
   /** @hidden */
   hash: Hash = 0;

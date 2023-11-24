@@ -76,7 +76,7 @@ export default class ChunkCollection {
 
   /**
    * Add multiple chunks to this collection.
-   * @param {Chunk[]} chunk The chunks to add
+   * @param {Chunk[]} chunks The chunks to add
    */
   addChunks( chunks : Chunk[] ){
     for ( const c of chunks ) {

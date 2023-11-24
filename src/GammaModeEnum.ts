@@ -1,9 +1,6 @@
 import Enum from "./Enum";
 
-/**
- * The gamma correction modes.
- * @enum
- */
+/** The gamma correction modes. */
 export const GammaModes = [
   /** No gamma correction */
   'GAMMA_NONE',
@@ -18,5 +15,8 @@ export const GammaModes = [
   'GAMMA_TB',
 ] as const
 
-/** An Enum for the gamma correction modes. */
+/**
+ * An Enum for the gamma correction modes.
+ * @resolveTypeof
+ */
 export type GammaModeEnum = Enum<typeof GammaModes>

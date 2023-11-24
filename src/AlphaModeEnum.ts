@@ -1,9 +1,6 @@
 import Enum from "./Enum";
 
-/**
- * The alpha rendering modes.
- * @enum
- */
+/** The alpha rendering modes. */
 export const AlphaModes = [
   /** Fully opaque */
   "OPAQUE",
@@ -13,5 +10,8 @@ export const AlphaModes = [
   "BLEND"
 ] as const
 
-/** An Enum for the alpha rendering modes. */
+/**
+ * An Enum for the alpha rendering modes.
+ * @resolveTypeof
+ */
 export type AlphaModeEnum = Enum<typeof AlphaModes>

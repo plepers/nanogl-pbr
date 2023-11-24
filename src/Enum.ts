@@ -37,6 +37,7 @@ class Enum<T extends readonly string[]> extends Chunk {
   private _accesDef: string;
 
   /**
+   * @typeParam T The type of the list of values
    * @param {string} name The name of the Enum
    * @param {T} penum The list of values available
    */

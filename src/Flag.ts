@@ -18,6 +18,7 @@ class Flag<T extends string = string> extends Chunk {
   private _val: boolean;
 
   /**
+   * @typeParam T The name of the flag
    * @param {T} name The name of the flag
    * @param {boolean} [val=false] The initial value
    */
@@ -73,7 +74,7 @@ class Flag<T extends string = string> extends Chunk {
    * @param {ChunksSlots} slots The slots to add the code to
    *
    * @example
-   * For an Flag defined as :
+   * For a Flag defined as :
    * ```js
    * new Flag('MyFlag', true)
    * ```

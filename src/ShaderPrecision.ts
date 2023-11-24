@@ -41,7 +41,7 @@ class ShaderPrecision extends Chunk {
    * @param {ChunksSlots} slots The slots to add the code to
    *
    * @example
-   * For an ShaderPrecision defined as :
+   * For a ShaderPrecision defined as :
    * ```js
    * new ShaderPrecision('highp')
    * ```

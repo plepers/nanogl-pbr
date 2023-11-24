@@ -85,6 +85,7 @@ export class StandardPass<TSurface extends PbrSurface = PbrSurface> extends Mate
   // private _uvs : Map<number, UVTransform> = new Map()
 
   /**
+   * @typeParam TSurface The type of the PBR surface to use for this pass
    * @param name The name of the pass
    */
   constructor( name : string = 'gltf-std-pass' ){

@@ -52,7 +52,7 @@ class ShaderVersion extends Chunk {
    * @param {ChunksSlots} slots The slots to add the code to
    *
    * @example
-   * For an ShaderVersion defined as :
+   * For a ShaderVersion defined as :
    * ```js
    * new ShaderVersion('300 es')
    * ```

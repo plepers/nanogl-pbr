@@ -83,7 +83,7 @@ export default abstract class Chunk {
    * Add a child to this chunk.
    *
    * @typeParam T The type of the chunk we are adding
-   * @param chunk The chunk to add to children
+   * @param {Chunk} child The chunk to add to children
    */
   addChild<T extends Chunk>( child : T ) : T {
     if (this._children.indexOf(child) > -1) {
@@ -100,7 +100,7 @@ export default abstract class Chunk {
   /**
    * Remove a child from this chunk.
    *
-   * @param {Chunk} chunk The chunk to remove from children
+   * @param {Chunk} child The chunk to remove from children
    */
   removeChild( child : Chunk ){
     var i = this._children.indexOf(child);

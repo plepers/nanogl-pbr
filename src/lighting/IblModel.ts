@@ -14,10 +14,7 @@ import Input, { Constant } from "../Input";
 const M3 = mat3.create()
 const V3 = vec3.create()
 
-/**
- * The IBL (Image Based Lighting) formats.
- * @enum
- */
+/** The IBL (Image Based Lighting) formats. */
 export const IblFormats = [
   /** Octahedron format */
   "OCTA",
@@ -25,10 +22,7 @@ export const IblFormats = [
   "PMREM",
 ] as const
 
-/**
- * The SH (Spherical Harmonics) formats.
- * @enum
- */
+/** The SH (Spherical Harmonics) formats. */
 export const ShFormats = [
   /** 9 SH coefficients */
   "SH9",
@@ -36,10 +30,7 @@ export const ShFormats = [
   "SH7",
 ] as const
 
-/**
- * The HDR (High Dynamic Range) encoding modes.
- * @enum
- */
+/** The HDR (High Dynamic Range) encoding modes. */
 export const HdrEncodings = [
   /** RGB + Multiplier */
   "RGBM",
@@ -49,11 +40,20 @@ export const HdrEncodings = [
   "RGBE",
 ] as const
 
-/** An IBL (Image Based Lighting) format. */
+/**
+ * An IBL (Image Based Lighting) format.
+ * @resolveTypeof
+ */
 export type IblFormat = typeof IblFormats[number]
-/** A SH (Spherical Harmonics) format. */
+/**
+ * A SH (Spherical Harmonics) format.
+ * @resolveTypeof
+ */
 export type ShFormat = typeof ShFormats[number]
-/** An HDR (High Dynamic Range) encoding mode. */
+/**
+ * An HDR (High Dynamic Range) encoding mode.
+ * @resolveTypeof
+ */
 export type HdrEncoding = typeof HdrEncodings[number]
 
 export class IblModel extends AbstractLightModel<Ibl> {

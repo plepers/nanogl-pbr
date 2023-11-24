@@ -18,6 +18,7 @@
 	  "entryPointStrategy": "expand",
 	  "out": "docs",
 	  "json": "docs/data.json",
-	  "githubPages": false
+	  "githubPages": false,
+    "modifierTags": ["@resolveTypeof"]
   }
 }
