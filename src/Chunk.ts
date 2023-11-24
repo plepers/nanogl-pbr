@@ -158,7 +158,7 @@ export default abstract class Chunk {
   }
 
   /**
-   * The method called by {@link Chunk.genCode}
+   * The method called by {@link genCode}
    * to generate the shader code for this chunk.
    *
    * @param {ChunksSlots} slots The slots to add the code to
