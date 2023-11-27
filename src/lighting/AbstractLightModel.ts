@@ -9,6 +9,7 @@ import { GLContext } from "nanogl/types";
 
 /**
  * This class is the base class for light models.
+ * @typeParam TLight The type of light this model supports
  */
 export default abstract class AbstractLightModel<TLight extends Light = Light> extends Chunk {
   /** The type of lighting */
@@ -26,6 +27,7 @@ export default abstract class AbstractLightModel<TLight extends Light = Light> e
 
 
   /**
+   * @typeParam TLight The type of light this model supports
    * @param {GlslCode} code The shader code template for this light model
    * @param {GlslCode} preCode The shader pre-code template for this light model
    */
@@ -87,7 +89,7 @@ export default abstract class AbstractLightModel<TLight extends Light = Light> e
 
   /**
    * Generate the shader code for a given light in this LightModel.
-   * @param {ChunksSlots} slots The slots to add the code to
+   * @param {TLight} light The light to generate the code for
    * @param {number} index The index of the light
    * @param {number} shadowIndex The shadow index of the light
    */

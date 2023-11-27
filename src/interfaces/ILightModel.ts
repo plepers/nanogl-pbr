@@ -1,6 +1,7 @@
 import Light from "../lighting/Light";
 import Chunk from "../Chunk";
 import LightSetup from "../lighting/LightSetup";
+import { GlslCode } from "./GlslCode";
 import { GLContext } from "nanogl/types";
 
 /**
@@ -45,29 +46,29 @@ export default interface ILightModel{
  */
 export interface ILightModelCode{
   /** The shader pre-code for directional lighting. */
-  dirPreCode     : (o:any)=>string;
+  dirPreCode     : GlslCode;
   /** The shader pre-code for spot lighting. */
-  spotPreCode    : (o:any)=>string;
+  spotPreCode    : GlslCode;
   /** The shader pre-code for point lighting. */
-  pointPreCode   : (o:any)=>string;
+  pointPreCode   : GlslCode;
 
   /** The shader code for directional lighting. */
-  dirLightCode   : (o:any)=>string;
+  dirLightCode   : GlslCode;
   /** The shader code for spot lighting. */
-  spotLightCode  : (o:any)=>string;
+  spotLightCode  : GlslCode;
   /** The shader code for point lighting. */
-  pointLightCode : (o:any)=>string;
+  pointLightCode : GlslCode;
 
   /** The shader pre-code for shadow maps. */
-  shadPreCode    : (o:any)=>string;
+  shadPreCode    : GlslCode;
   /** The shader code for setup before lighting. */
-  preLightCode   : (o:any)=>string;
+  preLightCode   : GlslCode;
   /** The shader code for setup after lighting. */
-  postLightCode  : (o:any)=>string;
+  postLightCode  : GlslCode;
 
   /** The shader pre-code for IBL. */
-  iblPreCode : (o:any)=>string;
+  iblPreCode : GlslCode;
   /** The shader code for IBL. */
-  iblCode    : (o:any)=>string;
+  iblCode    : GlslCode;
 
 }
