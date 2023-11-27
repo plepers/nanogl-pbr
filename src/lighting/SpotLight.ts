@@ -9,16 +9,22 @@ import PunctualLight from './PunctualLight';
 const BiasVector = new Float32Array(4);
 
 
-
+/**
+ * This class manages spot lights.
+ */
 class SpotLight extends PunctualLight implements ShadowMappedLight{
-  
+
   readonly _type = LightType.SPOT;
 
+  /** The inner angle of the spot light */
   private _innerAngle: number = 0;
+  /** The outer angle of the spot light */
   private _outerAngle: number = 0;
+  /** The radius of the spot light */
   private _radius: number = 0;
-  
+
   // x : 1.0 / radius^2
+  /** The computed attenuation data of the spot light */
   _attenuationData   : Float32Array;
 
   _camera: Camera<PerspectiveLens>|null = null;
@@ -71,17 +77,41 @@ class SpotLight extends PunctualLight implements ShadowMappedLight{
   }
 
 
-
+  /**
+   * Get the inner angle of the spot light.
+   */
   get innerAngle() { return this._innerAngle; }
+  /**
+   * Set the inner angle of the spot light.
+   * This will also update the attenuation data.
+   * @param {number} v The new value
+   */
   set innerAngle( v :number ) {
     this._innerAngle = v;
     this._updateSpotData();
   }
 
+  /**
+   * Get the outer angle of the spot light.
+   */
   get angle(){ return this._outerAngle; }
+  /**
+   * Set the outer angle of the spot light.
+   * This will not update the attenuation data.
+   * @param {number} v The new value
+   */
   set angle(v:number){ this.outerAngle=v; }
 
+  /**
+   * Get the outer angle of the spot light.
+   */
   get outerAngle() { return this._outerAngle; }
+  /**
+   * Set the outer angle of the spot light.
+   * This will also update the attenuation data
+   * and adjust the camera fov if the light casts shadows.
+   * @param {number} v The new value
+   */
   set outerAngle( v :number ) {
     this._outerAngle = v;
     this._updateSpotData();
@@ -91,15 +121,24 @@ class SpotLight extends PunctualLight implements ShadowMappedLight{
   }
 
 
-
+  /**
+   * Get the radius of the spot light.
+   */
   get radius() { return this._radius }
+  /**
+   * Set the radius of the spot light.
+   * This will also update the attenuation data.
+   * @param {number} v The new value
+   */
   set radius( v : number ) {
     this._radius = v;
     this._updateSpotData();
   }
 
 
-
+  /**
+   * Update the attenuation data of the spot light.
+   */
   _updateSpotData() {
     this._attenuationData[0] = 1.0 / (this._radius * this._radius);
     this._attenuationData[1] = (this._radius * this._radius);
@@ -108,7 +147,7 @@ class SpotLight extends PunctualLight implements ShadowMappedLight{
   }
 
 
-  
+
 }
 
 export default SpotLight;

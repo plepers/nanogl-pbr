@@ -8,14 +8,25 @@ import DepthFormat, { DepthFormatEnum } from '../DepthFormatEnum';
 import Chunk from '../Chunk';
 import { GLContext } from 'nanogl/types';
 
+/**
+ * This class handles the setup of all lights.
+ *
+ * It manages the standard model and all other
+ * registered global light models.
+ */
 class LightSetup {
-
+  /** The list of lights */
   _lights     : Light[];
+  /** The depth pass format */
   depthFormat : DepthFormatEnum;
+  /** The bounds to use for lighting */
   bounds      : Bounds;
+  /** The standard model */
   stdModel    : StandardModel;
 
+  /** The list of light models */
   _models     : ILightModel[];
+  /** The list of id / light model pairs */
   _modelsMap  : Record<string,ILightModel>;
 
 
@@ -36,7 +47,14 @@ class LightSetup {
   }
 
 
-
+  /**
+   * Add a light to the setup.
+   *
+   * This will add the light to the lights list
+   * and to all the registered models.
+   *
+   * @param {Light} l The light to add
+   */
   add(l:Light) {
     if (this._lights.indexOf(l) === -1) {
       this._lights.push(l);
@@ -47,7 +65,14 @@ class LightSetup {
     }
   }
 
-
+  /**
+   * Remove a light from the setup.
+   *
+   * This will remove the light from the lights list
+   * and from all the registered models.
+   *
+   * @param {Light} l The light to remove
+   */
   remove(l:Light) {
     var i = this._lights.indexOf(l);
     if (i > -1) {
@@ -59,14 +84,22 @@ class LightSetup {
     }
   }
 
-
+  /**
+   * Prepare all registered models for rendering.
+   * @param {GLContext} gl The webgl context to use
+   */
   prepare( gl :GLContext ) {
     for (var i = 0; i < this._models.length; i++) {
       this._models[i].prepare(gl);
     }
   }
 
-
+  /**
+   * Get the shader chunks for the model correpsonding to the given id.
+   * If no id is given, the standard model is used.
+   *
+   * @param {string} modelId The id of the model to use
+   */
   getChunks( modelId : string ) : Chunk[] {
     if (modelId === undefined) {
       modelId = 'std';
@@ -77,7 +110,13 @@ class LightSetup {
     return res;
   }
 
-
+  /**
+   * Register a light model to the setup.
+   * If a model with the same id is already registered, it will not be replaced.
+   *
+   * @param id The id of the model
+   * @param model The model to register
+   */
   _registerModel(id : string , model : ILightModel ) {
     if (this._modelsMap[id] === undefined) {
       this._modelsMap[id] = model;

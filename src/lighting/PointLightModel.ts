@@ -6,14 +6,22 @@ import StandardModel from "./StandardModel";
 import Program from "nanogl/program";
 import { GLContext } from "nanogl/types";
 
-
+/**
+ * This class manages point light models.
+ */
 export default class PointLightModel extends AbstractLightModel<PointLight> {
 
   readonly type = LightType.POINT
 
+  /** The color for each light */
   _colors   : Float32Array | null;
+  /** The position for each light */
   _positions: Float32Array | null;
 
+  /**
+   * @param {GlslCode} code The shader code template for this light model
+   * @param {GlslCode} preCode The shader pre-code template for this light model
+   */
   constructor(code : GlslCode, preCode : GlslCode) {
     super(code, preCode);
 
@@ -32,6 +40,10 @@ export default class PointLightModel extends AbstractLightModel<PointLight> {
     return this.codeTemplate(o);
   }
 
+  /**
+   * Allocate the colors & positions arrays for the given number of lights.
+   * @param {number} n The number of lights
+   */
   allocate(n: number) {
 
     if (this._colors === null || this._colors.length / 3 !== n) {

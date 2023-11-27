@@ -56,20 +56,34 @@ export type ShFormat = typeof ShFormats[number]
  */
 export type HdrEncoding = typeof HdrEncodings[number]
 
+/**
+ * This class manages IBL (Image Based Lighting) light models.
+ *
+ * **Important :** The IBL light model only supports one IBL light.
+ */
 export class IblModel extends AbstractLightModel<Ibl> {
 
   readonly type = LightType.IBL;
 
+  /** Whether to enable rotation of the IBL or not */
   private readonly enableRotation      = new Flag("enableRotation"     )
+  /** Whether to enable box projection for reflection or not */
   private readonly enableBoxProjection = new Flag("enableBoxProjection")
 
+  /** The type of mapping of the env map */
   private readonly iblFormat   = new Enum("iblFormat"     , IblFormats  )
+  /** The spherical harmonics format */
   private readonly shFormat    = new Enum("shFormat"      , ShFormats   )
+  /** The encoding mode used to store HDR values in the env map */
   private readonly hdrEncoding = new Enum("iblHdrEncoding", HdrEncodings)
+  /** The IBL intensities : the ambiant intensity & the specular intensity */
   private readonly intensities = new Input("iblIntensities", 2)
+  /** The number of available mip levels in the env map */
   private readonly mipLevels   = new Input("iblNumMipLevel", 1)
 
+  /** The constant attached to the `intensities` input */
   private readonly intensitiesValue: Constant;
+  /** The constant attached to the `mipLevels` input */
   private readonly mipLevelsValue: Constant;
 
 
@@ -102,7 +116,10 @@ export class IblModel extends AbstractLightModel<Ibl> {
 
   }
 
-
+  /**
+   * @param {GlslCode} code The shader code template for this light model
+   * @param {GlslCode} preCode The shader pre-code template for this light model
+   */
   constructor( code : GlslCode, preCode : GlslCode ) {
     super( code, preCode );
     this.mipLevelsValue   = this.mipLevels.attachConstant(5)
@@ -117,7 +134,10 @@ export class IblModel extends AbstractLightModel<Ibl> {
     this.addChild( this.intensities         )
   }
 
-
+  /**
+   * Setup the given program for this light model.
+   * @param {Program} prg The program to setup
+   */
   setup( prg : Program ){
     if( this.lights.length > 0 ){
       const ibl = this.lights[0]

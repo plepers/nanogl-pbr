@@ -7,13 +7,22 @@ import { ShadowMappedLightModel } from './AbstractLightModel'
 import { GlslCode } from "../interfaces/GlslCode";
 import { GLContext } from "nanogl/types";
 
+/**
+ * This class manages directional light models.
+ */
 export default class DirectionalLightModel extends ShadowMappedLightModel<DirectionalLight> {
 
   readonly type = LightType.DIRECTIONAL;
 
+  /** The direction for each light */
   _directions: Float32Array | null
+  /** The color for each light */
   _colors: Float32Array | null
 
+  /**
+   * @param {GlslCode} code The shader code template for this light model
+   * @param {GlslCode} preCode The shader pre-code template for this light model
+   */
   constructor( code : GlslCode, preCode : GlslCode ) {
     super(code, preCode);
 
@@ -32,6 +41,10 @@ export default class DirectionalLightModel extends ShadowMappedLightModel<Direct
   }
 
 
+  /**
+   * Allocate the directions & colors arrays for the given number of lights.
+   * @param {number} n The number of lights
+   */
   allocate(n: number) {
 
     if (this._colors === null || this._colors.length / 4 !== n) {
@@ -81,4 +94,3 @@ export default class DirectionalLightModel extends ShadowMappedLightModel<Direct
 
 
 }
-

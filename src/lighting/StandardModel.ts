@@ -53,24 +53,40 @@ class StandardModelCode implements ILightModelCode {
 // =================================
 //          Light Model
 // =================================
-
+/**
+ * This class manages standard light models.
+ *
+ * It is a global light model that handles
+ * the light models for all lighting types.
+ */
 class StandardModel implements ILightModel {
-  
+  /** The code for this light model */
   modelCode: ILightModelCode
 
+  /** The shader chunk for the setup before lighting */
   preLightsChunk : PreLightsChunk     ;
+  /** The shader chunk for the setup after lighting */
   postLightsChunk: PostLightsChunk    ;
+  /** The shader chunk for shadows */
   shadowChunk    : ShadowsChunk       ;
+  /** The shader chunk for shadow filtering */
   shadowFilter   : ShadowFilteringEnum
 
+  /** @hidden */
   iblShadowing: Flag;
 
   // iblChunk : IblChunk;
 
+  /** The list of model type / light model pairs */
   private _datas: Record<string, AbstractLightModel>;
+  /** The list of light models */
   private _dataList: AbstractLightModel[];
+  /** The light setup for this model */
   private _setup: LightSetup | null;
 
+  /**
+   * @param {ILightModelCode} [modelCode] The code for this light model, if not provided, the standard code is used
+   */
   constructor( modelCode? : ILightModelCode ) {
 
     if( modelCode === undefined ){
@@ -97,10 +113,13 @@ class StandardModel implements ILightModel {
     this.registerLightModel( new SpotLightModel       ( modelCode.spotLightCode  , modelCode.spotPreCode       ) );
     this.registerLightModel( new DirectionalLightModel( modelCode.dirLightCode   , modelCode.dirPreCode        ) );
     this.registerLightModel( new IblModel             ( modelCode.iblCode        , modelCode.iblPreCode        ) );
-    
+
   }
-  
-  
+
+  /**
+   * Register a light model to this model.
+   * @param model The light model to register
+   */
   registerLightModel( model : AbstractLightModel ) : void {
     this._datas[model.type] = model;
     this._dataList.push(model);
@@ -118,7 +137,11 @@ class StandardModel implements ILightModel {
     this._setup = ls;
   }
 
-
+  /**
+   * Add a light to the model.
+   * The light will be added to the corresponding type light model.
+   * @param {Light} l The light to add
+   */
   add(l: Light) {
     var data = this._datas[l._type];
     data.addLight(l);
@@ -150,7 +173,7 @@ class StandardModel implements ILightModel {
       this.preLightsChunk,
     ];
 
-    
+
     for (var i = 0; i < this._dataList.length; i++) {
       res.push( this._dataList[i] );
     }
@@ -167,16 +190,26 @@ class StandardModel implements ILightModel {
 // =================================
 //          COMMON CHUNK
 // =================================
-
-class PreLightsChunk extends Chunk {
-
+/**
+ * This class handles the setup before lighting
+ * for light models, in a shader chunk.
+ */
+export class PreLightsChunk extends Chunk {
+  /** The shader code for this chunk */
   code: GlslCode
 
+  /**
+   * @param {GlslCode} code The shader code for this chunk
+   */
   constructor( code : GlslCode) {
     super(true, false);
     this.code = code;
   }
 
+  /**
+   * Generate the shader code for this chunk.
+   * @param slots The slots to add the code to
+   */
   _genCode(slots: ChunksSlots) {
     slots.add('lightsf', this.code(this) );
   }
@@ -186,16 +219,26 @@ class PreLightsChunk extends Chunk {
 //          POST LIGHT CHUNK
 // =================================
 
-
-class PostLightsChunk extends Chunk {
-
+/**
+ * This class handles the setup after lighting
+ * for light models, in a shader chunk.
+ */
+export class PostLightsChunk extends Chunk {
+  /** The shader code for this chunk */
   code: GlslCode
 
+  /**
+   * @param {GlslCode} code The shader code for this chunk
+   */
   constructor( code : GlslCode) {
     super(true, false);
     this.code = code;
   }
 
+  /**
+   * Generate the shader code for this chunk.
+   * @param slots The slots to add the code to
+   */
   _genCode(slots: ChunksSlots) {
     slots.add('lightsf',this.code(this) );
   }
@@ -211,23 +254,37 @@ class PostLightsChunk extends Chunk {
 const MAX_SHADOWS = 4;
 const AA = Math.PI / 4.0;
 
-class ShadowsChunk extends Chunk {
-
+/**
+ * This class handles shadows for light models,
+ * in a shader chunk.
+ */
+export class ShadowsChunk extends Chunk {
+  /** The standard model this shadows chunk belongs to */
   lightModel: StandardModel
 
+  /** The number of shadow maps to generate */
   shadowCount: number
+  /** The number of generated shadow maps */
   genCount: number
 
+  /** The projection matrix for each shadow */
   _matrices: Float32Array
+  /** The texel bias vector for each shadow */
   _texelBiasVector: Float32Array
+  /** The size for each shadow map */
   _shadowmapSizes: Float32Array
 
+  /** The buffer used for the uniform for the projection matrices */
   _umatrices: Float32Array | null
+  /** The buffer used for the uniform for the texel bias vector */
   _utexelBiasVector: Float32Array | null
+  /** The buffer used for the uniform for the shadow map sizes */
   _ushadowmapSizes: Float32Array | null
-  
 
 
+  /**
+   * @param {StandardModel} lightModel The standard model this shadows chunk belongs to
+   */
   constructor(lightModel: StandardModel) {
     super(true, true);
 
@@ -246,7 +303,10 @@ class ShadowsChunk extends Chunk {
   }
 
 
-
+  /**
+   * Generate the shader code for this shadows chunk.
+   * @param slots The slots to add the code to
+   */
   _genCode(slots: ChunksSlots) {
 
     if (this.shadowCount > 0) {
@@ -255,7 +315,10 @@ class ShadowsChunk extends Chunk {
 
   }
 
-
+  /**
+   * Add a light for which to handle shadow mapping.
+   * @param {ShadowMappedLight} light The light to add
+   */
   addLight(light: ShadowMappedLight) {
 
     const i = this.shadowCount;
@@ -278,7 +341,10 @@ class ShadowsChunk extends Chunk {
     return i;
   }
 
-
+  /**
+   * Check if the shadow count and generated shadow count are different.
+   * If so, update the shadow data & invalidate the code.
+   */
   check() {
     if (this.genCount !== this.shadowCount) {
       this.genCount = this.shadowCount;
@@ -290,6 +356,10 @@ class ShadowsChunk extends Chunk {
     this._invalid = true;
   }
 
+  /**
+   * Setup the given program for this shadows chunk.
+   * @param {Program} prg The program to setup
+   */
   setup(prg: Program) {
 
     if (this.shadowCount > 0) {
