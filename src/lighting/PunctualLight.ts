@@ -139,7 +139,7 @@ export default abstract class PunctualLight extends Light {
   /**
    * Create the FBO resource used as target when rendering the shadowmap.
    *
-   * This method is called by {@link PunctualLight.initShadowmap} when needed.
+   * This method is called by {@link PunctualLight#initShadowmap} when needed.
    *
    * @param {GLContext} gl The webgl context to use
    */
