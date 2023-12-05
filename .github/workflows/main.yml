@@ -30,6 +30,7 @@ jobs:
           message: 'update: docs (via GHAction)'
           author_email: 'evan.martiin29@gmail.com'
           author_name: 'evanmartiin'
+          branch: 'next/3.0'
 
       - uses: actions/github-script@v6
         with:
