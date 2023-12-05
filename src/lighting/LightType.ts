@@ -1,4 +1,4 @@
-
+/** The type of lighting. */
 enum LightType {
   UNKNOWN     = 0,
   DIRECTIONAL = 1,

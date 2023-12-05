@@ -2,7 +2,7 @@ import Chunk from "./Chunk";
 import ChunksSlots from "./ChunksSlots";
 import type { MorphAttribInfos } from "./MorphCode";
 import Program from "nanogl/program";
-export declare type Target = {
+export type Target = {
     attributes: string[];
 };
 export default class MorphDeformer extends Chunk {

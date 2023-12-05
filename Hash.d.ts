@@ -1,4 +1,4 @@
-export declare type Hash = number;
+export type Hash = number;
 export declare function hashString(str: string, hash?: Hash): Hash;
 export declare function hashNumber(n: number, hash?: Hash): Hash;
 export declare function mergeHash(h1: Hash, h2: Hash): number;

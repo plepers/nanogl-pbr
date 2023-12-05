@@ -115,14 +115,6 @@ export class Sampler extends BaseParams {
     }
 }
 export class Uniform extends BaseParams {
-    constructor(name, size) {
-        super(true, true);
-        this.ptype = ParamType.UNIFORM;
-        this.name = name;
-        this.size = size;
-        this._value = new Float32Array(size);
-        this.token = 'VAL_' + this.name;
-    }
     get value() {
         return this._value;
     }
@@ -134,6 +126,14 @@ export class Uniform extends BaseParams {
     get y() { return this._value[1]; }
     get z() { return this._value[2]; }
     get w() { return this._value[3]; }
+    constructor(name, size) {
+        super(true, true);
+        this.ptype = ParamType.UNIFORM;
+        this.name = name;
+        this.size = size;
+        this._value = new Float32Array(size);
+        this.token = 'VAL_' + this.name;
+    }
     set(...args) {
         for (var i = 0; i < args.length; i++) {
             this._value[i] = args[i];

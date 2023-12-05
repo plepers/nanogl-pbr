@@ -73,12 +73,6 @@ class TexCoordTransform {
     }
 }
 class TexCoord extends Chunk {
-    constructor(attrib = _DefaultTexCoord, hasSetup) {
-        super(true, hasSetup);
-        this._uid = '';
-        this.attrib = attrib;
-        this._transform = new TexCoordTransform();
-    }
     static create(attrib) {
         return new StaticTexCoord(attrib, M3_IDENTITY);
     }
@@ -95,6 +89,12 @@ class TexCoord extends Chunk {
     }
     static createTransformedDynamic(attrib) {
         return new DynamicTexCoord(attrib);
+    }
+    constructor(attrib = _DefaultTexCoord, hasSetup) {
+        super(true, hasSetup);
+        this._uid = '';
+        this.attrib = attrib;
+        this._transform = new TexCoordTransform();
     }
     _genCode(slots) {
         slots.add('pf', GLSL.declareIn(this.varying()));

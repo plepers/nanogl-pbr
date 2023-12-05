@@ -7,7 +7,7 @@ export declare enum PbrWorkflowType {
     METALNESS = "METALNESS",
     SPECULAR = "SPECULAR"
 }
-export declare type PbrSurface = MetalnessSurface | SpecularSurface;
+export type PbrSurface = MetalnessSurface | SpecularSurface;
 export declare abstract class AbstractPbrSurface extends Chunk {
     readonly type: PbrWorkflowType;
     protected pbrInputType: Enum<readonly ["SPECULAR", "METALNESS"]>;

@@ -5,80 +5,65 @@ import { HdrEncoding, IblFormat, ShFormat } from './IblModel';
 import Light from './Light';
 import LightType from './LightType';
 
-
+/** @hidden */
 export type IblBoxProjection = {
   center: vec3;
   min: vec3;
   max: vec3;
 }
 
+/**
+ * This class manages IBL (Image Based Lighting) lights.
+ */
 export default class Ibl extends Light {
 
   readonly _type = LightType.IBL;
 
-  /**
-   * The type of Mapping of the env map
-   */
+  /** The type of mapping of the env map */
   iblFormat : IblFormat = 'OCTA';
-
-  /**
-   * Encoding used to storee HDR values in the env map
-   */
+  /** The encoding mode used to store HDR values in the env map */
   hdrEncoding: HdrEncoding = "RGBM";
-
-
+  /** The spherical harmonics format */
   shFormat: ShFormat = "SH9";
 
   /**
-   * number of available mip levels in the env map
-   * In pmrem, the lower mip levels can be left unused (black) to keep definition in high roughness values
+   * The number of available mip levels in the env map.
+   * In `PMREM`, the lower mip levels can be left unused (black)
+   * to keep definition in high roughness values.
    */
   mipLevels = 5;
 
-  /**
-   * enable rotation of the IBL
-   */
+  /** Whether to enable rotation of the IBL or not */
   enableRotation = false
 
-
-  
-  /**
-   * enable box projection for reflection
-   */
+  /** Whether to enable box projection for reflection or not */
   enableBoxProjection = false
-  
-  /**
-   * global intensity of the ibl
-   */
+
+  /** The global intensity of the IBL */
   intensity = 1.0;
 
-  /**
-   * intensity of the SH part
-   */
+  /** The intensity of the spherical harmonics */
   ambiantIntensity = 1.0;
 
-  /**
-   * intensity of environement reflections
-   */
+  /** The intensity of environement reflections */
   specularIntensity = 1.0;
 
-  /**
-   * The size of the box projection
-   */
+  /** The size of the box projection */
   readonly boxProjectionSize = vec3.fromValues(1, 1, 1)
-  
+
   /**
-   * offset the center of the projection relative to the world space position of the light's node
+   * The offset of the center of the box projection
+   * relative to the world space position of the light's node
    */
   readonly boxProjectionOffset = vec3.fromValues(0, 0, 0)
 
-  
-
-
+  /**
+   * @param {Texture} [env] The env map texture
+   * @param {ArrayLike<number>} [sh] The spherical harmonics coefficients
+   */
   constructor( public env? : Texture, public sh? : ArrayLike<number> ){
     super();
   }
 
 
 }
-

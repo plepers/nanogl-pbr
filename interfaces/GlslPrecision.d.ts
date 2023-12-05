@@ -1,1 +1,1 @@
-export declare type GlslPrecision = 'highp' | 'mediump' | 'lowp';
+export type GlslPrecision = 'highp' | 'mediump' | 'lowp';

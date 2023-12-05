@@ -25,42 +25,69 @@ const M4 = mat4.create();
 const MAT_ID = 'std';
 
 /**
- * @extends {BaseMaterial}
+ * This class manages the standard pass of a material.
+ * @extends {MaterialPass}
+ * @typeParam TSurface The type of the PBR surface to use for this pass
  */
-
 export class StandardPass<TSurface extends PbrSurface = PbrSurface> extends MaterialPass {
 
-
+  /** The glsl version */
   version              : ShaderVersion
+  /** The shader float precision */
   precision            : ShaderPrecision
+  /** The id for the shader */
   shaderid             : Flag
+  /** The alpha value */
   alpha                : Input
+  /** The alpha factor */
   alphaFactor          : Input
+  /** The alpha cutoff */
   alphaCutoff          : Input
+  /** The emissive color */
   emissive             : Input
+  /** The emissive factor */
   emissiveFactor       : Input
+  /** The normal map */
   normal               : Input
+  /** The normal scale */
   normalScale          : Input
+  /** The occlusion value */
   occlusion            : Input
+  /** The occlusion strength */
   occlusionStrength    : Input
+  /**
+   * The gamma value for gamma correction
+   * (only used if gammaMode is set to `GAMMA_STD`)
+   */
   iGamma               : Input
+  /** The exposure multiplier */
   iExposure            : Input
 
+  /** The alpha rendering mode */
   alphaMode: AlphaModeEnum
+  /** The gamma correction mode */
   gammaMode: GammaModeEnum
 
+  /** Whether the backface of the geometry should be rendered or not */
   doubleSided   : Flag
+  /** @hidden */
   horizonFading : Flag
-  glossNearest  : Flag
   /**
-   * @deprecated
+   * Whether glossiness should use the nearest env map blur level or a lerp between
+   * the higher and lower levels
    */
+  glossNearest  : Flag
+  /** Whether the irradiance should be computed per vertex or per fragment */
   perVertexIrrad: Flag
-  
+  /** The PBR surface used for this pass */
   surface?: TSurface
 
   // private _uvs : Map<number, UVTransform> = new Map()
 
+  /**
+   * @typeParam TSurface The type of the PBR surface to use for this pass
+   * @param name The name of the pass
+   */
   constructor( name : string = 'gltf-std-pass' ){
 
     super( {
@@ -91,7 +118,7 @@ export class StandardPass<TSurface extends PbrSurface = PbrSurface> extends Mate
 
     inputs.add( this.occlusion             = new Input( 'occlusion'          , 1 ) );
     inputs.add( this.occlusionStrength     = new Input( 'occlusionStrength'  , 1 ) );
-    
+
     inputs.add( this.iGamma                = new Input( 'gamma'              , 1 ) );
     inputs.add( this.iExposure             = new Input( 'exposure'           , 1 ) );
 
@@ -99,14 +126,17 @@ export class StandardPass<TSurface extends PbrSurface = PbrSurface> extends Mate
     inputs.add( this.gammaMode             = new Enum( 'gammaMode', GammaModes )).set( 'GAMMA_2_2' );
 
     inputs.add( this.doubleSided           = new Flag ( 'doubleSided'   ,  false ) );
-    
+
     inputs.add( this.perVertexIrrad        = new Flag ( 'perVertexIrrad',  false ) );
     inputs.add( this.horizonFading         = new Flag ( 'horizonFading' ,  false ) );
     inputs.add( this.glossNearest          = new Flag ( 'glossNearest'  ,  false ) );
 
   }
 
-
+  /**
+   * Set the PBR surface to use for this pass.
+   * @param surface The surface to use for this pass
+   */
   setSurface( surface:TSurface ) : void {
     if( this.surface ) {
       this.inputs.remove( this.surface );
@@ -115,41 +145,50 @@ export class StandardPass<TSurface extends PbrSurface = PbrSurface> extends Mate
     this.inputs.add( this.surface );
   }
 
-
+  /**
+   * Set the light setup to use for this pass.
+   * @param {LightSetup} setup The light setup to use for this pass
+   */
   setLightSetup( setup : LightSetup ){
     this.inputs.addChunks( setup.getChunks( 'std' ) );
   }
 
-  
+
   prepare( prg:Program, node : Node, camera : Camera ){
-    
+
     // matrices
-    
+
     if( prg.uMVP ){
       camera.modelViewProjectionMatrix( M4, node._wmatrix );
       prg.uMVP(          M4            );
     }
-    
+
     if( prg.uWorldMatrix )
       prg.uWorldMatrix( node._wmatrix );
-    
+
     if( prg.uVP )
       prg.uVP( camera._viewProj );
-    
+
     if( prg.uCameraPosition )
       prg.uCameraPosition( camera._wposition );
-  
+
 
   }
 
 
 };
 
-
+/**
+ * This class manages the standard pass of a specular material.
+ * @extends {StandardPass<SpecularSurface>}
+ */
 export class StandardSpecular extends StandardPass<SpecularSurface> {
 
   readonly surface!: SpecularSurface
 
+  /**
+   * @param name The name of the pass
+   */
   constructor( name : string = 'gltf-std-pass' ){
     super( name );
     var surface = new SpecularSurface()
@@ -159,10 +198,17 @@ export class StandardSpecular extends StandardPass<SpecularSurface> {
 
 }
 
+/**
+ * This class manages the standard pass of a metalness material.
+ * @extends {StandardPass<SpecularSurface>}
+ */
 export class StandardMetalness extends StandardPass<MetalnessSurface> {
-  
+
   readonly surface!: MetalnessSurface;
 
+  /**
+   * @param name The name of the pass
+   */
   constructor( name : string = 'gltf-std-pass' ){
     super( name );
     var surface = new MetalnessSurface()
@@ -170,5 +216,3 @@ export class StandardMetalness extends StandardPass<MetalnessSurface> {
   }
 
 }
-
-

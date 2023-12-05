@@ -9,15 +9,21 @@ import PunctualLight from './PunctualLight';
 
 const BiasVector = new Float32Array(4);
 
-
+/**
+ * This class manages directional lights.
+ */
 class DirectionalLight extends PunctualLight implements ShadowMappedLight {
 
   readonly _type = LightType.DIRECTIONAL;
 
+  /**
+   * The amount to offset the camera near when projecting shadow map
+   * @defaultValue 0
+   */
   _shadowmapNearOffset: number;
 
   _camera: Camera<OrthographicLens>|null = null;
-  
+
 
   constructor() {
     super();

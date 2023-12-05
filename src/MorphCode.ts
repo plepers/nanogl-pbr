@@ -1,11 +1,16 @@
 import type MorphDeformer from "./MorphDeformer"
 
+/** The name of the uniform that holds the weights of the morph targets. */
 export const WEIGHTS_UNIFORM = 'uMorphWeights'
 
-
+/** A type of morph attribute. */
 export type MorphAttributeType = 'float' | 'vec2' | 'vec3' | 'vec4';
+/** A name of morph attribute. */
 export type MorphAttributeName = 'position' | 'normal' | 'tangent';
 /**
+ * The definition of a morph attribute.
+ * @example
+ * ```js
  * {
  *    type:  'vec3'
  *    name : 'position'
@@ -15,10 +20,14 @@ export type MorphAttributeName = 'position' | 'normal' | 'tangent';
  *      'aPosition_morph2'
  *    ]
  * }
+ * ```
  */
 export type MorphAttribInfos = {
+  /** The type of the attribute to morph */
   type : MorphAttributeType
+  /** The name of the attribute to morph */
   name : MorphAttributeName
+  /** The list of attributes names for the morph targets */
   attributes : string[]
 }
 
@@ -36,7 +45,7 @@ function declareAttribute( infos : MorphAttribInfos ) : string {
 
 
 /**
- * 
+ *
  * void MorphAttribute_position( inout vec3 position ) {
  *   position +=
  *     aPosition_morph0 * uMorphWeights[0] +
@@ -81,8 +90,14 @@ function declareWeights( numtgt : number ) : string {
 }
 
 
-
+/**
+ * The code for a MorphDeformer.
+ */
 const MorphCode = {
+  /**
+   * Generate the pre-vertex code for a MorphDeformer.
+   * @param morph The MorphDeformer to generate the code for
+   */
   preVertexCode( morph : MorphDeformer ) : string {
     return [
       declareWeights(morph.numTargets),
@@ -90,7 +105,10 @@ const MorphCode = {
       generateMorphFunctions(morph.morphInfos)
     ].join('\n')
   },
-  
+  /**
+   * Generate the vertex code for a MorphDeformer.
+   * @param morph The MorphDeformer to generate the code for
+   */
   vertexCode( morph : MorphDeformer ) : string {
     return generateMorphCalls(morph.morphInfos);
   }

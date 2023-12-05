@@ -20,26 +20,6 @@ export const HdrEncodings = [
     "RGBE",
 ];
 export class IblModel extends AbstractLightModel {
-    constructor(code, preCode) {
-        super(code, preCode);
-        this.type = LightType.IBL;
-        this.enableRotation = new Flag("enableRotation");
-        this.enableBoxProjection = new Flag("enableBoxProjection");
-        this.iblFormat = new Enum("iblFormat", IblFormats);
-        this.shFormat = new Enum("shFormat", ShFormats);
-        this.hdrEncoding = new Enum("iblHdrEncoding", HdrEncodings);
-        this.intensities = new Input("iblIntensities", 2);
-        this.mipLevels = new Input("iblNumMipLevel", 1);
-        this.mipLevelsValue = this.mipLevels.attachConstant(5);
-        this.intensitiesValue = this.intensities.attachConstant([1, 1]);
-        this.addChild(this.enableRotation);
-        this.addChild(this.enableBoxProjection);
-        this.addChild(this.iblFormat);
-        this.addChild(this.shFormat);
-        this.addChild(this.hdrEncoding);
-        this.addChild(this.mipLevels);
-        this.addChild(this.intensities);
-    }
     genCodePerLights(light, index, shadowIndex) {
         return this.codeTemplate(this);
     }
@@ -63,6 +43,26 @@ export class IblModel extends AbstractLightModel {
             throw new Error("IblModel support only one Ibl Light");
         }
         super.addLight(l);
+    }
+    constructor(code, preCode) {
+        super(code, preCode);
+        this.type = LightType.IBL;
+        this.enableRotation = new Flag("enableRotation");
+        this.enableBoxProjection = new Flag("enableBoxProjection");
+        this.iblFormat = new Enum("iblFormat", IblFormats);
+        this.shFormat = new Enum("shFormat", ShFormats);
+        this.hdrEncoding = new Enum("iblHdrEncoding", HdrEncodings);
+        this.intensities = new Input("iblIntensities", 2);
+        this.mipLevels = new Input("iblNumMipLevel", 1);
+        this.mipLevelsValue = this.mipLevels.attachConstant(5);
+        this.intensitiesValue = this.intensities.attachConstant([1, 1]);
+        this.addChild(this.enableRotation);
+        this.addChild(this.enableBoxProjection);
+        this.addChild(this.iblFormat);
+        this.addChild(this.shFormat);
+        this.addChild(this.hdrEncoding);
+        this.addChild(this.mipLevels);
+        this.addChild(this.intensities);
     }
     setup(prg) {
         if (this.lights.length > 0) {

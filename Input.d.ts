@@ -11,7 +11,7 @@ export declare enum ShaderType {
     VERTEX = 2,
     ALL = 3
 }
-declare type InputSize = 1 | 2 | 3 | 4;
+type InputSize = 1 | 2 | 3 | 4;
 declare enum ParamType {
     SAMPLER = 0,
     UNIFORM = 1,
@@ -25,7 +25,7 @@ export interface IInputParam {
     token: string;
     genInputCode(slots: ChunksSlots, input: Input): void;
 }
-declare type InputParam = Sampler | Uniform | Attribute | Constant;
+type InputParam = Sampler | Uniform | Attribute | Constant;
 export declare abstract class BaseParams extends Chunk {
     protected _colorspace: ColorSpace;
     constructor(hasCode?: boolean, hasSetup?: boolean);

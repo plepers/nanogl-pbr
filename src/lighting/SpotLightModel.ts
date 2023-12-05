@@ -7,17 +7,27 @@ import Program from "nanogl/program";
 import { GLContext } from "nanogl/types";
 
 
-
+/**
+ * This class manages spot light models.
+ */
 export default class SpotLightModel extends ShadowMappedLightModel<SpotLight> {
 
 
   readonly type = LightType.SPOT
 
+  /** The position for each light */
   _positions   : Float32Array | null
+  /** The direction for each light */
   _directions  : Float32Array | null
+  /** The color for each light */
   _colors      : Float32Array | null
+  /** The attenuation amount for each light */
   _attenuation : Float32Array | null
 
+  /**
+   * @param {GlslCode} code The shader code template for this light model
+   * @param {GlslCode} preCode The shader pre-code template for this light model
+   */
   constructor(code : GlslCode, preCode : GlslCode) {
     super(code, preCode);
 
@@ -40,6 +50,11 @@ export default class SpotLightModel extends ShadowMappedLightModel<SpotLight> {
     return this.codeTemplate(o);
   }
 
+  /**
+   * Allocate the positions, directions, colors & attenuation amount
+   * arrays for the given number of lights.
+   * @param {number} n The number of lights
+   */
   allocate(n: number) {
 
     if (this._colors === null || this._colors.length / 4 !== n) {

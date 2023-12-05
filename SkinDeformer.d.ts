@@ -2,7 +2,7 @@ import Program from "nanogl/program";
 import Chunk from "./Chunk";
 import ChunksSlots from "./ChunksSlots";
 import { mat4 } from "gl-matrix";
-export declare type SkinAttributeSet = {
+export type SkinAttributeSet = {
     weightsAttrib: string;
     jointsAttrib: string;
     numComponents: 1 | 2 | 3 | 4;
