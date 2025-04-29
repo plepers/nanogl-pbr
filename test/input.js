@@ -44,9 +44,9 @@ describe( "Input", function(){
 
     //   inputs.compile()
       var codes = inputs.getCode();
-      expect( codes.slotsMap.pv.code ).to.be( 'IN float aInput;\nOUT float v_aInput;\n\n' );
-      expect( codes.slotsMap.v.code  ).to.be( 'v_aInput = aInput;\n\n' );
-      expect( codes.slotsMap.pf.code ).to.be( 'IN float v_aInput;\n\n#define _input(k) v_aInput\n' );
+      expect( codes.slotsMap.pv.code ).to.be( 'IN float aInput;\nOUT float vaaInput;\n\n' );
+      expect( codes.slotsMap.v.code  ).to.be( 'vaaInput = aInput;\n\n' );
+      expect( codes.slotsMap.pf.code ).to.be( 'IN float vaaInput;\n\n#define _input(k) vaaInput\n' );
       expect( codes.slotsMap.f  ).to.be( undefined );
 
     });

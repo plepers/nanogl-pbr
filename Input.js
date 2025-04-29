@@ -166,7 +166,7 @@ export class Attribute extends BaseParams {
         this.ptype = ParamType.ATTRIBUTE;
         this.name = name;
         this.size = size;
-        this.token = `v_${this.name}`;
+        this.token = `va${this.name}`;
     }
     _genCode(slots) { }
     genInputCode(slots, input) {

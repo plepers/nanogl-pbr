@@ -510,7 +510,7 @@ export class Attribute extends BaseParams implements IInputParam {
 
     this.name = name;
     this.size = size;
-    this.token = `v_${this.name}`;
+    this.token = `va${this.name}`;
   }
 
 
